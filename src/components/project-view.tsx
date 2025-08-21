@@ -109,21 +109,25 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
     html2canvas(input, { scale: 2 })
       .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
+        const imgData = canvas.toDataURL('image/jpeg', 0.9); // Use JPEG format with quality 0.9
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
         const ratio = canvasWidth / canvasHeight;
-        const width = pdfWidth - 20; // with margin
-        const height = width / ratio;
-        
-        let position = 0;
-        let pageHeight = pdf.internal.pageSize.height;
-        let remainingHeight = canvasHeight;
+        let width = pdfWidth;
+        let height = width / ratio;
 
-        pdf.addImage(imgData, 'PNG', 10, 10, width, height);
+        if (height > pdfHeight) {
+            height = pdfHeight;
+            width = height * ratio;
+        }
+
+        const marginX = (pdfWidth - width) / 2;
+        const marginY = (pdfHeight - height) / 2;
+        
+        pdf.addImage(imgData, 'JPEG', marginX, marginY, width, height, undefined, 'MEDIUM');
         
         pdf.save(`${project.name}-report.pdf`);
       })
@@ -215,7 +219,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   return (
     <>
       <div style={{ position: 'fixed', left: '-9999px', top: 0, width: '210mm' }}>
-        {project && organization && (
+        {project && (
           <ProjectReport ref={reportRef} project={project} organization={organization} />
         )}
       </div>

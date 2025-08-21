@@ -54,13 +54,6 @@ export default function AdditionalCostsDialog({ open, onOpenChange, onConfirm, c
       costs: existingCosts,
     },
   });
-  
-  useEffect(() => {
-    if (open) {
-      form.reset({ costs: existingCosts });
-    }
-  }, [existingCosts, form.reset, open]);
-
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -78,11 +71,16 @@ export default function AdditionalCostsDialog({ open, onOpenChange, onConfirm, c
     onOpenChange(false);
   }
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen) {
+        form.reset({ costs: existingCosts });
+    }
+    onOpenChange(isOpen);
+  };
+
+
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => {
-        if(!isOpen) form.reset();
-        onOpenChange(isOpen);
-    }}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>

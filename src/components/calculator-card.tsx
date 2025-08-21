@@ -132,6 +132,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 interface CalculationResult {
+  inputs: FormData;
   totalWeight: number;
   totalCost: number | null;
   weightPerPiece: number;
@@ -144,6 +145,38 @@ interface CalculationResult {
   webRunningFeet?: number;
   quantity: number;
 }
+
+const renderItemDimensions = (item: FormData) => {
+    switch (item.type) {
+        case 'plate':
+            return `L:${item.length} x W:${item.width} x T:${item.thickness} mm`;
+        case 'plate-imperial':
+            return `L:${item.length}in x W:${item.width}in x T:${item.thickness}mm`;
+        case 'pipe':
+            return `L:${item.length} Ø:${item.outerDiameter} Wall:${item.wallThickness} mm`;
+        case 'girder':
+            return `L:${item.length} Flange:${item.flangeWidth}x${item.flangeThickness} Web:${item.webHeight}x${item.webThickness} mm`;
+        case 'circular':
+            if (item.innerDiameter && item.innerDiameter > 0) {
+                 return `T:${item.thickness} Ø:${item.diameter} Inner Ø:${item.innerDiameter} mm`;
+            }
+            return `T:${item.thickness} Ø:${item.diameter} mm`;
+        default:
+            return '';
+    }
+};
+
+const getItemTypeLabel = (type: FormData['type']) => {
+    switch (type) {
+        case 'plate':
+            return 'Steel Plate (Quality)';
+        case 'plate-imperial':
+            return 'Steel Plate (Non-Quality)';
+        default:
+            return type.charAt(0).toUpperCase() + type.slice(1);
+    }
+}
+
 
 export default function CalculatorCard() {
   const [result, setResult] = useState<CalculationResult | null>(null);
@@ -248,6 +281,7 @@ export default function CalculatorCard() {
     const costPerPiece = pricePerKg !== null ? weightKg * pricePerKg : null;
 
     setResult({
+        inputs: data,
         totalWeight: weightKg * quantity,
         totalCost: costPerPiece !== null ? costPerPiece * quantity : null,
         weightPerPiece: weightKg,
@@ -490,6 +524,9 @@ export default function CalculatorCard() {
                 <Card className="bg-muted/50">
                     <CardHeader className='pb-4'>
                         <CardTitle className='text-xl'>Calculation Result</CardTitle>
+                        <CardDescription>
+                            {getItemTypeLabel(result.inputs.type)} (Qty: {result.quantity}) - {renderItemDimensions(result.inputs)}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="grid grid-cols-2 gap-4 text-center">
@@ -560,7 +597,5 @@ export default function CalculatorCard() {
     </Card>
   );
 }
-
-    
 
     

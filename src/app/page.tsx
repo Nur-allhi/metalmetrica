@@ -151,7 +151,7 @@ export default function Home() {
               </Sidebar>
               <SidebarInset>
                   <Header />
-                  <main className="flex flex-1 flex-col gap-4 p-4 sm:p-4 md:p-6 overflow-hidden">
+                  <main className="flex flex-1 flex-col gap-4 p-4 sm:p-6 overflow-hidden">
                       <Tabs defaultValue="single" className="flex-1 flex flex-col overflow-hidden h-full">
                         <div className="flex items-center">
                             <SidebarTrigger className="md:hidden" />

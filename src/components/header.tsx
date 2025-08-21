@@ -42,8 +42,8 @@ export default function Header({}: HeaderProps) {
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 no-print">
-        <div className="hidden items-center gap-2 md:flex">
+      <header className="sticky top-0 z-30 hidden h-auto items-center gap-4 border-0 bg-transparent px-6 sm:flex no-print">
+        <div className="flex items-center gap-2">
           <Logo className="h-6 w-6 text-primary" />
           <h1 className="text-xl font-bold">MetalMetrica</h1>
         </div>

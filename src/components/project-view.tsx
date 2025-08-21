@@ -644,23 +644,23 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             </CardHeader>
             <CardContent className="grid gap-4">
                <div className="grid gap-2 text-sm">
-                 <div className="flex justify-between gap-x-2 flex-col items-start sm:flex-row sm:items-baseline">
+                 <div className="flex flex-col sm:flex-row sm:justify-between gap-x-2">
                     <span className="text-muted-foreground">Total Weight</span>
                     <span className="font-bold">{numberFormat(totalWeight)} kg</span>
                 </div>
                 {hasCost && totalCost !== null && (
                     <>
-                     <div className="flex justify-between gap-x-2 flex-col items-start sm:flex-row sm:items-baseline">
+                     <div className="flex flex-col sm:flex-row sm:justify-between gap-x-2">
                         <span className="text-muted-foreground">Item Sub-total</span>
                         <span className="font-medium text-green-600">{currencySymbol} {numberFormat(subTotalCost)}</span>
                       </div>
                       {(project.additionalCosts || []).map(cost => (
-                        <div key={cost.id} className="flex justify-between gap-x-2 flex-col items-start sm:flex-row sm:items-baseline">
+                        <div key={cost.id} className="flex flex-col sm:flex-row sm:justify-between gap-x-2">
                             <span className="text-muted-foreground">{cost.description}</span>
                             <span className="font-medium text-green-600">{currencySymbol} {numberFormat(cost.amount)}</span>
                         </div>
                       ))}
-                      <div className="flex justify-between font-bold border-t pt-2 mt-1 gap-x-2 flex-col items-start sm:flex-row sm:items-baseline">
+                      <div className="flex flex-col sm:flex-row sm:justify-between font-bold border-t pt-2 gap-x-2">
                         <span className="text-muted-foreground">Grand Total</span>
                         <span className="text-green-600">{currencySymbol} {numberFormat(totalCost)}</span>
                       </div>

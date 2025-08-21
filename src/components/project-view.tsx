@@ -262,15 +262,16 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             const totalWeight = item.weight * item.quantity;
             const totalCost = item.cost !== null ? item.cost * item.quantity : null;
             
-            let dimensions = renderItemDimensions(item);
+            let dimensions = `${item.name}\n${renderItemDimensions(item)}`;
             if (item.type === 'girder') {
                 const girder = item as SteelGirder;
                 dimensions += `\nFlange Wt: ${numberFormat(girder.flangeWeight!)} kg | Web Wt: ${numberFormat(girder.webWeight!)} kg`;
+                dimensions += `\nFlange Ft: ${numberFormat(girder.flangeRunningFeet!)} ft | Web Ft: ${numberFormat(girder.webRunningFeet!)} ft`;
             }
 
             const row = [
                 { content: getItemTypeLabel(item.type) },
-                { content: `${item.name}\n${dimensions}` },
+                { content: dimensions },
                 { content: numberFormat(item.weight), styles: { halign: 'right' } },
                 ...(hasCost ? [{ content: item.cost !== null ? numberFormat(item.cost) : 'N/A', styles: { halign: 'right' } }] : []),
                 { content: item.quantity, styles: { halign: 'center' } },
@@ -283,10 +284,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0);
         const totalCost = hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null;
         
+        const footColSpan = hasCost ? 5 : 4;
         let footContent = [
-             { content: 'Project Totals', colSpan: hasCost ? 2 : 1, styles: { halign: 'right', fontStyle: 'bold' } },
-             { content: '', colSpan: 1 },
-             { content: '', colSpan: 1 },
+             { content: 'Project Totals', colSpan: footColSpan, styles: { halign: 'right', fontStyle: 'bold' } },
              { content: numberFormat(totalWeight) + ' kg', styles: { halign: 'right', fontStyle: 'bold' } },
         ];
         

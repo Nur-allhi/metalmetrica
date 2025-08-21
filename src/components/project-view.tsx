@@ -80,9 +80,10 @@ const getItemTypeLabel = (type: SteelItem['type']) => {
 const ItemCard = ({ item, onDelete, organization }: { item: SteelItem, onDelete: () => void, organization: Organization | null }) => {
     const girder = item as SteelGirder;
     const hasCost = item.cost !== null;
-    const pricePerKg = hasCost && item.weight > 0 ? item.cost! / item.weight : null;
+    
     const currencyCode = organization?.currency || "USD";
     const currencySymbol = getCurrencySymbol(currencyCode);
+    const pricePerKg = hasCost && item.weight > 0 ? (item.cost || 0) / item.weight : null;
 
 
     const numberFormat = (value: number) => {
@@ -175,7 +176,6 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     doc.setFont("helvetica", "normal");
 
     const currencyCode = organization?.currency || 'USD';
-    const currencySymbol = getCurrencySymbol(currencyCode);
     
     const numberFormat = (value: number) => value.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
     
@@ -254,23 +254,22 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
         // Table
         const hasCost = project.items.some(item => item.cost !== null);
-        const head = [
-            [
-                'S.No.',
-                'Name & Dimensions', 
-                `Unit Wt\n(kg)`, 
-                ...(hasCost ? [`Unit Cost\n(${currencyCode})`] : []),
-                'Qty', 
-                `Total Wt\n(kg)`, 
-                ...(hasCost ? [`Total Cost\n(${currencyCode})`] : [])
-            ]
-        ];
+        
+        const head = [[
+            'S.No.',
+            'Name & Dimensions',
+            'Unit Wt\n(kg)',
+            ...(hasCost ? [`Unit Cost\n(${currencyCode})`] : []),
+            'Qty',
+            'Total Wt\n(kg)',
+            ...(hasCost ? [`Total Cost\n(${currencyCode})`] : [])
+        ]];
         
         const body = project.items.map((item, index) => {
             const totalWeight = item.weight * item.quantity;
             const totalCost = item.cost !== null ? item.cost * item.quantity : null;
             
-            let dimensions;
+            let nameAndDims;
             const nameAndType = `${item.name} (${getItemTypeLabel(item.type)})`;
             const itemDims = renderItemDimensions(item);
 
@@ -278,14 +277,14 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 const girder = item as SteelGirder;
                 const weights = `Flange Wt: ${numberFormat(girder.flangeWeight!)} kg | Web Wt: ${numberFormat(girder.webWeight!)} kg`;
                 const feets = `Flange Ft: ${numberFormat(girder.flangeRunningFeet!)} ft | Web Ft: ${numberFormat(girder.webRunningFeet!)} ft`;
-                dimensions = `${nameAndType}\n${itemDims}\n${weights}\n${feets}`;
+                nameAndDims = `${nameAndType}\n${itemDims}\n${weights}\n${feets}`;
             } else {
-                 dimensions = `${nameAndType}\n${itemDims}`;
+                 nameAndDims = `${nameAndType}\n${itemDims}`;
             }
 
             const row = [
                 { content: (index + 1).toString(), styles: { halign: 'center' } },
-                { content: dimensions },
+                { content: nameAndDims },
                 { content: numberFormat(item.weight), styles: { halign: 'right' } },
             ];
             
@@ -309,29 +308,21 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         
         const footerRows = [];
         
-        if (hasCost && subTotalCost !== null) {
-            const subTotalRow = [
-                { content: 'Sub-Total', colSpan: 5, styles: { halign: 'right', fontStyle: 'bold' } },
-                { content: `${numberFormat(totalWeight)}\nkg`, styles: { halign: 'right', fontStyle: 'bold' } },
-                { content: `${numberFormat(subTotalCost)}`, styles: { halign: 'right', fontStyle: 'bold' } },
-            ];
-            footerRows.push(subTotalRow);
-
-        } else {
-             const subTotalRow = [
-                 { content: 'Total Weight', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
-                 { content: `${numberFormat(totalWeight)}\nkg`, styles: { halign: 'right', fontStyle: 'bold' } },
-             ]
-             if(hasCost) subTotalRow.push({ content: ''});
-             footerRows.push(subTotalRow);
+        // Sub-total
+        const subTotalRow = [];
+        subTotalRow.push({ content: 'Sub-Total', colSpan: hasCost ? 4 : 3, styles: { halign: 'right', fontStyle: 'bold' } });
+        subTotalRow.push({ content: `${numberFormat(totalWeight)}\nkg`, styles: { halign: 'right', fontStyle: 'bold' } });
+        if(hasCost && subTotalCost !== null) {
+            subTotalRow.push({ content: `${numberFormat(subTotalCost)}\n${currencyCode}`, styles: { halign: 'right', fontStyle: 'bold' } });
         }
+        footerRows.push(subTotalRow);
         
         let grandTotal = subTotalCost;
         if (hasCost && grandTotal !== null) {
             additionalCosts.forEach(cost => {
                 const additionalCostRow = [
-                    { content: cost.description, colSpan: 6, styles: { halign: 'right' } },
-                    { content: `${numberFormat(cost.amount)}`, styles: { halign: 'right' } },
+                    { content: cost.description, colSpan: hasCost ? 5 : 4, styles: { halign: 'right' } },
+                    { content: `${numberFormat(cost.amount)}\n${currencyCode}`, styles: { halign: 'right' } },
                 ]
                 footerRows.push(additionalCostRow);
             });
@@ -341,26 +332,11 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
             if(additionalCosts.length > 0) {
                  const grandTotalRow = [
-                    { content: 'Grand Total', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } },
-                    { content: `${numberFormat(grandTotal)}`, styles: { halign: 'right', fontStyle: 'bold' } },
+                    { content: 'Grand Total', colSpan: hasCost ? 5 : 4, styles: { halign: 'right', fontStyle: 'bold' } },
+                    { content: `${numberFormat(grandTotal)}\n${currencyCode}`, styles: { halign: 'right', fontStyle: 'bold' } },
                  ]
                  footerRows.push(grandTotalRow);
             }
-        }
-
-        const columnStyles: { [key: string]: any } = {
-          0: { cellWidth: '6%' },    
-          1: { cellWidth: 'auto' },  
-          2: { cellWidth: '10%' },  
-          3: { cellWidth: '10%' },
-          4: { cellWidth: '8%' },   
-          5: { cellWidth: '12%' },  
-        };
-        
-        if(hasCost) {
-            columnStyles[6] = { cellWidth: '12%' }; 
-        } else {
-            delete columnStyles[3];
         }
 
 
@@ -396,7 +372,15 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 lineWidth: 0.1,
                 lineColor: [0, 0, 0]
             },
-            columnStyles: columnStyles,
+            columnStyles: {
+              0: { cellWidth: '6%' },    // S.No
+              1: { cellWidth: 'auto' },  // Name & Dims
+              2: { cellWidth: '12%' },  // Unit Wt
+              3: { cellWidth: '12%' },  // Unit Cost
+              4: { cellWidth: '8%' },   // Qty
+              5: { cellWidth: '12%' },  // Total Wt
+              6: { cellWidth: '12%' },  // Total Cost
+            },
             didDrawPage: (data: any) => {
                 currentY = data.cursor.y;
             }
@@ -425,6 +409,18 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
 
     function finalizePdf() {
+        const pageCount = (doc as any).internal.getNumberOfPages();
+        const now = new Date();
+        const timestamp = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+        const footerText = `System generated by MetalMetrica on ${timestamp}`;
+
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setTextColor(150);
+            doc.text(footerText, pageMargin, pageHeight - 10);
+        }
+
         doc.save(`${project.name}-report.pdf`);
         toast({
             title: "Report Generated",

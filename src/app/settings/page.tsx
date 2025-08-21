@@ -5,10 +5,10 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -43,7 +43,9 @@ const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }).optional().or(z.literal('')),
   address: z.string().optional(),
   contactNumber: z.string().optional(),
-  termsAndConditions: z.string().optional(),
+  termsAndConditions: z.array(z.object({
+    text: z.string().min(1, "Term cannot be empty."),
+  })).optional(),
   currency: z.string().optional(),
 });
 
@@ -63,9 +65,14 @@ export default function SettingsPage() {
       email: "",
       address: "",
       contactNumber: "",
-      termsAndConditions: "",
+      termsAndConditions: [],
       currency: "USD",
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "termsAndConditions",
   });
 
   useEffect(() => {
@@ -76,7 +83,7 @@ export default function SettingsPage() {
         email: organization.email || "",
         address: organization.address || "",
         contactNumber: organization.contactNumber || "",
-        termsAndConditions: organization.termsAndConditions || "",
+        termsAndConditions: organization.termsAndConditions || [],
         currency: organization.currency || "USD",
       });
     }
@@ -158,19 +165,36 @@ export default function SettingsPage() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="termsAndConditions"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Terms & Conditions</FormLabel>
-                        <FormControl>
-                          <Textarea placeholder="Payment is due within 30 days..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+
+                  <div>
+                     <FormLabel>Terms & Conditions</FormLabel>
+                     <div className="grid gap-2 pt-2">
+                        {fields.map((field, index) => (
+                           <div key={field.id} className="flex items-center gap-2">
+                                <FormField
+                                    control={form.control}
+                                    name={`termsAndConditions.${index}.text`}
+                                    render={({ field }) => (
+                                        <FormItem className="flex-1">
+                                            <FormControl>
+                                                <Input placeholder={`Term ${index + 1}`} {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                           </div>
+                        ))}
+                        <Button type="button" variant="outline" onClick={() => append({ text: '' })}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Term
+                        </Button>
+                     </div>
+                  </div>
+
                   <FormField
                     control={form.control}
                     name="currency"

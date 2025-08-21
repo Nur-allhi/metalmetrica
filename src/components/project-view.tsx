@@ -409,8 +409,10 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         currentY = finalY;
 
 
-        if (organization?.termsAndConditions) {
-            const termsHeight = doc.getTextDimensions(organization.termsAndConditions, { maxWidth: pageWidth - pageMargin * 2 }).h;
+        if (organization?.termsAndConditions && organization.termsAndConditions.length > 0) {
+            const termsText = organization.termsAndConditions.map((term, index) => `${index + 1}. ${term.text}`).join('\n');
+            const termsHeight = doc.getTextDimensions(termsText, { maxWidth: pageWidth - pageMargin * 2 }).h;
+
             if (currentY + termsHeight + 20 > pageHeight) {
                 doc.addPage();
                 currentY = pageMargin;
@@ -422,7 +424,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             currentY += 5;
             doc.setFontSize(10);
             doc.setFont("helvetica", "normal");
-            doc.text(organization.termsAndConditions, pageMargin, currentY, { maxWidth: pageWidth - pageMargin * 2 });
+            doc.text(termsText, pageMargin, currentY, { maxWidth: pageWidth - pageMargin * 2 });
         }
     }
 

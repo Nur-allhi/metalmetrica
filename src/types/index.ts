@@ -1,5 +1,6 @@
 
 
+
 export interface Organization {
   name: string;
   logoUrl?: string;
@@ -7,7 +8,7 @@ export interface Organization {
   address?: string;
   currency?: string;
   contactNumber?: string;
-  termsAndConditions?: string;
+  termsAndConditions?: { text: string }[];
 }
 
 export type UnitSystem = "quality" | "non-quality";

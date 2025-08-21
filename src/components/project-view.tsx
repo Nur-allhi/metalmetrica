@@ -138,30 +138,30 @@ const ItemCard = ({ item, onDelete, onEdit, organization }: { item: SteelItem, o
                 <div className="grid grid-cols-2 gap-4 text-sm pt-2 border-t">
                     <div>
                         <p className="text-muted-foreground text-xs">Qty</p>
-                        <p className="font-medium">{item.quantity}</p>
+                        <p className="font-medium text-sm">{item.quantity}</p>
                     </div>
                      {hasCost && (
                          <div>
                             <p className="text-muted-foreground text-xs">Price ({currencySymbol}/kg)</p>
-                            <p className="font-medium">{pricePerKg !== null ? `${currencySymbol}${numberFormat(pricePerKg)}` : 'N/A'}</p>
+                            <p className="font-medium text-sm">{pricePerKg !== null ? `${currencySymbol}${numberFormat(pricePerKg)}` : 'N/A'}</p>
                         </div>
                     )}
                     <div>
                         <p className="text-muted-foreground text-xs">Unit Wt (kg)</p>
-                        <p className="font-medium">{numberFormat(item.weight)}</p>
+                        <p className="font-medium text-sm">{numberFormat(item.weight)}</p>
                     </div>
                      <div>
                         <p className="text-muted-foreground text-xs">Unit Cost</p>
-                        <p className="font-medium">{hasCost ? `${currencySymbol}${numberFormat(item.cost!)}` : 'N/A'}</p>
+                        <p className="font-medium text-sm">{hasCost ? `${currencySymbol}${numberFormat(item.cost!)}` : 'N/A'}</p>
                     </div>
                      <div>
                         <p className="text-muted-foreground text-xs">Total Wt (kg)</p>
-                        <p className="font-semibold">{numberFormat(item.weight * item.quantity)}</p>
+                        <p className="font-semibold text-sm">{numberFormat(item.weight * item.quantity)}</p>
                     </div>
                     {hasCost && (
                          <div>
                             <p className="text-muted-foreground text-xs">Total Cost</p>
-                            <p className="font-semibold text-green-600">{currencySymbol} {numberFormat((item.cost || 0) * item.quantity)}</p>
+                            <p className="font-semibold text-green-600 text-sm">{currencySymbol} {numberFormat((item.cost || 0) * item.quantity)}</p>
                         </div>
                     )}
                 </div>

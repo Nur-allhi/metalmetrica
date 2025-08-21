@@ -12,6 +12,10 @@ interface ProjectReportProps {
     organization: Organization | null;
 }
 
+const numberFormat = (value: number) => {
+    return value.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+}
+
 const renderItemDimensions = (item: SteelItem) => {
     switch (item.type) {
         case 'plate':
@@ -28,10 +32,10 @@ const renderItemDimensions = (item: SteelItem) => {
             return (
               <>
                 <p>L:{girder.length} Flange:{girder.flangeWidth}x{girder.flangeThickness} Web:{girder.webHeight}x{girder.webThickness} mm</p>
-                <p className="text-xs text-gray-700">Flange Wt: {girder.flangeWeight?.toFixed(2)} kg (Total: {(girder.flangeWeight! * girder.quantity).toFixed(2)} kg)</p>
-                <p className="text-xs text-gray-700">Web Wt: {girder.webWeight?.toFixed(2)} kg (Total: {(girder.webWeight! * girder.quantity).toFixed(2)} kg)</p>
-                <p className="text-xs text-gray-700">Flange Ft: {girder.flangeRunningFeet?.toFixed(2)} (Total: {(girder.flangeRunningFeet! * girder.quantity).toFixed(2)})</p>
-                <p className="text-xs text-gray-700">Web Ft: {girder.webRunningFeet?.toFixed(2)} (Total: {(girder.webRunningFeet! * girder.quantity).toFixed(2)})</p>
+                <p className="text-xs text-gray-700">Flange Wt: {numberFormat(girder.flangeWeight!)} kg (Total: {numberFormat(girder.flangeWeight! * girder.quantity)} kg)</p>
+                <p className="text-xs text-gray-700">Web Wt: {numberFormat(girder.webWeight!)} kg (Total: {numberFormat(girder.webWeight! * girder.quantity)} kg)</p>
+                <p className="text-xs text-gray-700">Flange Ft: {numberFormat(girder.flangeRunningFeet!)} (Total: {numberFormat(girder.flangeRunningFeet! * girder.quantity)})</p>
+                <p className="text-xs text-gray-700">Web Ft: {numberFormat(girder.webRunningFeet!)} (Total: {numberFormat(girder.webRunningFeet! * girder.quantity)})</p>
               </>
             )
         case 'circular':
@@ -138,19 +142,19 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                                     <TableCell>
                                        <span className='capitalize font-semibold'>{item.name}</span> - {renderItemDimensions(item)}
                                     </TableCell>
-                                    <TableCell className="text-center">{item.weight.toFixed(2)}</TableCell>
-                                    {hasCost && <TableCell className="text-center">{item.cost !== null ? <><span className='font-bold'>{currencySymbol}</span>{item.cost.toFixed(2)}</> : 'N/A'}</TableCell>}
+                                    <TableCell className="text-center">{numberFormat(item.weight)}</TableCell>
+                                    {hasCost && <TableCell className="text-center">{item.cost !== null ? <><span className='font-bold'>{currencySymbol}</span>{numberFormat(item.cost)}</> : 'N/A'}</TableCell>}
                                     <TableCell className="text-center">{item.quantity}</TableCell>
-                                    <TableCell className="text-center font-medium">{ (item.weight * item.quantity).toFixed(2) }</TableCell>
-                                    {hasCost && <TableCell className="text-center font-medium">{item.cost !== null ? <><span className='font-bold'>{currencySymbol}</span>{(item.cost * item.quantity).toFixed(2)}</> : 'N/A'}</TableCell>}
+                                    <TableCell className="text-center font-medium">{ numberFormat(item.weight * item.quantity) }</TableCell>
+                                    {hasCost && <TableCell className="text-center font-medium">{item.cost !== null ? <><span className='font-bold'>{currencySymbol}</span>{numberFormat(item.cost * item.quantity)}</> : 'N/A'}</TableCell>}
                                 </TableRow>
                             ))}
                         </TableBody>
                          <TableFooter className="report-table-footer">
                             <TableRow className="[&>td]:border [&>td]:border-gray-300 [&>td]:p-2 bg-gray-100">
                                 <TableCell colSpan={colSpanTotal} className="text-right font-bold text-xl pr-4 text-black">Project Totals</TableCell>
-                                <TableCell className="text-center font-bold text-xl text-black">{totalWeight.toFixed(2)} kg</TableCell>
-                                {hasCost && <TableCell className="text-center font-bold text-xl text-black"><span className="font-bold">{currencySymbol}</span>{totalCost?.toFixed(2)}</TableCell>}
+                                <TableCell className="text-center font-bold text-xl text-black">{numberFormat(totalWeight)} kg</TableCell>
+                                {hasCost && <TableCell className="text-center font-bold text-xl text-black"><span className="font-bold">{currencySymbol}</span>{numberFormat(totalCost!)}</TableCell>}
                             </TableRow>
                         </TableFooter>
                     </Table>

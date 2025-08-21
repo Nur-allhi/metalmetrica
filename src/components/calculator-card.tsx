@@ -183,6 +183,10 @@ const getItemTypeLabel = (type: FormData['type']) => {
     }
 }
 
+const numberFormat = (value: number) => {
+    return value.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+}
+
 
 export default function CalculatorCard() {
   const [result, setResult] = useState<CalculationResult | null>(null);
@@ -571,13 +575,13 @@ export default function CalculatorCard() {
                                 <div>
                                     <p className="text-sm text-muted-foreground">Total Weight</p>
                                     <p className="text-2xl font-bold">
-                                        {(result.unit === 'lbs' ? result.totalWeight * KG_TO_LBS : result.totalWeight).toFixed(2)} {result.unit}
+                                        {numberFormat(result.unit === 'lbs' ? result.totalWeight * KG_TO_LBS : result.totalWeight)} {result.unit}
                                     </p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-muted-foreground">Total Cost</p>
                                     <p className="text-2xl font-bold text-green-600">
-                                        {result.totalCost !== null ? `$${result.totalCost.toFixed(2)}` : 'N/A'}
+                                        {result.totalCost !== null ? `$${numberFormat(result.totalCost)}` : 'N/A'}
                                     </p>
                                 </div>
                             </div>
@@ -586,13 +590,13 @@ export default function CalculatorCard() {
                                 <div>
                                     <p className="text-sm text-muted-foreground">Weight / piece</p>
                                     <p className="text-lg font-semibold">
-                                        {(result.unit === 'lbs' ? result.weightPerPiece * KG_TO_LBS : result.weightPerPiece).toFixed(2)} {result.unit}
+                                        {numberFormat(result.unit === 'lbs' ? result.weightPerPiece * KG_TO_LBS : result.weightPerPiece)} {result.unit}
                                     </p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-muted-foreground">Cost / piece</p>
                                     <p className="text-lg font-semibold text-green-600">
-                                        {result.costPerPiece !== null ? `$${result.costPerPiece.toFixed(2)}` : 'N/A'}
+                                        {result.costPerPiece !== null ? `$${numberFormat(result.costPerPiece)}` : 'N/A'}
                                     </p>
                                 </div>
                             </div>
@@ -601,23 +605,23 @@ export default function CalculatorCard() {
                                 <div className="border rounded-lg p-3 text-sm text-muted-foreground space-y-2 bg-background/50">
                                     <div className="grid grid-cols-3 items-center">
                                         <p className='font-medium col-span-1'>Flange Weight</p>
-                                        <p className='font-semibold text-foreground text-center col-span-1'>{(result.flangeWeight).toFixed(2)} kg/piece</p>
-                                        <p className='font-semibold text-foreground text-right col-span-1'>Total: {(result.flangeWeight * result.quantity).toFixed(2)} kg</p>
+                                        <p className='font-semibold text-foreground text-center col-span-1'>{numberFormat(result.flangeWeight)} kg/piece</p>
+                                        <p className='font-semibold text-foreground text-right col-span-1'>Total: {numberFormat(result.flangeWeight * result.quantity)} kg</p>
                                     </div>
                                     <div className="grid grid-cols-3 items-center">
                                         <p className='font-medium col-span-1'>Web Weight</p>
-                                        <p className='font-semibold text-foreground text-center col-span-1'>{(result.webWeight!).toFixed(2)} kg/piece</p>
-                                        <p className='font-semibold text-foreground text-right col-span-1'>Total: {(result.webWeight! * result.quantity).toFixed(2)} kg</p>
+                                        <p className='font-semibold text-foreground text-center col-span-1'>{numberFormat(result.webWeight!)} kg/piece</p>
+                                        <p className='font-semibold text-foreground text-right col-span-1'>Total: {numberFormat(result.webWeight! * result.quantity)} kg</p>
                                     </div>
                                     <div className="grid grid-cols-3 items-center">
                                         <p className='font-medium col-span-1'>Flange Length (ft)</p>
-                                        <p className='font-semibold text-foreground text-center col-span-1'>{(result.flangeRunningFeet!).toFixed(2)} ft/piece</p>
-                                        <p className='font-semibold text-foreground text-right col-span-1'>Total: {(result.flangeRunningFeet! * result.quantity).toFixed(2)} ft</p>
+                                        <p className='font-semibold text-foreground text-center col-span-1'>{numberFormat(result.flangeRunningFeet!)} ft/piece</p>
+                                        <p className='font-semibold text-foreground text-right col-span-1'>Total: {numberFormat(result.flangeRunningFeet! * result.quantity)} ft</p>
                                     </div>
                                     <div className="grid grid-cols-3 items-center">
                                         <p className='font-medium col-span-1'>Web Length (ft)</p>
-                                        <p className='font-semibold text-foreground text-center col-span-1'>{(result.webRunningFeet!).toFixed(2)} ft/piece</p>
-                                        <p className='font-semibold text-foreground text-right col-span-1'>Total: {(result.webRunningFeet! * result.quantity).toFixed(2)} ft</p>
+                                        <p className='font-semibold text-foreground text-center col-span-1'>{numberFormat(result.webRunningFeet!)} ft/piece</p>
+                                        <p className='font-semibold text-foreground text-right col-span-1'>Total: {numberFormat(result.webRunningFeet! * result.quantity)} ft</p>
                                     </div>
                                 </div>
                             )}
@@ -646,3 +650,5 @@ export default function CalculatorCard() {
     </Card>
   );
 }
+
+    

@@ -73,6 +73,10 @@ const ItemCard = ({ item, onDelete, currencySymbol }: { item: SteelItem, onDelet
         }
     }
 
+    const numberFormat = (value: number) => {
+        return value.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+    }
+
     return (
         <Card>
             <CardContent className="p-4 flex flex-col gap-4">
@@ -91,23 +95,23 @@ const ItemCard = ({ item, onDelete, currencySymbol }: { item: SteelItem, onDelet
                   <div className="border rounded-lg p-2 text-xs text-muted-foreground space-y-1 bg-background/50">
                       <div className="grid grid-cols-3 items-center">
                           <p className='font-medium col-span-1'>Flange Weight</p>
-                          <p className='font-semibold text-foreground text-center col-span-1'>{(girder.flangeWeight)?.toFixed(2)} kg/p</p>
-                          <p className='font-semibold text-foreground text-right col-span-1'>T: {(girder.flangeWeight! * item.quantity).toFixed(2)} kg</p>
+                          <p className='font-semibold text-foreground text-center col-span-1'>{numberFormat(girder.flangeWeight!)} kg/p</p>
+                          <p className='font-semibold text-foreground text-right col-span-1'>T: {numberFormat(girder.flangeWeight! * item.quantity)} kg</p>
                       </div>
                       <div className="grid grid-cols-3 items-center">
                           <p className='font-medium col-span-1'>Web Weight</p>
-                           <p className='font-semibold text-foreground text-center col-span-1'>{(girder.webWeight)?.toFixed(2)} kg/p</p>
-                           <p className='font-semibold text-foreground text-right col-span-1'>T: {(girder.webWeight! * item.quantity).toFixed(2)} kg</p>
+                           <p className='font-semibold text-foreground text-center col-span-1'>{numberFormat(girder.webWeight!)} kg/p</p>
+                           <p className='font-semibold text-foreground text-right col-span-1'>T: {numberFormat(girder.webWeight! * item.quantity)} kg</p>
                       </div>
                       <div className="grid grid-cols-3 items-center">
                           <p className='font-medium col-span-1'>Flange Length (ft)</p>
-                          <p className='font-semibold text-foreground text-center col-span-1'>{(girder.flangeRunningFeet)?.toFixed(2)} ft/p</p>
-                          <p className='font-semibold text-foreground text-right col-span-1'>T: {(girder.flangeRunningFeet! * item.quantity).toFixed(2)} ft</p>
+                          <p className='font-semibold text-foreground text-center col-span-1'>{numberFormat(girder.flangeRunningFeet!)} ft/p</p>
+                          <p className='font-semibold text-foreground text-right col-span-1'>T: {numberFormat(girder.flangeRunningFeet! * item.quantity)} ft</p>
                       </div>
                       <div className="grid grid-cols-3 items-center">
                           <p className='font-medium col-span-1'>Web Length (ft)</p>
-                          <p className='font-semibold text-foreground text-center col-span-1'>{(girder.webRunningFeet)?.toFixed(2)} ft/p</p>
-                          <p className='font-semibold text-foreground text-right col-span-1'>T: {(girder.webRunningFeet! * item.quantity).toFixed(2)} ft</p>
+                          <p className='font-semibold text-foreground text-center col-span-1'>{numberFormat(girder.webRunningFeet!)} ft/p</p>
+                          <p className='font-semibold text-foreground text-right col-span-1'>T: {numberFormat(girder.webRunningFeet! * item.quantity)} ft</p>
                       </div>
                   </div>
                 )}
@@ -120,25 +124,25 @@ const ItemCard = ({ item, onDelete, currencySymbol }: { item: SteelItem, onDelet
                      {hasCost && (
                          <div>
                             <p className="text-muted-foreground">Price ({currencySymbol}/kg)</p>
-                            <p>{pricePerKg !== null ? `${currencySymbol}${pricePerKg.toFixed(2)}` : 'N/A'}</p>
+                            <p>{pricePerKg !== null ? `${currencySymbol}${numberFormat(pricePerKg)}` : 'N/A'}</p>
                         </div>
                     )}
                     <div>
                         <p className="text-muted-foreground">Unit Wt (kg)</p>
-                        <p>{item.weight.toFixed(2)}</p>
+                        <p>{numberFormat(item.weight)}</p>
                     </div>
                      <div>
                         <p className="text-muted-foreground">Unit Cost</p>
-                        <p>{hasCost ? `${currencySymbol}${item.cost!.toFixed(2)}` : 'N/A'}</p>
+                        <p>{hasCost ? `${currencySymbol}${numberFormat(item.cost!)}` : 'N/A'}</p>
                     </div>
                      <div>
                         <p className="text-muted-foreground">Total Wt (kg)</p>
-                        <p className="font-semibold">{(item.weight * item.quantity).toFixed(2)}</p>
+                        <p className="font-semibold">{numberFormat(item.weight * item.quantity)}</p>
                     </div>
                     {hasCost && (
                          <div>
                             <p className="text-muted-foreground">Total Cost</p>
-                            <p className="font-semibold text-green-600">{currencySymbol}{((item.cost || 0) * item.quantity).toFixed(2)}</p>
+                            <p className="font-semibold text-green-600">{currencySymbol}{numberFormat((item.cost || 0) * item.quantity)}</p>
                         </div>
                     )}
                 </div>
@@ -207,6 +211,10 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         });
       });
   };
+
+  const numberFormat = (value: number) => {
+    return value.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+  }
 
   const totalWeight = useMemo(() => project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0) || 0, [project.items]);
   const hasCost = useMemo(() => project.items.some(item => item.cost !== null), [project.items]);
@@ -352,12 +360,12 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             <CardContent className="grid gap-4">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Total Weight</span>
-                <span className="font-bold">{totalWeight.toFixed(2)} kg</span>
+                <span className="font-bold">{numberFormat(totalWeight)} kg</span>
               </div>
               {hasCost && (
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Total Cost</span>
-                  <span className="font-bold text-green-600">{currencySymbol}{totalCost?.toFixed(2)}</span>
+                  <span className="font-bold text-green-600">{currencySymbol}{numberFormat(totalCost!)}</span>
                 </div>
               )}
               <hr />
@@ -386,7 +394,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
       />
       <EditProjectDialog
           open={isEditProjectDialogOpen}
-          onOpen-change={setEditProjectDialogOpen}
+          onOpenChange={setEditProjectDialogOpen}
           onEditProject={handleEditProject}
           project={project}
       />
@@ -399,3 +407,5 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
+
+    

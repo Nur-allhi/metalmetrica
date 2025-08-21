@@ -104,11 +104,11 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                             ))}
                         </TableBody>
                         <TableFooter>
-                        <TableRow className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2 bg-gray-100">
-                            <TableCell colSpan={hasCost ? 4 : 3} className="text-right font-bold text-lg">Project Totals</TableCell>
-                            <TableCell className="text-center font-bold text-lg">{totalWeight.toFixed(2)} kg</TableCell>
-                            {hasCost && <TableCell className="text-center font-bold text-lg">${totalCost?.toFixed(2)}</TableCell>}
-                        </TableRow>
+                            <TableRow className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2 bg-gray-100">
+                                <TableCell colSpan={hasCost ? 5 : 4} className="text-right font-bold text-lg pr-4">Project Totals</TableCell>
+                                <TableCell className="text-center font-bold text-lg">{totalWeight.toFixed(2)} kg</TableCell>
+                                {hasCost && <TableCell className="text-center font-bold text-lg">${totalCost?.toFixed(2)}</TableCell>}
+                            </TableRow>
                         </TableFooter>
                     </Table>
                 </div>
@@ -123,5 +123,3 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
 });
 ProjectReport.displayName = 'ProjectReport';
 export default ProjectReport;
-
-    

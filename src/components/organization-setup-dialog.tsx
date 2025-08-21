@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,6 +32,7 @@ interface OrganizationSetupDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: (org: Organization) => void;
+  organization: Organization | null;
 }
 
 const formSchema = z.object({
@@ -45,6 +46,7 @@ export default function OrganizationSetupDialog({
   open,
   onOpenChange,
   onSave,
+  organization,
 }: OrganizationSetupDialogProps) {
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -54,6 +56,15 @@ export default function OrganizationSetupDialog({
       logoUrl: "",
     },
   });
+
+  useEffect(() => {
+    if (organization) {
+      form.reset({
+        name: organization.name,
+        logoUrl: organization.logoUrl || "",
+      });
+    }
+  }, [organization, form]);
 
   const logoUrl = form.watch("logoUrl");
 
@@ -72,10 +83,9 @@ export default function OrganizationSetupDialog({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
-              <DialogTitle>Welcome to MetalMetrica</DialogTitle>
+              <DialogTitle>{organization ? "Edit Organization" : "Welcome to MetalMetrica"}</DialogTitle>
               <DialogDescription>
-                Set up your organization details. This will be used in your
-                project reports.
+                {organization ? "Update your organization details." : "Set up your organization details. This will be used in your project reports."}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">

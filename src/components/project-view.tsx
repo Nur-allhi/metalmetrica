@@ -92,7 +92,7 @@ const ItemCard = ({ item, onDelete, onEdit, organization }: { item: SteelItem, o
     }
 
     return (
-        <Card>
+        <Card className="shadow-md hover:shadow-lg transition-shadow">
             <CardContent className="p-4 flex flex-col gap-4">
                 <div className="flex justify-between items-start">
                     <div>
@@ -754,3 +754,5 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
+
+    

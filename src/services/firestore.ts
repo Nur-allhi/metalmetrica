@@ -10,6 +10,8 @@ import {
   deleteDoc,
   doc,
   serverTimestamp,
+  getDoc,
+  arrayUnion,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { Project, SteelItem } from "@/types";
@@ -48,12 +50,9 @@ export const deleteProject = async (projectId: string) => {
 // Project Items
 export const addItemToProject = async (projectId: string, item: Omit<SteelItem, 'id'>) => {
     const projectRef = doc(db, "projects", projectId);
-    // This is not ideal, we should be using a subcollection for items.
-    // For now, we update the whole array.
-    // This will be improved in a future step.
-    const projectDoc = await (await fetch(projectRef.path)).json();
-    const currentItems = projectDoc.fields.items.arrayValue.values || [];
     const newItem = { ...item, id: `item_${Date.now()}`};
-    const updatedItems = [...currentItems, newItem];
-    await updateDoc(projectRef, { items: updatedItems });
+    
+    await updateDoc(projectRef, {
+        items: arrayUnion(newItem)
+    });
 };

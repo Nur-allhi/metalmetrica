@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Plus, Download, Trash2, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +20,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import type { Project, Organization } from '@/types';
+import type { Project, Organization, SteelItem } from '@/types';
+import AddItemDialog from './add-item-dialog';
+import { addItemToProject as addItemToProjectDb } from '@/services/firestore';
+import { useToast } from "@/hooks/use-toast";
 
 interface ProjectViewProps {
     project: Project;
@@ -29,6 +32,8 @@ interface ProjectViewProps {
 }
 
 export default function ProjectView({ project, organization, onPrint }: ProjectViewProps) {
+  const [isAddItemDialogOpen, setAddItemDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0) || 0;
   const totalCost = project.items.reduce((acc, item) => acc + item.cost * item.quantity, 0) || 0;
@@ -41,7 +46,26 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
     return acc;
   }, {} as Record<string, number>) || {};
 
+  const handleAddItem = async (item: Omit<SteelItem, 'id'>) => {
+    try {
+      await addItemToProjectDb(project.id, item);
+      toast({
+        title: "Item Added",
+        description: `${item.name} has been added to the project.`,
+      });
+      setAddItemDialogOpen(false);
+    } catch (error) {
+      console.error("Error adding item:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add item to the project.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
+    <>
     <div className="grid gap-4 md:gap-8 lg:grid-cols-3 flex-1">
         <div className="lg:col-span-2">
             <Card className="h-full">
@@ -57,7 +81,7 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
                     <Edit />
                     Edit Details
                     </Button>
-                    <Button size="sm">
+                    <Button size="sm" onClick={() => setAddItemDialogOpen(true)}>
                     <Plus />
                     Add Item
                     </Button>
@@ -139,5 +163,11 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
             </Card>
         </div>
     </div>
+    <AddItemDialog
+        open={isAddItemDialogOpen}
+        onOpenChange={setAddItemDialogOpen}
+        onAddItem={handleAddItem}
+    />
+    </>
   )
 }

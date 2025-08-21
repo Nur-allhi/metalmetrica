@@ -23,15 +23,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 import ProjectSidebar from "@/components/project-sidebar";
 import ProjectView from "@/components/project-view";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarTrigger } from "@/components/ui/sidebar";
+import AddProjectDialog from "@/components/add-project-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 
 export default function Home() {
   const { user, loading: authLoading } = useAuth();
+  const { toast } = useToast();
   const [organization, setOrganization] = useLocalStorage<Organization | null>(
     "metalmetrica-org",
     null
   );
   const [isOrgSetupOpen, setOrgSetupOpen] = useState(false);
+  const [isAddProjectDialogOpen, setAddProjectDialogOpen] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
@@ -71,19 +75,29 @@ export default function Home() {
     }, 100);
   };
   
-  const handleAddProject = async () => {
+  const handleAddProject = async (data: { name: string; customer: string; }) => {
     if (!user) return;
-    // Simple prompt for now, will be replaced with a dialog
-    const name = prompt("Enter project name:");
-    const customer = prompt("Enter customer name:");
-    if(name && customer) {
+    
+    try {
         const newProject: Omit<Project, 'id' | 'createdAt' | 'userId'> = {
-            name,
-            customer,
+            name: data.name,
+            customer: data.customer,
             projectId: `P-${Date.now()}`,
             items: [],
         };
         await addProjectToDb(user.uid, newProject);
+        toast({
+            title: "Project Created",
+            description: `${data.name} has been successfully created.`,
+        });
+        setAddProjectDialogOpen(false);
+    } catch(error) {
+        console.error("Error creating project:", error);
+        toast({
+            title: "Error",
+            description: "Failed to create project.",
+            variant: "destructive",
+        });
     }
   };
 
@@ -107,7 +121,7 @@ export default function Home() {
                 <Workflow size={48} className="text-muted-foreground mb-4" />
                 <CardTitle>No Project Selected</CardTitle>
                 <CardDescription className="mt-2">Select a project from the list or create a new one.</CardDescription>
-                <Button className="mt-4" onClick={handleAddProject}>
+                <Button className="mt-4" onClick={() => setAddProjectDialogOpen(true)}>
                     <Plus className="mr-2 h-4 w-4" />
                     Create New Project
                 </Button>
@@ -138,7 +152,7 @@ export default function Home() {
                         projects={projects}
                         activeProject={activeProject}
                         onProjectSelect={setActiveProject}
-                        onAddProject={handleAddProject}
+                        onAddProject={() => setAddProjectDialogOpen(true)}
                         loading={loading}
                     />
                 </Sidebar>
@@ -178,6 +192,11 @@ export default function Home() {
         }}
         organization={organization}
       />
+      <AddProjectDialog
+        open={isAddProjectDialogOpen}
+        onOpenChange={setAddProjectDialogOpen}
+        onAddProject={handleAddProject}
+       />
     </>
   );
 }

@@ -53,13 +53,13 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
             <main>
                 <div className="grid grid-cols-2 gap-8 mb-8">
                     <div>
-                        <h2 className="text-lg font-semibold mb-2">Project Details</h2>
+                        <h2 className="text-lg font-bold mb-2">Project Details</h2>
                         <p><span className="font-semibold">Project Name:</span> {project.name}</p>
                         <p><span className="font-semibold">Project ID:</span> {project.projectId}</p>
                         <p><span className="font-semibold">Client:</span> {project.customer}</p>
                     </div>
                     <div>
-                        <h2 className="text-lg font-semibold mb-2">Report Details</h2>
+                        <h2 className="text-lg font-bold mb-2">Report Details</h2>
                         <p><span className="font-semibold">Report Date:</span> {new Date().toLocaleDateString()}</p>
                         <p><span className="font-semibold">Items:</span> {project.items.length}</p>
                     </div>
@@ -69,35 +69,37 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                 <div className="border border-gray-300">
                     <Table className="border-collapse">
                         <TableHeader>
-                            <TableRow>
-                                <TableHead className="text-gray-600 border border-gray-300 p-2">Item Name</TableHead>
-                                <TableHead className="text-gray-600 border border-gray-300 p-2">Type</TableHead>
-                                <TableHead className="text-gray-600 border border-gray-300 p-2">Dimensions / Profile</TableHead>
-                                <TableHead className="text-right text-gray-600 border border-gray-300 p-2">Qty</TableHead>
-                                <TableHead className="text-right text-gray-600 border border-gray-300 p-2">Weight (kg)</TableHead>
-                                <TableHead className="text-right text-gray-600 border border-gray-300 p-2">Cost ($)</TableHead>
-                                <TableHead className="text-right text-gray-600 border border-gray-300 p-2">Total Weight (kg)</TableHead>
-                                <TableHead className="text-right text-gray-600 border border-gray-300 p-2">Total Cost ($)</TableHead>
+                            <TableRow className="bg-gray-100">
+                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Item Name</TableHead>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Type</TableHead>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Dimensions / Profile</TableHead>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Qty</TableHead>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Weight (kg)</TableHead>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Cost ($)</TableHead>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Total Weight (kg)</TableHead>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Total Cost ($)</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {project.items.map(item => (
                                 <TableRow key={item.id} className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2">
-                                    <TableCell className="font-medium">{item.name}</TableCell>
-                                    <TableCell className="capitalize">{item.type}</TableCell>
+                                    <TableCell className="font-medium text-center">{item.name}</TableCell>
+                                    <TableCell className="capitalize text-center">
+                                        {item.type}
+                                    </TableCell>
                                     <TableCell>
                                         {renderItemDimensions(item)}
                                     </TableCell>
-                                    <TableCell className="text-right">{item.quantity}</TableCell>
-                                    <TableCell className="text-right">{item.weight.toFixed(2)}</TableCell>
-                                    <TableCell className="text-right">{(item.cost || 0).toFixed(2)}</TableCell>
-                                    <TableCell className="text-right font-medium">{(item.weight * item.quantity).toFixed(2)}</TableCell>
-                                    <TableCell className="text-right font-medium">{((item.cost || 0) * item.quantity).toFixed(2)}</TableCell>
+                                    <TableCell className="text-center">{item.quantity}</TableCell>
+                                    <TableCell className="text-center">{item.weight.toFixed(2)}</TableCell>
+                                    <TableCell className="text-center">{(item.cost || 0).toFixed(2)}</TableCell>
+                                    <TableCell className="text-center font-medium">{(item.weight * item.quantity).toFixed(2)}</TableCell>
+                                    <TableCell className="text-center font-medium">{((item.cost || 0) * item.quantity).toFixed(2)}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                         <TableFooter>
-                        <TableRow className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2">
+                        <TableRow className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2 bg-gray-100">
                             <TableCell colSpan={6} className="text-right font-bold text-lg">Project Totals</TableCell>
                             <TableCell className="text-right font-bold text-lg">{totalWeight.toFixed(2)} kg</TableCell>
                             <TableCell className="text-right font-bold text-lg">${totalCost.toFixed(2)}</TableCell>

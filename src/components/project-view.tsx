@@ -259,10 +259,10 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 'S.No.',
                 'Name & Dimensions', 
                 `Unit Wt\n(kg)`, 
-                ...(hasCost ? [`Unit Cost\n(${currencySymbol})`] : []),
+                ...(hasCost ? [`Unit Cost\n(${currencyCode})`] : []),
                 'Qty', 
                 `Total Wt\n(kg)`, 
-                ...(hasCost ? [`Total Cost\n(${currencySymbol})`] : [])
+                ...(hasCost ? [`Total Cost\n(${currencyCode})`] : [])
             ]
         ];
         
@@ -313,7 +313,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             const subTotalRow = [
                 { content: 'Sub-Total', colSpan: 5, styles: { halign: 'right', fontStyle: 'bold' } },
                 { content: `${numberFormat(totalWeight)}\nkg`, styles: { halign: 'right', fontStyle: 'bold' } },
-                { content: `${numberFormat(subTotalCost)}\n${currencyCode}`, styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: `${numberFormat(subTotalCost)}`, styles: { halign: 'right', fontStyle: 'bold' } },
             ];
             footerRows.push(subTotalRow);
 
@@ -331,7 +331,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             additionalCosts.forEach(cost => {
                 const additionalCostRow = [
                     { content: cost.description, colSpan: 6, styles: { halign: 'right' } },
-                    { content: `${numberFormat(cost.amount)}\n${currencyCode}`, styles: { halign: 'right' } },
+                    { content: `${numberFormat(cost.amount)}`, styles: { halign: 'right' } },
                 ]
                 footerRows.push(additionalCostRow);
             });
@@ -342,7 +342,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             if(additionalCosts.length > 0) {
                  const grandTotalRow = [
                     { content: 'Grand Total', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } },
-                    { content: `${numberFormat(grandTotal)}\n${currencyCode}`, styles: { halign: 'right', fontStyle: 'bold' } },
+                    { content: `${numberFormat(grandTotal)}`, styles: { halign: 'right', fontStyle: 'bold' } },
                  ]
                  footerRows.push(grandTotalRow);
             }

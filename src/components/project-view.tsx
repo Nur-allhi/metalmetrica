@@ -96,7 +96,7 @@ const ItemCard = ({ item, onDelete, onEdit, organization }: { item: SteelItem, o
             <CardContent className="p-4 flex flex-col gap-4">
                 <div className="flex justify-between items-start">
                     <div>
-                        <h3 className="font-semibold">{item.name}</h3>
+                        <h3 className="font-semibold text-lg">{item.name}</h3>
                         <Badge variant="secondary" className="mt-1">{getItemTypeLabel(item.type)}</Badge>
                     </div>
                     <div className="flex">
@@ -135,32 +135,32 @@ const ItemCard = ({ item, onDelete, onEdit, organization }: { item: SteelItem, o
                   </div>
                 )}
                 
-                <div className="grid grid-cols-2 gap-4 text-xs pt-2 border-t">
+                <div className="grid grid-cols-2 gap-4 text-sm pt-2 border-t">
                     <div>
-                        <p className="text-muted-foreground">Qty</p>
+                        <p className="text-muted-foreground text-xs">Qty</p>
                         <p className="font-medium">{item.quantity}</p>
                     </div>
                      {hasCost && (
                          <div>
-                            <p className="text-muted-foreground">Price ({currencySymbol}/kg)</p>
+                            <p className="text-muted-foreground text-xs">Price ({currencySymbol}/kg)</p>
                             <p className="font-medium">{pricePerKg !== null ? `${currencySymbol}${numberFormat(pricePerKg)}` : 'N/A'}</p>
                         </div>
                     )}
                     <div>
-                        <p className="text-muted-foreground">Unit Wt (kg)</p>
+                        <p className="text-muted-foreground text-xs">Unit Wt (kg)</p>
                         <p className="font-medium">{numberFormat(item.weight)}</p>
                     </div>
                      <div>
-                        <p className="text-muted-foreground">Unit Cost</p>
+                        <p className="text-muted-foreground text-xs">Unit Cost</p>
                         <p className="font-medium">{hasCost ? `${currencySymbol}${numberFormat(item.cost!)}` : 'N/A'}</p>
                     </div>
                      <div>
-                        <p className="text-muted-foreground">Total Wt (kg)</p>
+                        <p className="text-muted-foreground text-xs">Total Wt (kg)</p>
                         <p className="font-semibold">{numberFormat(item.weight * item.quantity)}</p>
                     </div>
                     {hasCost && (
                          <div>
-                            <p className="text-muted-foreground">Total Cost</p>
+                            <p className="text-muted-foreground text-xs">Total Cost</p>
                             <p className="font-semibold text-green-600">{currencySymbol} {numberFormat((item.cost || 0) * item.quantity)}</p>
                         </div>
                     )}
@@ -593,8 +593,8 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
   return (
     <>
-      <div className="grid auto-rows-max items-start gap-4 lg:grid-cols-3 lg:gap-8 w-full h-full">
-        <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 h-full flex-col flex">
+      <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:grid-cols-3">
+        <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
@@ -641,25 +641,25 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             )}
           </div>
         </div>
-        <div className="grid auto-rows-max items-start gap-4 lg:col-span-1">
+        <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>Project Summary</CardTitle>
+              <CardTitle className="text-xl">Project Summary</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
-               <div className="grid gap-2">
+               <div className="grid gap-2 text-sm">
                 <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Total Weight</span>
                     <span className="font-bold">{numberFormat(totalWeight)} kg</span>
                 </div>
                 {hasCost && totalCost !== null && (
                     <>
-                     <div className="flex items-center justify-between text-sm">
+                     <div className="flex items-center justify-between">
                         <span className="text-muted-foreground pl-2">Item Sub-total</span>
                         <span className="font-medium text-green-600">{currencySymbol} {numberFormat(subTotalCost)}</span>
                       </div>
                       {(project.additionalCosts || []).map(cost => (
-                        <div key={cost.id} className="flex items-center justify-between text-sm">
+                        <div key={cost.id} className="flex items-center justify-between">
                             <span className="text-muted-foreground pl-2">{cost.description}</span>
                             <span className="font-medium text-green-600">{currencySymbol} {numberFormat(cost.amount)}</span>
                         </div>

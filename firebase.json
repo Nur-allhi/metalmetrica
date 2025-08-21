@@ -21,10 +21,5 @@
     "ui": {
       "enabled": true
     }
-  },
-  "auth": {
-    "anonymous": {
-      "enabled": true
-    }
   }
 }

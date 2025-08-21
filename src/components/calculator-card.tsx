@@ -571,7 +571,7 @@ export default function CalculatorCard() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="p-0 space-y-4">
-                            <div className="grid grid-cols-2 gap-4 text-center">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
                                 <div>
                                     <p className="text-sm text-muted-foreground">Total Weight</p>
                                     <p className="text-2xl font-bold">
@@ -586,7 +586,7 @@ export default function CalculatorCard() {
                                 </div>
                             </div>
 
-                            <div className="border-t pt-4 grid grid-cols-2 gap-4 text-center">
+                            <div className="border-t pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
                                 <div>
                                     <p className="text-sm text-muted-foreground">Weight / piece</p>
                                     <p className="text-lg font-semibold">
@@ -650,5 +650,3 @@ export default function CalculatorCard() {
     </Card>
   );
 }
-
-    

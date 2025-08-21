@@ -27,10 +27,10 @@ const renderItemDimensions = (item: SteelItem) => {
             return (
               <>
                 <p>L:{girder.length} Flange:{girder.flangeWidth}x{girder.flangeThickness} Web:{girder.webHeight}x{girder.webThickness} mm</p>
-                <p className="text-xs text-gray-500">Flange Wt: {girder.flangeWeight?.toFixed(2)} kg (Total: {(girder.flangeWeight! * girder.quantity).toFixed(2)} kg)</p>
-                <p className="text-xs text-gray-500">Web Wt: {girder.webWeight?.toFixed(2)} kg (Total: {(girder.webWeight! * girder.quantity).toFixed(2)} kg)</p>
-                <p className="text-xs text-gray-500">Flange Ft: {girder.flangeRunningFeet?.toFixed(2)} (Total: {(girder.flangeRunningFeet! * girder.quantity).toFixed(2)})</p>
-                <p className="text-xs text-gray-500">Web Ft: {girder.webRunningFeet?.toFixed(2)} (Total: {(girder.webRunningFeet! * girder.quantity).toFixed(2)})</p>
+                <p className="text-xs text-gray-600">Flange Wt: {girder.flangeWeight?.toFixed(2)} kg (Total: {(girder.flangeWeight! * girder.quantity).toFixed(2)} kg)</p>
+                <p className="text-xs text-gray-600">Web Wt: {girder.webWeight?.toFixed(2)} kg (Total: {(girder.webWeight! * girder.quantity).toFixed(2)} kg)</p>
+                <p className="text-xs text-gray-600">Flange Ft: {girder.flangeRunningFeet?.toFixed(2)} (Total: {(girder.flangeRunningFeet! * girder.quantity).toFixed(2)})</p>
+                <p className="text-xs text-gray-600">Web Ft: {girder.webRunningFeet?.toFixed(2)} (Total: {(girder.webRunningFeet! * girder.quantity).toFixed(2)})</p>
               </>
             )
         case 'circular':
@@ -50,15 +50,15 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
     const hasCost = project.items.some(item => item.cost !== null);
     const totalCost = hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null;
     
-    const colSpanTotal = hasCost ? 4 : 3;
+    const colSpanTotal = hasCost ? 5 : 4;
 
 
     return (
-        <div ref={ref} className="bg-white p-8 font-sans text-sm text-gray-800">
+        <div ref={ref} className="bg-white p-8 font-sans text-sm text-black">
             <header className="flex justify-between items-center mb-8 border-b pb-4">
                 <div>
-                     {organization?.name && <h1 className="text-3xl font-bold text-gray-800">{organization.name}</h1>}
-                    <p className="text-gray-500">Project Weight {hasCost && '& Cost'} Report</p>
+                     {organization?.name && <h1 className="text-3xl font-bold text-black">{organization.name}</h1>}
+                    <p className="text-gray-700">Project Weight {hasCost && '& Cost'} Report</p>
                 </div>
                 {organization?.logoUrl && (
                     <Image src={organization.logoUrl} alt="Organization Logo" width={150} height={50} className="object-contain" data-ai-hint="company logo" />
@@ -85,13 +85,13 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                     <Table className="border-collapse">
                         <TableHeader>
                             <TableRow className="bg-gray-100">
-                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Item Name</TableHead>
-                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold">Dimensions / Profile</TableHead>
-                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Unit Weight (kg)</TableHead>
-                                {hasCost && <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Unit Cost ($)</TableHead>}
-                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Qty</TableHead>
-                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Total Weight (kg)</TableHead>
-                                {hasCost && <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Total Cost ($)</TableHead>}
+                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Item Name</TableHead>
+                                <TableHead className="text-black border border-gray-300 p-2 font-bold">Dimensions / Profile</TableHead>
+                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Unit Weight (kg)</TableHead>
+                                {hasCost && <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Unit Cost ($)</TableHead>}
+                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Qty</TableHead>
+                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Total Weight (kg)</TableHead>
+                                {hasCost && <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Total Cost ($)</TableHead>}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -120,7 +120,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                 </div>
             </main>
 
-            <footer className="mt-16 text-center text-xs text-gray-400">
+            <footer className="mt-16 text-center text-xs text-gray-500">
                 <p>Report generated by MetalMetrica on {new Date().toLocaleString()}</p>
                  {organization?.name && <p>{organization.name}</p>}
             </footer>

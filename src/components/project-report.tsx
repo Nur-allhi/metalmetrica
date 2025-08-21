@@ -20,8 +20,13 @@ const renderItemDimensions = (item: SteelItem) => {
             const pipe = item as SteelPipe;
             return `L:${pipe.length} Ø:${pipe.outerDiameter} Wall:${pipe.wallThickness} mm`;
         case 'girder':
-             const girder = item as SteelGirder;
-            return `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm`;
+            const girder = item as SteelGirder;
+            return (
+              <>
+                <p>L:{girder.length} Flange:{girder.flangeWidth}x{girder.flangeThickness} Web:{girder.webHeight}x{girder.webThickness} mm</p>
+                <p className="text-xs text-gray-500">Flange Wt: {girder.flangeWeight?.toFixed(2)} kg, Web Wt: {girder.webWeight?.toFixed(2)} kg</p>
+              </>
+            )
         case 'circular':
             const circular = item as SteelCircular;
             if (circular.innerDiameter && circular.innerDiameter > 0) {
@@ -72,7 +77,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                             <TableRow className="bg-gray-100">
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Item Name</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Dimensions / Profile</TableHead>
-                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Weight (kg)</TableHead>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Weight(kg)</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Cost ($)</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Qty</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Total Weight (kg)</TableHead>

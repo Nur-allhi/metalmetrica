@@ -177,7 +177,6 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
 
     let newItem: Omit<SteelItem, 'id'> | null = null;
     const density = STEEL_DENSITIES.MS;
-    const densityGcm3 = density / 1000; // 7.85
 
     if (data.type === "plate" && data.length && data.width && data.thickness) {
         const { length, width, thickness } = data;
@@ -201,12 +200,17 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
     } else if (data.type === "girder" && data.length && data.flangeWidth && data.flangeThickness && data.webHeight && data.webThickness) {
         const { length, flangeWidth, flangeThickness, webHeight, webThickness } = data;
         
-        // Using "Girder by Running Feet" logic from blueprint, adapted for kg
-        const weightKg = ((flangeWidth * flangeThickness * 2) + (webHeight * webThickness)) * (length / 1000) * (densityGcm3 / 1000);
+        // Using "Girder by Running Feet" logic from blueprint
+        const DENSITY_G_CM3 = density / 1000; // 7.85
+        const MM_TO_M = 1 / 1000;
+
+        const flangeWeight = (flangeWidth * flangeThickness * 2 * length * MM_TO_M) * (DENSITY_G_CM3 / 1000);
+        const webWeight = (webHeight * webThickness * length * MM_TO_M) * (DENSITY_G_CM3 / 1000);
+        const weightKg = flangeWeight + webWeight;
 
         newItem = {
             name: data.name, type: 'girder', quantity, length, flangeWidth, flangeThickness, webHeight, webThickness,
-            weight: weightKg, cost: weightKg * pricePerKg,
+            weight: weightKg, cost: weightKg * pricePerKg, flangeWeight, webWeight,
         };
     } else if (data.type === "circular" && data.thickness && data.diameter) {
         const { thickness, diameter, innerDiameter } = data;

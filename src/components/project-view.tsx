@@ -40,7 +40,7 @@ const renderItemDimensions = (item: SteelItem) => {
             const pipe = item as SteelPipe;
             return `L:${pipe.length} Ø:${pipe.outerDiameter} Wall:${pipe.wallThickness} mm`;
         case 'girder':
-             const girder = item as SteelGirder;
+            const girder = item as SteelGirder;
             return `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm`;
         case 'circular':
             const circular = item as SteelCircular;
@@ -66,7 +66,15 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
                 </Button>
             </div>
             <p className="text-sm text-muted-foreground">{renderItemDimensions(item)}</p>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+
+            {item.type === 'girder' && (
+              <div className="text-xs text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-1">
+                <p>Flange Wt:</p><p className="text-right font-medium">{(item as SteelGirder).flangeWeight?.toFixed(2)} kg</p>
+                <p>Web Wt:</p><p className="text-right font-medium">{(item as SteelGirder).webWeight?.toFixed(2)} kg</p>
+              </div>
+            )}
+            
+            <div className="grid grid-cols-2 gap-4 text-sm pt-2 border-t">
                 <div>
                     <p className="text-muted-foreground">Qty</p>
                     <p>{item.quantity}</p>

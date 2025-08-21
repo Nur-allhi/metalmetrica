@@ -28,6 +28,9 @@ export interface SteelGirder extends BaseSteelItem {
   flangeThickness: number;
   webHeight: number;
   webThickness: number;
+  // Detailed running feet calculations
+  flangeWeight?: number;
+  webWeight?: number;
 }
 
 export interface SteelPipe extends BaseSteelItem {

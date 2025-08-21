@@ -2,21 +2,11 @@
 "use client"
 
 import * as React from "react"
-import { Pie, PieChart, ResponsiveContainer, Cell, Tooltip } from "recharts"
+import { Pie, PieChart, ResponsiveContainer, Cell, Sector } from "recharts"
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import {
   ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltipContent,
 } from "@/components/ui/chart"
 
 interface ProjectSummaryChartProps {
@@ -27,8 +17,6 @@ interface ProjectSummaryChartProps {
   }[];
 }
 
-const chartConfig = {} as ChartConfig
-// Populate chartConfig dynamically based on data
 const generateChartConfig = (data: ProjectSummaryChartProps['data']): ChartConfig => {
     const config: ChartConfig = {
          weight: {
@@ -44,14 +32,23 @@ const generateChartConfig = (data: ProjectSummaryChartProps['data']): ChartConfi
     return config;
 }
 
+const RADIAN = Math.PI / 180;
+const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, payload }: any) => {
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const labelRadius = outerRadius + 20;
+  const x = cx + labelRadius * Math.cos(-midAngle * RADIAN);
+  const y = cy + labelRadius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text x={x} y={y} fill={payload.fill} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-xs font-semibold">
+      {`${payload.type} (${(percent * 100).toFixed(0)}%)`}
+    </text>
+  );
+};
+
 
 export default function ProjectSummaryChart({ data }: ProjectSummaryChartProps) {
-    const totalWeight = React.useMemo(() => {
-        return data.reduce((acc, curr) => acc + curr.weight, 0)
-    }, [data])
-    
     const dynamicChartConfig = React.useMemo(() => generateChartConfig(data), [data]);
-
 
     if (data.length === 0) {
         return (
@@ -67,27 +64,23 @@ export default function ProjectSummaryChart({ data }: ProjectSummaryChartProps) 
         className="mx-auto aspect-square h-[300px]"
       >
         <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-                <Tooltip
-                    cursor={false}
-                    content={<ChartTooltipContent 
-                        hideLabel 
-                        formatter={(value, name) => `${value.toFixed(2)} kg`}
-                    />}
-                />
+            <PieChart margin={{ top: 20, right: 40, bottom: 20, left: 40 }}>
                 <Pie
                     data={data}
                     dataKey="weight"
                     nameKey="type"
-                    innerRadius={50}
-                    outerRadius={100}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    fill="#8884d8"
+                    labelLine={false}
+                    label={renderCustomizedLabel}
                     strokeWidth={2}
                 >
                     {data.map((entry) => (
-                    <Cell key={`cell-${entry.type}`} fill={entry.fill} name={entry.type}/>
+                      <Cell key={`cell-${entry.type}`} fill={entry.fill} name={entry.type}/>
                     ))}
                 </Pie>
-                <ChartLegend content={<ChartLegendContent nameKey="type" />} />
             </PieChart>
         </ResponsiveContainer>
       </ChartContainer>

@@ -3,7 +3,7 @@
 
 import React, {useState} from 'react';
 import Image from "next/image";
-import { Plus, Settings, LogIn, LogOut, LayoutGrid, ChevronsUpDown, Search, Folder } from 'lucide-react';
+import { Plus, Settings, LogIn, LogOut, LayoutGrid, ChevronsUpDown, Search, Folder, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -81,6 +81,7 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                                 <SidebarMenuButton>
                                     <Folder />
                                     <span>Projects</span>
+                                    <ChevronDown className="h-4 w-4 ml-auto shrink-0 transition-transform duration-200 group-data-[disabled]:opacity-0 group-data-[state=open]:rotate-180" />
                                 </SidebarMenuButton>
                             </AccordionTrigger>
                             <AccordionContent className="pl-4 pt-1">
@@ -115,11 +116,12 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                             </AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="settings" className="border-none">
-                            <AccordionTrigger>
-                               <SidebarMenuButton>
-                                    <Settings />
-                                    <span>Settings</span>
-                                </SidebarMenuButton>
+                             <AccordionTrigger>
+                                <SidebarMenuButton>
+                                     <Settings />
+                                     <span>Settings</span>
+                                     <ChevronDown className="h-4 w-4 ml-auto shrink-0 transition-transform duration-200 group-data-[disabled]:opacity-0 group-data-[state=open]:rotate-180" />
+                                 </SidebarMenuButton>
                             </AccordionTrigger>
                             <AccordionContent className="pl-4 pt-1">
                                 <SidebarMenu>
@@ -169,4 +171,3 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
         </>
     );
 }
-

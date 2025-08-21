@@ -76,10 +76,11 @@ const getItemTypeLabel = (type: SteelItem['type']) => {
 }
 
 
-const ItemCard = ({ item, onDelete, currencySymbol, organization }: { item: SteelItem, onDelete: () => void, currencySymbol: string, organization: Organization | null }) => {
+const ItemCard = ({ item, onDelete, organization }: { item: SteelItem, onDelete: () => void, organization: Organization | null }) => {
     const girder = item as SteelGirder;
     const hasCost = item.cost !== null;
     const pricePerKg = hasCost && item.weight > 0 ? item.cost! / item.weight : null;
+    const currencySymbol = getCurrencySymbol(organization?.currency);
 
     const numberFormat = (value: number) => {
         return value.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
@@ -164,7 +165,6 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   const [isEditProjectDialogOpen, setEditProjectDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<SteelItem | null>(null);
   const { toast } = useToast();
-  const currencySymbol = getCurrencySymbol(organization?.currency);
   
   const handleGeneratePdf = () => {
     const doc = new jsPDF();
@@ -253,10 +253,10 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             [
                 'Item Type', 
                 'Name & Dimensions', 
-                `Unit Wt\n(${'kg'})`, 
+                `Unit Wt\n(kg)`, 
                 ...(hasCost ? [`Unit Cost\n(${currencyCode})`] : []),
                 'Qty', 
-                `Total Wt\n(${'kg'})`, 
+                `Total Wt\n(kg)`, 
                 ...(hasCost ? [`Total Cost\n(${currencyCode})`] : [])
             ]
         ];
@@ -305,34 +305,19 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
         const foot = [ footContent ];
 
-        let columnStyles: { [key: string]: any } = {};
-        if (hasCost) {
-            columnStyles = {
-                0: { cellWidth: 25 }, // Item Type
-                1: { cellWidth: 50 }, // Name & Dimensions
-                2: { cellWidth: 15 }, // Unit Wt
-                3: { cellWidth: 20 }, // Unit Cost
-                4: { cellWidth: 10 }, // Qty
-                5: { cellWidth: 20 }, // Total Wt
-                6: { cellWidth: 25 }, // Total Cost
-            };
-        } else {
-            columnStyles = {
-                0: { cellWidth: 30 }, // Item Type
-                1: { cellWidth: 75 }, // Name & Dimensions
-                2: { cellWidth: 25 }, // Unit Wt
-                3: { cellWidth: 15 }, // Qty
-                4: { cellWidth: 25 }, // Total Wt
-            };
-        }
-
-
         (doc as any).autoTable({
             startY: currentY,
             head: head,
             body: body,
             foot: foot,
             theme: 'grid',
+            margin: { horizontal: pageMargin },
+            tableWidth: 'auto',
+            styles: {
+                fontSize: 10,
+                cellPadding: 2,
+                overflow: 'linebreak',
+            },
             headStyles: {
                 fillColor: [47, 79, 79], // Dark Slate Gray
                 textColor: 255,
@@ -346,11 +331,14 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 textColor: 0,
                 fontSize: 10,
             },
-            columnStyles: columnStyles,
-            styles: {
-                cellPadding: 2,
-                fontSize: 10,
-                overflow: 'linebreak'
+            columnStyles: {
+              0: { cellWidth: '15%' }, // Item Type
+              1: { cellWidth: '30%' }, // Name & Dimensions
+              2: { cellWidth: '12.5%' }, // Unit Wt
+              3: { cellWidth: '12.5%' }, // Unit Cost
+              4: { cellWidth: '5%' }, // Qty
+              5: { cellWidth: '12.5%' }, // Total Wt
+              6: { cellWidth: '12.5%' }, // Total Cost
             },
             didDrawPage: (data: any) => {
                 currentY = data.cursor.y;
@@ -509,7 +497,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                   <ScrollArea className="flex-1 -mr-4 pr-4">
                       <div className="grid gap-4 md:grid-cols-2">
                           {project.items.map((item) => (
-                          <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} currencySymbol={currencySymbol} organization={organization} />
+                          <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} organization={organization} />
                           ))}
                       </div>
                   </ScrollArea>
@@ -578,6 +566,3 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
-
-
-    

@@ -32,25 +32,24 @@ const chartConfig = {
 } as ChartConfig
 
 const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, index, payload }: any) => {
+    const radius = outerRadius + 15;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-  if (percent < 0.05) return null; // Don't render label for very small slices
+    if (percent < 0.05) return null;
 
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="white"
-      textAnchor={x > cx ? 'start' : 'end'}
-      dominantBaseline="central"
-      className="text-xs font-bold"
-    >
-      {`${(percent * 100).toFixed(0)}%`}
-    </text>
-  );
+    return (
+        <text
+            x={x}
+            y={y}
+            className="fill-foreground text-xs"
+            textAnchor={x > cx ? 'start' : 'end'}
+            dominantBaseline="central"
+        >
+            {`${(percent * 100).toFixed(0)}%`}
+        </text>
+    );
 };
 
 
@@ -84,7 +83,7 @@ export default function ProjectSummaryChart({ data }: ProjectSummaryChartProps) 
                     nameKey="type"
                     innerRadius={60}
                     strokeWidth={5}
-                    labelLine={false}
+                    labelLine={true}
                     label={renderCustomizedLabel}
                 >
                     {data.map((entry) => (

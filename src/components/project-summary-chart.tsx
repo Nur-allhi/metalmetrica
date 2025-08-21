@@ -64,7 +64,7 @@ export default function ProjectSummaryChart({ data }: ProjectSummaryChartProps) 
         className="mx-auto aspect-square h-[300px]"
       >
         <ResponsiveContainer width="100%" height="100%">
-            <PieChart margin={{ top: 20, right: 40, bottom: 20, left: 40 }}>
+            <PieChart margin={{ top: 40, right: 40, bottom: 40, left: 40 }}>
                 <Pie
                     data={data}
                     dataKey="weight"

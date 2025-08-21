@@ -308,17 +308,18 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         
         const footerRows = [];
         const rightAlignBold = { halign: 'right', fontStyle: 'bold' };
+        const rightAlign = { halign: 'right' };
 
         if (hasCost && subTotalCost !== null) {
-             const subTotalRow = [
-                { content: 'Sub-Total', colSpan: 5, styles: { halign: 'right', fontStyle: 'bold' } },
+            const subTotalRow = [
+                { content: 'Sub-Total', colSpan: 5, styles: rightAlignBold },
                 { content: `${numberFormat(totalWeight)}\nkg`, styles: rightAlignBold },
                 { content: `${numberFormat(subTotalCost)}\n${currencySymbol}`, styles: rightAlignBold },
             ];
             footerRows.push(subTotalRow);
         } else {
              const subTotalRow = [
-                { content: 'Sub-Total', colSpan: 5, styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: 'Sub-Total', colSpan: 5, styles: rightAlignBold },
                 { content: `${numberFormat(totalWeight)}\nkg`, styles: rightAlignBold },
                 ...(hasCost ? [{ content: '', styles: rightAlignBold }] : [])
             ];
@@ -329,8 +330,8 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         if (hasCost && grandTotal !== null) {
             additionalCosts.forEach(cost => {
                 const additionalCostRow = [
-                   { content: cost.description, colSpan: 6, styles: { halign: 'right' } },
-                   { content: `${numberFormat(cost.amount)}\n${currencySymbol}`, styles: { halign: 'right' } }
+                   { content: cost.description, colSpan: 6, styles: rightAlign },
+                   { content: `${numberFormat(cost.amount)}\n${currencySymbol}`, styles: rightAlign }
                 ];
                 footerRows.push(additionalCostRow);
             });
@@ -363,6 +364,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 font: 'helvetica',
                 lineColor: [0, 0, 0],
                 lineWidth: 0.1,
+            },
+            bodyStyles: {
+                textColor: 0,
             },
             headStyles: {
                 fillColor: [255, 255, 255],
@@ -636,5 +640,3 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
-
-    

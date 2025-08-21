@@ -57,9 +57,6 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                         <h1 className="text-md font-bold">MetalMetrica</h1>
                         <p className="text-xs text-muted-foreground">by Ha-Mim Iron Mart</p>
                     </div>
-                    <Button variant="ghost" size="icon" className="ml-auto">
-                        <ChevronsUpDown className="h-4 w-4" />
-                    </Button>
                 </div>
                  <div className="relative px-2">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -68,12 +65,6 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
             </SidebarHeader>
             <SidebarContent className="p-2">
                 <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton>
-                            <LayoutGrid />
-                            <span>Dashboard</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
                     <Accordion type="single" collapsible defaultValue="projects" className="w-full">
                         <AccordionItem value="projects" className="border-none">
                             <AccordionTrigger asChild>

@@ -61,7 +61,7 @@ export default function ProjectSummaryChart({ data }: ProjectSummaryChartProps) 
   return (
       <ChartContainer
         config={dynamicChartConfig}
-        className="mx-auto aspect-square h-[300px]"
+        className="mx-auto aspect-square h-[350px]"
       >
         <ResponsiveContainer width="100%" height="100%">
             <PieChart margin={{ top: 40, right: 40, bottom: 40, left: 40 }}>
@@ -71,7 +71,7 @@ export default function ProjectSummaryChart({ data }: ProjectSummaryChartProps) 
                     nameKey="type"
                     cx="50%"
                     cy="50%"
-                    outerRadius={80}
+                    outerRadius={70}
                     fill="#8884d8"
                     labelLine={false}
                     label={renderCustomizedLabel}

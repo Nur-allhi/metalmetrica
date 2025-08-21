@@ -644,25 +644,25 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             </CardHeader>
             <CardContent className="grid gap-4">
                <div className="grid gap-2 text-sm">
-                <div className="flex items-baseline justify-between flex-wrap gap-x-2">
+                 <div className="flex items-baseline justify-between gap-x-2 flex-wrap">
                     <span className="text-muted-foreground">Total Weight</span>
-                    <span className="font-bold whitespace-nowrap">{numberFormat(totalWeight)} kg</span>
+                    <span className="font-bold">{numberFormat(totalWeight)} kg</span>
                 </div>
                 {hasCost && totalCost !== null && (
                     <>
-                     <div className="flex items-baseline justify-between flex-wrap gap-x-2">
+                     <div className="flex items-baseline justify-between gap-x-2 flex-wrap">
                         <span className="text-muted-foreground pl-2">Item Sub-total</span>
-                        <span className="font-medium text-green-600 whitespace-nowrap">{currencySymbol} {numberFormat(subTotalCost)}</span>
+                        <span className="font-medium text-green-600">{currencySymbol} {numberFormat(subTotalCost)}</span>
                       </div>
                       {(project.additionalCosts || []).map(cost => (
-                        <div key={cost.id} className="flex items-baseline justify-between flex-wrap gap-x-2">
+                        <div key={cost.id} className="flex items-baseline justify-between gap-x-2 flex-wrap">
                             <span className="text-muted-foreground pl-2">{cost.description}</span>
-                            <span className="font-medium text-green-600 whitespace-nowrap">{currencySymbol} {numberFormat(cost.amount)}</span>
+                            <span className="font-medium text-green-600">{currencySymbol} {numberFormat(cost.amount)}</span>
                         </div>
                       ))}
-                      <div className="flex items-baseline justify-between font-bold border-t pt-2 mt-1 flex-wrap gap-x-2">
+                      <div className="flex items-baseline justify-between font-bold border-t pt-2 mt-1 gap-x-2 flex-wrap">
                         <span className="text-muted-foreground">Grand Total</span>
-                        <span className="text-green-600 whitespace-nowrap">{currencySymbol} {numberFormat(totalCost)}</span>
+                        <span className="text-green-600">{currencySymbol} {numberFormat(totalCost)}</span>
                       </div>
                     </>
                 )}
@@ -676,13 +676,13 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                           <div className="flex items-center justify-between text-sm flex-wrap gap-x-2">
                               <div className="flex items-center gap-2 min-w-0">
                                   <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.fill }} />
-                                  <span className="font-semibold truncate">{item.type}</span>
+                                  <span className="font-semibold">{item.type}</span>
                               </div>
-                              <span className="font-medium whitespace-nowrap">{numberFormat(item.weight)} kg</span>
+                              <span className="font-medium">{numberFormat(item.weight)} kg</span>
                           </div>
                           {item.avgPricePerKg !== null && (
-                              <div className="flex items-center justify-end text-xs text-muted-foreground mt-1 flex-wrap gap-x-2">
-                                  <span className='whitespace-nowrap'>{currencySymbol}{numberFormat(item.avgPricePerKg)}/kg</span>
+                              <div className="flex items-center justify-end text-xs text-muted-foreground mt-1 gap-x-2 flex-wrap">
+                                  <span>{currencySymbol}{numberFormat(item.avgPricePerKg)}/kg</span>
                               </div>
                           )}
                       </div>
@@ -750,5 +750,3 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
-
-    

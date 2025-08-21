@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import html2canvas from "html2canvas";
-import { Download } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 
 import {
   Card,
@@ -190,6 +190,7 @@ const numberFormat = (value: number) => {
 
 export default function CalculatorCard() {
   const [result, setResult] = useState<CalculationResult | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const resultCardRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -304,7 +305,7 @@ export default function CalculatorCard() {
     });
   }
 
-  const handleSaveAsImage = () => {
+  const handleSaveAsImage = async () => {
     if (!resultCardRef.current) {
         toast({
             title: "Error",
@@ -314,7 +315,9 @@ export default function CalculatorCard() {
         return;
     };
 
-    html2canvas(resultCardRef.current, { scale: 2 }).then((canvas) => {
+    setIsSaving(true);
+    try {
+        const canvas = await html2canvas(resultCardRef.current, { scale: 2 });
         const link = document.createElement('a');
         link.download = 'calculation-result.png';
         link.href = canvas.toDataURL("image/png");
@@ -323,14 +326,16 @@ export default function CalculatorCard() {
             title: "Image Saved",
             description: "Calculation result has been saved as an image.",
         });
-    }).catch(err => {
+    } catch (err) {
         console.error("Error saving image:", err);
         toast({
             title: "Error",
             description: "Failed to save result as image.",
             variant: "destructive",
         });
-    });
+    } finally {
+        setIsSaving(false);
+    }
   };
   
   const renderInput = (field: any) => <Input type="number" step="any" {...field} value={field.value ?? ''} />;
@@ -632,9 +637,13 @@ export default function CalculatorCard() {
                         </CardContent>
                     </div>
                      <CardFooter>
-                        <Button type="button" variant="outline" className="w-full" onClick={handleSaveAsImage}>
-                            <Download className="mr-2 h-4 w-4" />
-                            Save The Result
+                        <Button type="button" variant="outline" className="w-full" onClick={handleSaveAsImage} disabled={isSaving}>
+                            {isSaving ? (
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                                <Download className="mr-2 h-4 w-4" />
+                            )}
+                            {isSaving ? "Saving..." : "Save The Result"}
                         </Button>
                     </CardFooter>
                 </Card>

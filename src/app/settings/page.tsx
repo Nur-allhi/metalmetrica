@@ -101,7 +101,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center bg-muted/40 p-4 sm:p-6 lg:p-8">
+    <div className="flex min-h-screen w-full flex-col items-center bg-muted/40 p-4 sm:p-6 lg:p-8 animate-in fade-in-0 slide-in-from-top-4 duration-500">
       <div className="w-full max-w-2xl">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>

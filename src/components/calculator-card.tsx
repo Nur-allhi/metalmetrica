@@ -1,10 +1,13 @@
 
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import html2canvas from "html2canvas";
+import { Download } from "lucide-react";
+
 import {
   Card,
   CardContent,
@@ -32,6 +35,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { STEEL_DENSITIES, KG_TO_LBS } from "@/lib/constants";
+import { useToast } from "@/hooks/use-toast";
+
 
 const formSchema = z.object({
   type: z.enum(["plate", "pipe", "girder", "circular", "plate-imperial"]),
@@ -180,6 +185,8 @@ const getItemTypeLabel = (type: FormData['type']) => {
 
 export default function CalculatorCard() {
   const [result, setResult] = useState<CalculationResult | null>(null);
+  const resultCardRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -291,6 +298,35 @@ export default function CalculatorCard() {
         ...girderDetails
     });
   }
+
+  const handleSaveAsImage = () => {
+    if (!resultCardRef.current) {
+        toast({
+            title: "Error",
+            description: "Could not capture result card.",
+            variant: "destructive",
+        });
+        return;
+    };
+
+    html2canvas(resultCardRef.current, { scale: 2 }).then((canvas) => {
+        const link = document.createElement('a');
+        link.download = 'calculation-result.png';
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        toast({
+            title: "Image Saved",
+            description: "Calculation result has been saved as an image.",
+        });
+    }).catch(err => {
+        console.error("Error saving image:", err);
+        toast({
+            title: "Error",
+            description: "Failed to save result as image.",
+            variant: "destructive",
+        });
+    });
+  };
   
   const renderInput = (field: any) => <Input type="number" step="any" {...field} value={field.value ?? ''} />;
 
@@ -521,7 +557,7 @@ export default function CalculatorCard() {
                 </div>
             
                {result && (
-                <Card className="bg-muted/50">
+                <Card ref={resultCardRef} className="bg-muted/50">
                     <CardHeader className='pb-4'>
                         <CardTitle className='text-xl'>Calculation Result</CardTitle>
                         <CardDescription>
@@ -584,6 +620,12 @@ export default function CalculatorCard() {
                             </div>
                          )}
                     </CardContent>
+                     <CardFooter>
+                        <Button type="button" variant="outline" className="w-full" onClick={handleSaveAsImage}>
+                            <Download className="mr-2 h-4 w-4" />
+                            Save as Image
+                        </Button>
+                    </CardFooter>
                 </Card>
                )}
 
@@ -597,6 +639,8 @@ export default function CalculatorCard() {
     </Card>
   );
 }
+
+    
 
     
 

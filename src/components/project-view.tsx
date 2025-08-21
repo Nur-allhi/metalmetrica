@@ -258,9 +258,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 'S.No.',
                 'Name & Dimensions', 
                 `Unit Wt\n(kg)`, 
-                ...(hasCost ? [`Unit Cost\n(${currencyCode})`] : []),
                 'Qty', 
                 `Total Wt\n(kg)`, 
+                ...(hasCost ? [`Unit Cost\n(${currencyCode})`] : []),
                 ...(hasCost ? [`Total Cost\n(${currencyCode})`] : [])
             ]
         ];
@@ -270,25 +270,30 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             const totalCost = item.cost !== null ? item.cost * item.quantity : null;
             
             let dimensions;
+            const nameAndType = `${item.name} (${getItemTypeLabel(item.type)})`;
+            const itemDims = renderItemDimensions(item);
+
             if (item.type === 'girder') {
                 const girder = item as SteelGirder;
-                const mainDims = `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness}\nWeb:${girder.webHeight}x${girder.webThickness} mm`;
                 const weights = `Flange Wt: ${numberFormat(girder.flangeWeight!)} kg | Web Wt: ${numberFormat(girder.webWeight!)} kg`;
                 const feets = `Flange Ft: ${numberFormat(girder.flangeRunningFeet!)} ft | Web Ft: ${numberFormat(girder.webRunningFeet!)} ft`;
-                dimensions = `${item.name} (${getItemTypeLabel(item.type)})\n${mainDims}\n${weights}\n${feets}`;
+                dimensions = `${nameAndType}\n${itemDims}\n${weights}\n${feets}`;
             } else {
-                 dimensions = `${item.name} (${getItemTypeLabel(item.type)})\n${renderItemDimensions(item)}`;
+                 dimensions = `${nameAndType}\n${itemDims}`;
             }
 
             const row = [
                 { content: (index + 1).toString(), styles: { halign: 'center' } },
                 { content: dimensions },
                 { content: numberFormat(item.weight), styles: { halign: 'right' } },
-                ...(hasCost ? [{ content: item.cost !== null ? numberFormat(item.cost) : 'N/A', styles: { halign: 'right' } }] : []),
                 { content: item.quantity, styles: { halign: 'center' } },
                 { content: numberFormat(totalWeight), styles: { halign: 'right' } },
-                ...(hasCost ? [{ content: totalCost !== null ? numberFormat(totalCost) : 'N/A', styles: { halign: 'right' } }] : []),
             ];
+
+            if (hasCost) {
+                row.push({ content: item.cost !== null ? numberFormat(item.cost) : 'N/A', styles: { halign: 'right' } });
+                row.push({ content: totalCost !== null ? numberFormat(totalCost) : 'N/A', styles: { halign: 'right' } });
+            }
             return row;
         });
         
@@ -296,30 +301,24 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         const subTotalCost = hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null;
         
         const footerRows = [];
+        const costColSpan = hasCost ? 5 : 4;
+
 
         // Sub-Total Row
         if (hasCost && subTotalCost !== null) {
             const subTotalRow = [
-                { content: 'Sub-Total', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
-                {}, // Empty cell for Qty column
+                { content: 'Sub-Total', colSpan: costColSpan, styles: { halign: 'right', fontStyle: 'bold' } },
                 { content: `${numberFormat(totalWeight)} kg`, styles: { halign: 'right', fontStyle: 'bold' } },
+                {}, // Empty cell for unit cost
                 { content: `${currencyCode} ${numberFormat(subTotalCost)}`, styles: { halign: 'right', fontStyle: 'bold' } },
             ];
-             // remove the empty cell if cost is not present
-            if (!hasCost) {
-                subTotalRow.splice(3, 1);
-            }
             footerRows.push(subTotalRow);
 
         } else {
              const subTotalRow = [
-                 { content: 'Total Weight', colSpan: 5, styles: { halign: 'right', fontStyle: 'bold' } },
+                 { content: 'Total Weight', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
                  { content: `${numberFormat(totalWeight)} kg`, styles: { halign: 'right', fontStyle: 'bold' } },
              ]
-             if (hasCost) {
-                subTotalRow.splice(1, 0, {}); // empty cell for unit cost
-                subTotalRow[0].colSpan = 4;
-             }
              footerRows.push(subTotalRow);
         }
         
@@ -328,7 +327,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         if (hasCost && grandTotal !== null) {
             additionalCosts.forEach(cost => {
                 const additionalCostRow = [
-                    { content: cost.description, colSpan: 6, styles: { halign: 'right' } },
+                    { content: cost.description, colSpan: costColSpan + 2, styles: { halign: 'right' } },
                     { content: `${currencyCode} ${numberFormat(cost.amount)}`, styles: { halign: 'right' } },
                 ]
                 footerRows.push(additionalCostRow);
@@ -340,7 +339,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             // Grand Total Row
             if(additionalCosts.length > 0) {
                  const grandTotalRow = [
-                    { content: 'Grand Total', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } },
+                    { content: 'Grand Total', colSpan: costColSpan + 2, styles: { halign: 'right', fontStyle: 'bold' } },
                     { content: `${currencyCode} ${numberFormat(grandTotal)}`, styles: { halign: 'right', fontStyle: 'bold' } },
                  ]
                  footerRows.push(grandTotalRow);
@@ -348,15 +347,15 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         }
 
         const columnStyles: { [key: string]: any } = {
-          0: { cellWidth: '6%' }, // S.No.
-          1: { cellWidth: 'auto' }, // Name & Dimensions
-          2: { cellWidth: '10%' }, // Unit Wt
-          4: { cellWidth: '8%' }, // Qty
-          5: { cellWidth: '12%' }, // Total Wt
+          0: { cellWidth: '6%' },    // S.No.
+          1: { cellWidth: 'auto' },   // Name & Dimensions
+          2: { cellWidth: '10%' },  // Unit Wt
+          3: { cellWidth: '8%' },   // Qty
+          4: { cellWidth: '12%' },  // Total Wt
         };
 
         if(hasCost) {
-          columnStyles[3] = { cellWidth: '12%' }; // Unit Cost
+          columnStyles[5] = { cellWidth: '12%' }; // Unit Cost
           columnStyles[6] = { cellWidth: '15%' }; // Total Cost
         }
 
@@ -386,6 +385,8 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 fillColor: [245, 245, 245], // White smoke
                 textColor: 0,
                 fontSize: 10,
+                lineWidth: 0.1,
+                lineColor: [0, 0, 0]
             },
             columnStyles: columnStyles,
             didDrawPage: (data: any) => {

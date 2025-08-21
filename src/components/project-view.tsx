@@ -178,8 +178,6 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
     // Logo
     if (organization?.logoUrl) {
-        // This is a simplified image handler. It requires CORS to be enabled on the image server.
-        // For a real app, you might proxy the image or use a base64 string.
         try {
             const img = new Image();
             img.crossOrigin = "anonymous";
@@ -218,13 +216,19 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             doc.text(organization.address, pageMargin, currentY);
             currentY += 5;
         }
+        
+        let contactLine = '';
         if(organization?.email) {
-            doc.text(`Email: ${organization.email}`, pageMargin, currentY);
+            contactLine += `Email: ${organization.email}`;
         }
-         if(organization?.contactNumber) {
-            doc.text(`Contact: ${organization.contactNumber}`, pageMargin + 60, currentY);
+        if(organization?.contactNumber) {
+            if (contactLine) contactLine += ` | `;
+            contactLine += `Contact: ${organization.contactNumber}`;
         }
-        currentY += 5;
+        if(contactLine) {
+            doc.text(contactLine, pageMargin, currentY);
+            currentY += 5;
+        }
 
         doc.setLineWidth(0.5);
         doc.line(pageMargin, currentY, pageWidth - pageMargin, currentY);
@@ -279,13 +283,19 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0);
         const totalCost = hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null;
         
-        const foot = [
-            [
-                { content: 'Project Totals', colSpan: hasCost ? 4 : 3, styles: { halign: 'right', fontStyle: 'bold' } },
-                { content: numberFormat(totalWeight) + ' kg', styles: { halign: 'right', fontStyle: 'bold' } },
-                ...(hasCost ? [{ content: currencySymbol + numberFormat(totalCost!), styles: { halign: 'right', fontStyle: 'bold' } }] : []),
-            ]
+        let footContent = [
+             { content: 'Project Totals', colSpan: hasCost ? 2 : 1, styles: { halign: 'right', fontStyle: 'bold' } },
+             { content: '', colSpan: 1 },
+             { content: '', colSpan: 1 },
+             { content: numberFormat(totalWeight) + ' kg', styles: { halign: 'right', fontStyle: 'bold' } },
         ];
+        
+        if (hasCost) {
+            footContent.push({ content: currencySymbol + numberFormat(totalCost!), styles: { halign: 'right', fontStyle: 'bold' } });
+        }
+
+
+        const foot = [ footContent ];
 
         
         (doc as any).autoTable({
@@ -298,6 +308,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 fillColor: [47, 79, 79], // Dark Slate Gray
                 textColor: 255,
                 fontStyle: 'bold',
+                halign: 'center',
             },
              footStyles: {
                 fillColor: [245, 245, 245], // White smoke
@@ -537,5 +548,3 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
-
-    

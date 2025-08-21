@@ -86,6 +86,11 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
       type: "plate",
       quantity: 1,
       price: 0.8,
+      length: undefined,
+      width: undefined,
+      thickness: undefined,
+      outerDiameter: undefined,
+      wallThickness: undefined,
     },
   });
 

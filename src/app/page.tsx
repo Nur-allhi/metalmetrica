@@ -166,7 +166,7 @@ export default function Home() {
                         <TabsContent value="single" className="mt-4">
                             <CalculatorCard />
                         </TabsContent>
-                        <TabsContent value="projects" className="flex-1 mt-4 overflow-y-auto">
+                        <TabsContent value="projects" className="flex-1 flex flex-col mt-4 overflow-y-auto">
                             {renderProjectContent()}
                         </TabsContent>
                       </Tabs>

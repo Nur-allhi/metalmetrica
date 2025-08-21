@@ -131,7 +131,7 @@ const ItemCard = ({ item, onDelete, onEdit, organization }: { item: SteelItem, o
                   </div>
                 )}
                 
-                <div className="grid grid-cols-2 gap-4 text-sm pt-2 border-t">
+                <div className="grid grid-cols-2 gap-4 pt-2 border-t">
                     <div>
                         <p className="text-muted-foreground text-xs">Qty</p>
                         <p className="font-medium text-sm">{item.quantity}</p>
@@ -589,7 +589,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
   return (
     <>
-      <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:grid-cols-3">
+      <div className="grid auto-rows-max items-start gap-4 md:gap-8 grid-cols-1 lg:grid-cols-3">
         <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -750,5 +750,3 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
-
-    

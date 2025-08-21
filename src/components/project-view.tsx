@@ -366,7 +366,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 lineWidth: 0.1,
             },
             bodyStyles: {
-                textColor: 0,
+                textColor: [0, 0, 0],
             },
             headStyles: {
                 fillColor: [255, 255, 255],
@@ -585,18 +585,35 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
               <CardTitle>Project Summary</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Total Weight</span>
-                <span className="font-bold">{numberFormat(totalWeight)} kg</span>
-              </div>
-              {hasCost && totalCost !== null && (
+               <div className="grid gap-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Total Cost</span>
-                  <span className="font-bold text-green-600">{currencySymbol} {numberFormat(totalCost)}</span>
+                    <span className="text-muted-foreground">Total Weight</span>
+                    <span className="font-bold">{numberFormat(totalWeight)} kg</span>
                 </div>
-              )}
-              <hr />
-              <h4 className="mb-2 text-center text-sm font-medium">Weight by Type</h4>
+                {hasCost && totalCost !== null && (
+                    <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Total Cost</span>
+                    <span className="font-bold text-green-600">{currencySymbol} {numberFormat(totalCost)}</span>
+                    </div>
+                )}
+               </div>
+
+              {chartData.length > 0 && <hr />}
+
+              <div className="grid gap-2">
+                {chartData.map((item, index) => (
+                  <div key={index} className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.fill }} />
+                          <span>{item.type}</span>
+                      </div>
+                      <span className="font-medium">{numberFormat(item.weight)} kg</span>
+                  </div>
+                ))}
+              </div>
+
+              {chartData.length > 0 && <hr />}
+              
               <ProjectSummaryChart data={chartData} />
             </CardContent>
             <CardFooter>

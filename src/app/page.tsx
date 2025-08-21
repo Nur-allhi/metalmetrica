@@ -101,24 +101,12 @@ export default function Home() {
   };
 
   const renderProjectContent = () => {
-    if (loading || authLoading) {
+    if (loading) {
         return (
-            <div className="p-4">
+            <div className="p-4 md:p-0">
                 <Card>
                     <CardHeader><Skeleton className="h-8 w-3/4" /></CardHeader>
                     <CardContent><Skeleton className="h-40 w-full" /></CardContent>
-                </Card>
-            </div>
-        )
-    }
-
-    if (!user) {
-        return (
-             <div className="flex-1 flex items-center justify-center h-full">
-                <Card className="flex flex-col items-center justify-center p-10 text-center bg-transparent border-dashed">
-                    <Logo className="h-12 w-12 text-muted-foreground mb-4" />
-                    <CardTitle>Welcome to MetalMetrica</CardTitle>
-                    <CardDescription className="mt-2">Please sign in to manage your projects.</CardDescription>
                 </Card>
             </div>
         )
@@ -159,12 +147,12 @@ export default function Home() {
                       onProjectSelect={setActiveProject}
                       onAddProject={() => setAddProjectDialogOpen(true)}
                       onSettingsClick={() => setOrgSetupOpen(true)}
-                      loading={loading || authLoading}
+                      loading={loading}
                   />
               </Sidebar>
               <SidebarInset>
                   <Header onSettingsClick={() => setOrgSetupOpen(true)} />
-                  <main className="flex flex-1 flex-col gap-4 p-4 lg:p-6 overflow-hidden">
+                  <main className="flex flex-1 flex-col gap-4 p-4 overflow-hidden">
                       <Tabs defaultValue="projects" className="flex-1 flex flex-col overflow-hidden h-full">
                         <div className="flex items-center">
                             <TabsList>
@@ -178,7 +166,7 @@ export default function Home() {
                         <TabsContent value="single" className="mt-4">
                             <CalculatorCard />
                         </TabsContent>
-                        <TabsContent value="projects" className="flex-1 mt-4 h-full">
+                        <TabsContent value="projects" className="flex-1 mt-4 overflow-y-auto">
                             {renderProjectContent()}
                         </TabsContent>
                       </Tabs>

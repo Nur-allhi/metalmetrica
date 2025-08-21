@@ -43,7 +43,7 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                 <SidebarMenu>
                     {loading ? (
                        [...Array(3)].map((_, i) => <SidebarMenuSkeleton key={i} />)
-                    ) : user ? (
+                    ) : (
                         <>
                             {projects.map(project => (
                                 <SidebarMenuItem key={project.id}>
@@ -60,17 +60,15 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                                 <p className="text-sm text-muted-foreground p-4 text-center">No projects yet.</p>
                             )}
                         </>
-                    ) : (
-                         <p className="text-sm text-muted-foreground p-4 text-center">Sign in to see projects.</p>
                     )}
                 </SidebarMenu>
             </SidebarContent>
             <SidebarFooter className='flex flex-row gap-2'>
-                 <Button onClick={onAddProject} className="flex-1" disabled={!user}>
+                 <Button onClick={onAddProject} className="flex-1">
                     <Plus />
                     <span>Create Project</span>
                 </Button>
-                <Button variant="outline" size="icon" onClick={onSettingsClick} disabled={!user}>
+                <Button variant="outline" size="icon" onClick={onSettingsClick}>
                     <Settings className="h-4 w-4" />
                     <span className="sr-only">Settings</span>
                 </Button>

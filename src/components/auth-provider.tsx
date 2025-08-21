@@ -2,9 +2,22 @@
 "use client";
 
 import React, { useEffect, useState, createContext, useContext } from "react";
-import { onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider, type User } from "firebase/auth";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { 
+    onAuthStateChanged, 
+    signInWithPopup, 
+    signOut, 
+    GoogleAuthProvider, 
+    type User, 
+    signInAnonymously,
+    linkWithCredential,
+    deleteUser
+} from "firebase/auth";
+import { doc, getDoc, setDoc, serverTimestamp, writeBatch } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
+import { getProjects, addProject as addProjectToDb } from "@/services/firestore";
+import type { Project } from "@/types";
+import useLocalStorage from "@/hooks/use-local-storage";
+
 
 interface AuthContextType {
   user: User | null;
@@ -29,8 +42,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userRef = doc(db, 'users', rawUser.uid);
       const userDoc = await getDoc(userRef);
 
-      if (!userDoc.exists()) {
-        // Create a new user profile in Firestore
+      if (!userDoc.exists() && !rawUser.isAnonymous) {
+        // Create a new user profile in Firestore for non-anonymous users
         await setDoc(userRef, {
           displayName: rawUser.displayName,
           email: rawUser.email,
@@ -40,7 +53,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       setUser(rawUser);
     } else {
-      setUser(null);
+      // No user signed in, so sign in anonymously
+      try {
+        const { user: anonymousUser } = await signInAnonymously(auth);
+        setUser(anonymousUser);
+      } catch (error) {
+        console.error("Error signing in anonymously:", error);
+        setUser(null);
+      }
     }
     setLoading(false);
   };
@@ -52,21 +72,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     setLoading(true);
+    const provider = new GoogleAuthProvider();
+    const anonymousUser = auth.currentUser;
+
     try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Error signing in with Google:", error);
-      // This catch block handles errors like popup closed by user
+        const result = await signInWithPopup(auth, provider);
+        if (anonymousUser && anonymousUser.isAnonymous) {
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            if (credential) {
+                const linkedUserCredential = await linkWithCredential(anonymousUser, credential);
+                setUser(linkedUserCredential.user);
+            }
+        }
+    } catch (error: any) {
+        console.error("Error signing in with Google:", error);
+        // Handle specific errors like popup closed by user gracefully
+        if (error.code !== 'auth/popup-closed-by-user') {
+            // Re-throw other errors or handle them as needed
+        }
     } finally {
-      // Ensure loading is always reset, even if sign-in fails or is cancelled
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
+
 
   const logout = async () => {
     setLoading(true);
     await signOut(auth);
+    // After logging out, a new anonymous user will be created by onAuthStateChanged
   };
 
   const value = {

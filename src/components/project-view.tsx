@@ -175,15 +175,13 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
   return (
     <>
-        <div style={{ display: "none" }}>
+        <div className="hidden">
           {project && organization && (
-             <div ref={reportRef}>
-                <ProjectReport project={project} organization={organization} />
-             </div>
+              <ProjectReport ref={reportRef} project={project} organization={organization} />
           )}
         </div>
-        <div className="grid gap-6 md:gap-8 flex-1">
-            <div>
+        <div className="grid gap-6 md:gap-8 md:grid-cols-[1fr_300px]">
+            <div className="grid gap-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">
                     <div>
@@ -199,9 +197,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                     </div>
                     </CardHeader>
                 </Card>
-            </div>
 
-            <div className="grid gap-4">
                 {project.items.length === 0 ? (
                     <Card className="flex flex-col items-center justify-center p-10 text-center bg-transparent border-dashed">
                         <CardTitle>No Items Yet</CardTitle>
@@ -218,7 +214,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                                 <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} />
                             ))}
                         </div>
-                        <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm py-4 -mx-4 -mb-4 mt-4">
+                        <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm py-4 -mx-4 -mb-4 mt-4 px-4">
                             <Button className="w-full" onClick={() => setAddItemDialogOpen(true)}>
                                 <Plus />
                                 Add Item
@@ -247,15 +243,19 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                         <ProjectSummaryChart data={chartData} />
                     </CardContent>
                     <CardFooter>
-                        <Button 
-                            className="w-full" 
-                            onClick={handlePrint} 
-                            disabled={!project || !organization}
-                            title={!organization ? "Please set up an organization first" : "" }
+                         <div
+                            onClick={handlePrint}
+                            className="w-full cursor-pointer"
+                            title={!organization ? "Please set up an organization first" : ""}
                         >
-                            <Download />
-                            Generate Report
-                        </Button>
+                            <Button 
+                                className="w-full" 
+                                disabled={!project || !organization}
+                            >
+                                <Download />
+                                Generate Report
+                            </Button>
+                        </div>
                     </CardFooter>
                 </Card>
             </div>

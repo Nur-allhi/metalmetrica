@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -257,11 +258,11 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         const head = [[
             'S.No.',
             'Name & Dimensions',
-            'Unit Wt\n(kg)',
-            ...(hasCost ? [`Unit Cost\n(${currencySymbol})`] : []),
+            'Unit Wt (kg)',
+            ...(hasCost ? [`Unit Cost (${currencySymbol})`] : []),
             'Qty',
-            'Total Wt\n(kg)',
-            ...(hasCost ? [`Total Cost\n(${currencySymbol})`] : [])
+            'Total Wt (kg)',
+            ...(hasCost ? [`Total Cost (${currencySymbol})`] : [])
         ]];
         
         const body = project.items.map((item, index) => {
@@ -269,7 +270,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             const totalCost = item.cost !== null ? item.cost * item.quantity : null;
             
             let nameAndDims;
-            const nameAndType = `${item.name} (${getItemTypeLabel(item.type)})`;
+            const nameAndType = `${item.name}`;
             const itemDims = renderItemDimensions(item);
 
             if (item.type === 'girder') {
@@ -310,17 +311,17 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
         if (hasCost && subTotalCost !== null) {
              const subTotalRow = [
-                { content: 'Sub-Total', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: 'Sub-Total', colSpan: 5, styles: { halign: 'right', fontStyle: 'bold' } },
                 { content: `${numberFormat(totalWeight)}\nkg`, styles: rightAlignBold },
                 { content: `${numberFormat(subTotalCost)}\n${currencySymbol}`, styles: rightAlignBold },
             ];
             footerRows.push(subTotalRow);
         } else {
              const subTotalRow = [
-                { content: 'Sub-Total', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: 'Sub-Total', colSpan: 5, styles: { halign: 'right', fontStyle: 'bold' } },
                 { content: `${numberFormat(totalWeight)}\nkg`, styles: rightAlignBold },
+                ...(hasCost ? [{ content: '', styles: rightAlignBold }] : [])
             ];
-             if (hasCost) footerRows.push({content: ''});
              footerRows.push(subTotalRow);
         }
         
@@ -328,8 +329,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         if (hasCost && grandTotal !== null) {
             additionalCosts.forEach(cost => {
                 const additionalCostRow = [
-                   { content: cost.description, colSpan: 4, styles: { halign: 'right' } },
-                   '',
+                   { content: cost.description, colSpan: 6, styles: { halign: 'right' } },
                    { content: `${numberFormat(cost.amount)}\n${currencySymbol}`, styles: { halign: 'right' } }
                 ];
                 footerRows.push(additionalCostRow);
@@ -340,8 +340,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
             if(additionalCosts.length > 0) {
                  const grandTotalRow = [
-                    { content: 'Grand Total', colSpan: 4, styles: rightAlignBold },
-                    '',
+                    { content: 'Grand Total', colSpan: 6, styles: rightAlignBold },
                     { content: `${numberFormat(grandTotal)}\n${currencySymbol}`, styles: rightAlignBold },
                  ]
                  footerRows.push(grandTotalRow);
@@ -384,11 +383,11 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             columnStyles: {
               0: { halign: 'center', cellWidth: '6%' },    // S.No
               1: { cellWidth: 'auto' },  // Name & Dims
-              2: { halign: 'right', cellWidth: '13%' },  // Unit Wt
+              2: { halign: 'right', cellWidth: '12%' },  // Unit Wt
               3: { halign: 'right', cellWidth: '13%' },  // Unit Cost
               4: { halign: 'center', cellWidth: '8%' },   // Qty
-              5: { halign: 'right', cellWidth: '13%' },  // Total Wt
-              6: { halign: 'right', cellWidth: '13%' },  // Total Cost
+              5: { halign: 'right', cellWidth: '14%' },  // Total Wt
+              6: { halign: 'right', cellWidth: '14%' },  // Total Cost
             },
             didDrawPage: (data: any) => {
                 currentY = data.cursor.y;
@@ -637,3 +636,5 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
+
+    

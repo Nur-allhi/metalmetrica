@@ -68,7 +68,7 @@ export default function EditProjectDialog({ open, onOpenChange, onEditProject, p
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
@@ -105,7 +105,7 @@ export default function EditProjectDialog({ open, onOpenChange, onEditProject, p
                 )}
               />
             </div>
-            <DialogFooter>
+            <DialogFooter className="border-t pt-4">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button type="submit">Save Changes</Button>
             </DialogFooter>

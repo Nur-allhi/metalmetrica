@@ -90,9 +90,9 @@ export default function AdditionalCostsDialog({ open, onOpenChange, onConfirm, c
                 Add or edit additional costs like transport, labor, or taxes. These will be saved to the project.
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4 max-h-96 overflow-y-auto pr-2">
+            <div className="grid gap-4 py-4 max-h-96 overflow-y-auto pr-3 px-1">
                 {fields.map((field, index) => (
-                    <div key={field.id} className="grid grid-cols-[2fr_1fr_auto] items-end gap-2 p-2 border rounded-md">
+                    <div key={field.id} className="grid grid-cols-[2fr_1fr_auto] items-end gap-2 p-3 border rounded-lg">
                         <FormField
                             control={form.control}
                             name={`costs.${index}.description`}
@@ -124,12 +124,12 @@ export default function AdditionalCostsDialog({ open, onOpenChange, onConfirm, c
                         </Button>
                     </div>
                 ))}
-                 <Button type="button" variant="outline" onClick={() => append({ description: '', amount: 0 })}>
+                 <Button type="button" variant="outline" onClick={() => append({ description: '', amount: 0 })} className="mt-2">
                     <Plus className="mr-2 h-4 w-4" />
                     Add Cost
                 </Button>
             </div>
-            <DialogFooter className="pt-4">
+            <DialogFooter className="pt-4 border-t">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button type="submit">Save Costs</Button>
             </DialogFooter>

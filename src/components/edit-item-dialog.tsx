@@ -271,7 +271,7 @@ export default function EditItemDialog({ open, onOpenChange, onEditItem, item }:
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
@@ -280,7 +280,8 @@ export default function EditItemDialog({ open, onOpenChange, onEditItem, item }:
                 Update the item's specifications.
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 p-4 max-h-[60vh] overflow-y-auto">
+            <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto px-1">
+              <div className="grid gap-4 px-3">
               <FormField
                 control={form.control}
                 name="name"
@@ -505,6 +506,7 @@ export default function EditItemDialog({ open, onOpenChange, onEditItem, item }:
                         )}
                     />
                 </div>
+              </div>
             </div>
             <DialogFooter className="pt-4 border-t">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>

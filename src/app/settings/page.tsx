@@ -101,18 +101,18 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center bg-muted/40 p-4 sm:p-6">
+    <div className="flex min-h-screen w-full flex-col items-center bg-muted/40 p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-2xl">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <Card>
+              <Card className="shadow-lg">
                 <CardHeader>
                   <CardTitle>Organization Settings</CardTitle>
                   <CardDescription>
                     {organization ? "Update your organization details." : "Set up your organization details to be used in reports."}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="grid gap-4">
+                <CardContent className="grid gap-6">
                   <FormField
                     control={form.control}
                     name="name"
@@ -168,7 +168,7 @@ export default function SettingsPage() {
 
                   <div>
                      <FormLabel>Terms & Conditions</FormLabel>
-                     <div className="grid gap-2 pt-2">
+                     <div className="grid gap-3 pt-2">
                         {fields.map((field, index) => (
                            <div key={field.id} className="flex items-center gap-2">
                                 <FormField
@@ -250,7 +250,7 @@ export default function SettingsPage() {
                       </div>
                     )}
                 </CardContent>
-                <CardFooter className="flex justify-between">
+                <CardFooter className="flex justify-between border-t pt-6 mt-6">
                    <Button variant="outline" asChild>
                      <Link href="/">
                         <ArrowLeft className="mr-2 h-4 w-4" />

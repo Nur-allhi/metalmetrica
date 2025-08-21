@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -53,7 +54,7 @@ export default function AddProjectDialog({ open, onOpenChange, onAddProject }: A
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
@@ -90,7 +91,7 @@ export default function AddProjectDialog({ open, onOpenChange, onAddProject }: A
                 )}
               />
             </div>
-            <DialogFooter>
+            <DialogFooter className="border-t pt-4">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button type="submit">Create Project</Button>
             </DialogFooter>

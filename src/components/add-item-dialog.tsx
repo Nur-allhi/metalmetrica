@@ -282,7 +282,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
@@ -346,7 +346,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
               )}
 
                {(itemType === 'plate' || itemType === 'plate-imperial') && (
-                 <div className="grid grid-cols-2 gap-4">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="width"
@@ -373,7 +373,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                )}
 
               {itemType === 'pipe' && (
-                 <div className="grid grid-cols-2 gap-4">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="outerDiameter"
@@ -401,7 +401,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
               
                {itemType === 'girder' && (
                  <>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <FormField
                             control={form.control}
                             name="flangeWidth"
@@ -425,7 +425,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                             )}
                         />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <FormField
                             control={form.control}
                             name="webHeight"
@@ -465,7 +465,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                         </FormItem>
                       )}
                     />
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                        <FormField
                          control={form.control}
                          name="diameter"
@@ -493,7 +493,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                )}
 
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                         control={form.control}
                         name="quantity"

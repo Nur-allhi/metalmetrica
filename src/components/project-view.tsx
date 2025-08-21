@@ -452,24 +452,31 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   const currencyCode = organization?.currency || 'USD';
   const currencySymbol = getCurrencySymbol(currencyCode);
 
+  const summaryData = useMemo(() => {
+    const summary = project.items.reduce((acc, item) => {
+        let typeName = item.type.charAt(0).toUpperCase() + item.type.slice(1);
+        if (item.type === 'plate') typeName = 'Plate (Q)';
+        if (item.type === 'plate-imperial') typeName = 'Plate (NQ)';
 
-  const weightByType = project.items.reduce((acc, item) => {
-    let typeName = item.type.charAt(0).toUpperCase() + item.type.slice(1);
-    if(item.type === 'plate') typeName = 'Plate (Q)';
-    if(item.type === 'plate-imperial') typeName = 'Plate (NQ)';
+        if (!acc[typeName]) {
+            acc[typeName] = { weight: 0, cost: 0, count: 0 };
+        }
+        acc[typeName].weight += item.weight * item.quantity;
+        acc[typeName].cost += (item.cost || 0) * item.quantity;
+        acc[typeName].count++;
+        return acc;
+    }, {} as Record<string, { weight: number, cost: number, count: number }>);
 
-    if (!acc[typeName]) {
-      acc[typeName] = 0;
-    }
-    acc[typeName] += item.weight * item.quantity;
-    return acc;
-  }, {} as Record<string, number>) || {};
-
-  const chartData = Object.entries(weightByType).map(([type, weight], index) => ({
-    type: type,
-    weight: parseFloat(weight.toFixed(2)),
-    fill: CHART_COLORS[index % CHART_COLORS.length],
-  }));
+    return Object.entries(summary).map(([type, data], index) => {
+        const avgPricePerKg = data.weight > 0 && hasCost ? data.cost / data.weight : null;
+        return {
+            type,
+            weight: parseFloat(data.weight.toFixed(2)),
+            avgPricePerKg: avgPricePerKg ? parseFloat(avgPricePerKg.toFixed(2)) : null,
+            fill: CHART_COLORS[index % CHART_COLORS.length],
+        };
+    });
+  }, [project.items, hasCost]);
 
   const handleAddItem = async (item: Omit<SteelItem, 'id'>) => {
     try {
@@ -598,23 +605,30 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 )}
                </div>
 
-              {chartData.length > 0 && <hr />}
+              {summaryData.length > 0 && <hr />}
 
               <div className="grid gap-2">
-                {chartData.map((item, index) => (
-                  <div key={index} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.fill }} />
-                          <span>{item.type}</span>
+                  {summaryData.map((item, index) => (
+                      <div key={index} className="border p-2 rounded-md">
+                          <div className="flex items-center justify-between text-sm">
+                              <div className="flex items-center gap-2">
+                                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.fill }} />
+                                  <span className="font-semibold">{item.type}</span>
+                              </div>
+                              <span className="font-medium">{numberFormat(item.weight)} kg</span>
+                          </div>
+                          {item.avgPricePerKg !== null && (
+                              <div className="flex items-center justify-end text-xs text-muted-foreground mt-1">
+                                  <span>{currencySymbol}{numberFormat(item.avgPricePerKg)}/kg</span>
+                              </div>
+                          )}
                       </div>
-                      <span className="font-medium">{numberFormat(item.weight)} kg</span>
-                  </div>
-                ))}
+                  ))}
               </div>
 
-              {chartData.length > 0 && <hr />}
+              {summaryData.length > 0 && <hr />}
               
-              <ProjectSummaryChart data={chartData} />
+              <ProjectSummaryChart data={summaryData} />
             </CardContent>
             <CardFooter>
               <Button

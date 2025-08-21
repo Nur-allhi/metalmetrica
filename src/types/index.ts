@@ -37,6 +37,7 @@ export type SteelItem = SteelPlate | SteelGirder | SteelPipe;
 
 export interface Project {
   id: string;
+  userId: string;
   name: string;
   customer: string;
   projectId: string;

@@ -1,3 +1,4 @@
+
 export interface Organization {
   name: string;
   logoUrl?: string;
@@ -23,7 +24,10 @@ export interface SteelPlate extends BaseSteelItem {
 export interface SteelGirder extends BaseSteelItem {
     type: "girder";
     length: number;
-    profile: string;
+    flangeWidth: number;
+    flangeThickness: number;
+    webWidth: number;
+    webHeight: number;
 }
 
 export interface SteelPipe extends BaseSteelItem {

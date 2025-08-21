@@ -1,10 +1,11 @@
+
 "use client"
 
 import React from 'react';
 import Image from 'next/image';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import type { Project, Organization, SteelItem, SteelPlate, SteelPipe } from '@/types';
+import type { Project, Organization, SteelItem, SteelPlate, SteelPipe, SteelGirder } from '@/types';
 
 interface ProjectReportProps {
     project: Project;
@@ -20,7 +21,8 @@ const renderItemDimensions = (item: SteelItem) => {
             const pipe = item as SteelPipe;
             return `Ø${pipe.outerDiameter} x ${pipe.wallThickness}mm (L: ${pipe.length}mm)`;
         case 'girder':
-            return item.profile;
+             const girder = item as SteelGirder;
+            return `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webWidth}`;
         default:
             return '';
     }

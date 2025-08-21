@@ -197,7 +197,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                         <SelectContent>
                             <SelectItem value="plate">Steel Plate</SelectItem>
                             <SelectItem value="pipe">Steel Pipe</SelectItem>
-                            <SelectItem value="girder" disabled>Girder (coming soon)</SelectItem>
+                            <SelectItem value="girder" disabled>Girder</SelectItem>
                         </SelectContent>
                     </Select>
                     <FormMessage />

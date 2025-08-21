@@ -48,11 +48,6 @@ export default function Header({}: HeaderProps) {
           <h1 className="text-xl font-bold">MetalMetrica</h1>
         </div>
         <div className="ml-auto flex items-center gap-4">
-           <Link href="/settings">
-             <Button variant="ghost" size="icon">
-                <Settings className="h-5 w-5" />
-             </Button>
-           </Link>
         </div>
       </header>
       <SaveProgressDialog 

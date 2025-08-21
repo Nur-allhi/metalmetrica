@@ -46,34 +46,37 @@ export default function Home() {
     }
   }, [organization, authLoading]);
 
-  // Fetch projects
+  // Fetch projects and manage active project
   useEffect(() => {
     if (user) {
       setLoading(true);
       const unsubscribe = getProjects(user.uid, (fetchedProjects) => {
         setProjects(fetchedProjects);
         
-        // If there's an active project, find its updated version
-        if (activeProject) {
-            const refreshedProject = fetchedProjects.find(p => p.id === activeProject.id) || null;
-            setActiveProject(refreshedProject);
-        }
+        setActiveProject(prevActiveProject => {
+            // If there was an active project, find its updated version
+            if (prevActiveProject) {
+                const refreshedProject = fetchedProjects.find(p => p.id === prevActiveProject.id);
+                return refreshedProject || null;
+            }
+            // If there was no active project, but now there are projects, set the first one as active
+            if (fetchedProjects.length > 0) {
+                return fetchedProjects[0];
+            }
+            // Otherwise, there's no active project
+            return null;
+        });
         
         setLoading(false);
       });
       return () => unsubscribe();
+    } else if (!authLoading) {
+      // Handle case where there is no user
+      setProjects([]);
+      setActiveProject(null);
+      setLoading(false);
     }
-  }, [user, activeProject?.id]);
-
-  // Set initial active project
-  useEffect(() => {
-    if (!loading && projects.length > 0 && !activeProject) {
-        setActiveProject(projects[0]);
-    }
-    if (!loading && projects.length === 0) {
-        setActiveProject(null);
-    }
-  }, [loading, projects]);
+  }, [user, authLoading]);
 
   
   const handleAddProject = async (data: { name: string; customer: string; }) => {

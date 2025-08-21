@@ -19,8 +19,9 @@ import type { Project, Organization, SteelItem, SteelPlate, SteelPipe, SteelGird
 import AddItemDialog from './add-item-dialog';
 import EditProjectDialog from './edit-project-dialog';
 import DeleteItemDialog from './delete-item-dialog';
+import EditItemDialog from './edit-item-dialog';
 import AdditionalCostsDialog from './additional-costs-dialog';
-import { addItemToProject as addItemToProjectDb, deleteItemFromProject as deleteItemFromProjectDb, updateProject as updateProjectDb } from '@/services/firestore';
+import { addItemToProject as addItemToProjectDb, deleteItemFromProject as deleteItemFromProjectDb, updateItemInProject as updateItemInProjectDb, updateProject as updateProjectDb } from '@/services/firestore';
 import { useToast } from "@/hooks/use-toast";
 import ProjectSummaryChart from './project-summary-chart';
 import { CHART_COLORS } from '@/lib/constants';
@@ -76,7 +77,7 @@ const getItemTypeLabel = (type: SteelItem['type']) => {
 }
 
 
-const ItemCard = ({ item, onDelete, organization }: { item: SteelItem, onDelete: () => void, organization: Organization | null }) => {
+const ItemCard = ({ item, onDelete, onEdit, organization }: { item: SteelItem, onDelete: () => void, onEdit: () => void, organization: Organization | null }) => {
     const girder = item as SteelGirder;
     const hasCost = item.cost !== null;
     
@@ -97,9 +98,14 @@ const ItemCard = ({ item, onDelete, organization }: { item: SteelItem, onDelete:
                         <h3 className="font-semibold">{item.name}</h3>
                         <Badge variant="secondary" className="mt-1">{getItemTypeLabel(item.type)}</Badge>
                     </div>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 -mt-2" onClick={onDelete}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
+                    <div className="flex">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onEdit}>
+                            <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onDelete}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                    </div>
                 </div>
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">{renderItemDimensions(item)}</p>
 
@@ -168,6 +174,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   const [isEditProjectDialogOpen, setEditProjectDialogOpen] = useState(false);
   const [isCostsDialogOpen, setCostsDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<SteelItem | null>(null);
+  const [itemToEdit, setItemToEdit] = useState<SteelItem | null>(null);
   const { toast } = useToast();
   
   const handleGeneratePdf = (additionalCosts: AdditionalCost[] = []) => {
@@ -496,6 +503,25 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     }
   };
 
+  const handleEditItem = async (updatedItem: SteelItem) => {
+    if (!itemToEdit) return;
+    try {
+      await updateItemInProjectDb(project.id, itemToEdit, updatedItem);
+      toast({
+        title: "Item Updated",
+        description: `${updatedItem.name} has been updated.`,
+      });
+      setItemToEdit(null);
+    } catch (error) {
+      console.error("Error updating item:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update item.",
+        variant: "destructive",
+      });
+    }
+  }
+
   const handleEditProject = async (data: { name: string; customer: string; }) => {
     try {
         await updateProjectDb(project.id, data);
@@ -572,7 +598,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                   <ScrollArea className="flex-1 -mr-4 pr-4">
                       <div className="grid gap-4 md:grid-cols-2">
                           {project.items.map((item) => (
-                          <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} organization={organization} />
+                          <ItemCard key={item.id} item={item} onEdit={() => setItemToEdit(item)} onDelete={() => setItemToDelete(item)} organization={organization} />
                           ))}
                       </div>
                   </ScrollArea>
@@ -649,6 +675,12 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
           open={isAddItemDialogOpen}
           onOpenChange={setAddItemDialogOpen}
           onAddItem={handleAddItem}
+      />
+       <EditItemDialog
+          open={!!itemToEdit}
+          onOpenChange={(open) => !open && setItemToEdit(null)}
+          onEditItem={handleEditItem}
+          item={itemToEdit}
       />
       <EditProjectDialog
           open={isEditProjectDialogOpen}

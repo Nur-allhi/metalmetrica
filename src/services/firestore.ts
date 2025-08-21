@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -13,6 +14,7 @@ import {
   getDoc,
   arrayUnion,
   arrayRemove,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { Project, SteelItem } from "@/types";
@@ -57,6 +59,25 @@ export const addItemToProject = async (projectId: string, item: Omit<SteelItem, 
         items: arrayUnion(newItem)
     });
 };
+
+export const updateItemInProject = async (projectId: string, originalItem: SteelItem, updatedItem: SteelItem) => {
+    const projectRef = doc(db, "projects", projectId);
+    
+    // Firestore doesn't support updating a specific array element directly by value if it's an object.
+    // The standard approach is to remove the old item and add the new one.
+    // This is best done in a transaction or a batch write to ensure atomicity.
+    const batch = writeBatch(db);
+
+    batch.update(projectRef, {
+        items: arrayRemove(originalItem)
+    });
+
+    batch.update(projectRef, {
+        items: arrayUnion(updatedItem)
+    });
+    
+    await batch.commit();
+}
 
 export const deleteItemFromProject = async (projectId: string, itemToDelete: SteelItem) => {
     const projectRef = doc(db, "projects", projectId);

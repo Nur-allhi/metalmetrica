@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -311,29 +309,26 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         const rightAlignBold = { halign: 'right', fontStyle: 'bold' };
 
         if (hasCost && subTotalCost !== null) {
-            const subTotalRow = [
-                { content: '', colSpan: 4 },
-                { content: 'Sub-Total', styles: rightAlignBold },
+             const subTotalRow = [
+                { content: 'Sub-Total', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
                 { content: `${numberFormat(totalWeight)}\nkg`, styles: rightAlignBold },
                 { content: `${numberFormat(subTotalCost)}\n${currencySymbol}`, styles: rightAlignBold },
             ];
             footerRows.push(subTotalRow);
         } else {
              const subTotalRow = [
-                { content: '', colSpan: 4 },
-                { content: 'Sub-Total', styles: rightAlignBold },
+                { content: 'Sub-Total', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
                 { content: `${numberFormat(totalWeight)}\nkg`, styles: rightAlignBold },
             ];
-            if (hasCost) footerRows.push('');
-            footerRows.push(subTotalRow);
+             if (hasCost) footerRows.push({content: ''});
+             footerRows.push(subTotalRow);
         }
         
         let grandTotal = subTotalCost;
         if (hasCost && grandTotal !== null) {
             additionalCosts.forEach(cost => {
                 const additionalCostRow = [
-                   { content: '', colSpan: 4},
-                   { content: cost.description, styles: { halign: 'right' } },
+                   { content: cost.description, colSpan: 4, styles: { halign: 'right' } },
                    '',
                    { content: `${numberFormat(cost.amount)}\n${currencySymbol}`, styles: { halign: 'right' } }
                 ];
@@ -345,8 +340,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
             if(additionalCosts.length > 0) {
                  const grandTotalRow = [
-                    { content: '', colSpan: 4 },
-                    { content: 'Grand Total', styles: rightAlignBold },
+                    { content: 'Grand Total', colSpan: 4, styles: rightAlignBold },
                     '',
                     { content: `${numberFormat(grandTotal)}\n${currencySymbol}`, styles: rightAlignBold },
                  ]
@@ -390,11 +384,11 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             columnStyles: {
               0: { halign: 'center', cellWidth: '6%' },    // S.No
               1: { cellWidth: 'auto' },  // Name & Dims
-              2: { halign: 'right', cellWidth: '12%' },  // Unit Wt
-              3: { halign: 'right', cellWidth: '12%' },  // Unit Cost
+              2: { halign: 'right', cellWidth: '13%' },  // Unit Wt
+              3: { halign: 'right', cellWidth: '13%' },  // Unit Cost
               4: { halign: 'center', cellWidth: '8%' },   // Qty
-              5: { halign: 'right', cellWidth: '12%' },  // Total Wt
-              6: { halign: 'right', cellWidth: '12%' },  // Total Cost
+              5: { halign: 'right', cellWidth: '13%' },  // Total Wt
+              6: { halign: 'right', cellWidth: '13%' },  // Total Cost
             },
             didDrawPage: (data: any) => {
                 currentY = data.cursor.y;
@@ -416,7 +410,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             doc.setFont("helvetica", "bold");
             doc.text("Terms & Conditions", pageMargin, currentY);
             currentY += 5;
-            doc.setFontSize(8);
+            doc.setFontSize(10);
             doc.setFont("helvetica", "normal");
             doc.text(organization.termsAndConditions, pageMargin, currentY, { maxWidth: pageWidth - pageMargin * 2 });
         }

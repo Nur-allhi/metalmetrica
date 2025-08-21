@@ -18,12 +18,12 @@ import {
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import SaveProgressDialog from "./save-progress-dialog";
+import Link from "next/link";
 
 interface HeaderProps {
-  onSettingsClick: () => void;
 }
 
-export default function Header({ onSettingsClick }: HeaderProps) {
+export default function Header({}: HeaderProps) {
   const { user, signInWithGoogle, logout } = useAuth();
   const [isSaveDialogOpen, setSaveDialogOpen] = useState(false);
 
@@ -49,7 +49,11 @@ export default function Header({ onSettingsClick }: HeaderProps) {
           <h1 className="text-xl font-bold">MetalMetrica</h1>
         </div>
         <div className="ml-auto flex items-center gap-4">
-          
+           <Link href="/settings">
+             <Button variant="ghost" size="icon">
+                <Settings className="h-5 w-5" />
+             </Button>
+           </Link>
         </div>
       </header>
       <SaveProgressDialog 

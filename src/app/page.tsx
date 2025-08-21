@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "@/components/header";
-import OrganizationSetupDialog from "@/components/organization-setup-dialog";
 import CalculatorCard from "@/components/calculator-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProjectSidebar from "@/components/project-sidebar";
@@ -26,15 +25,16 @@ import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarTrigger 
 import AddProjectDialog from "@/components/add-project-dialog";
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/logo";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
   const [organization, setOrganization] = useLocalStorage<Organization | null>(
     "metalmetrica-org",
     null
   );
-  const [isOrgSetupOpen, setOrgSetupOpen] = useState(false);
   const [isAddProjectDialogOpen, setAddProjectDialogOpen] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
@@ -43,9 +43,9 @@ export default function Home() {
   useEffect(() => {
     // Only prompt for org setup if a user is logged in
     if (!authLoading && user && !organization) {
-      setOrgSetupOpen(true);
+      router.push('/settings');
     }
-  }, [organization, authLoading, user]);
+  }, [organization, authLoading, user, router]);
 
   // Fetch projects and manage active project
   useEffect(() => {
@@ -146,12 +146,11 @@ export default function Home() {
                       activeProject={activeProject}
                       onProjectSelect={setActiveProject}
                       onAddProject={() => setAddProjectDialogOpen(true)}
-                      onSettingsClick={() => setOrgSetupOpen(true)}
                       loading={loading}
                   />
               </Sidebar>
               <SidebarInset>
-                  <Header onSettingsClick={() => setOrgSetupOpen(true)} />
+                  <Header />
                   <main className="flex flex-1 flex-col gap-4 p-4 sm:p-4 md:p-6 overflow-hidden">
                       <Tabs defaultValue="projects" className="flex-1 flex flex-col overflow-hidden h-full">
                         <div className="flex items-center">
@@ -175,15 +174,6 @@ export default function Home() {
           </div>
       </SidebarProvider>
 
-      <OrganizationSetupDialog
-        open={isOrgSetupOpen}
-        onOpenChange={setOrgSetupOpen}
-        onSave={(org) => {
-            setOrganization(org);
-            setOrgSetupOpen(false);
-        }}
-        organization={organization}
-      />
       <AddProjectDialog
         open={isAddProjectDialogOpen}
         onOpenChange={setAddProjectDialogOpen}

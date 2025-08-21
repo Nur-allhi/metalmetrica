@@ -2,7 +2,7 @@
 "use client";
 
 import React, {useState} from 'react';
-import Image from "next/image";
+import Link from 'next/link';
 import { Plus, Settings, LogIn, LogOut, LayoutGrid, ChevronsUpDown, Search, Folder, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/components/auth-provider';
 import { Button } from '@/components/ui/button';
@@ -28,11 +28,10 @@ interface ProjectSidebarProps {
     activeProject: Project | null;
     onProjectSelect: (project: Project) => void;
     onAddProject: () => void;
-    onSettingsClick: () => void;
     loading: boolean;
 }
 
-export default function ProjectSidebar({ projects, activeProject, onProjectSelect, onAddProject, onSettingsClick, loading }: ProjectSidebarProps) {
+export default function ProjectSidebar({ projects, activeProject, onProjectSelect, onAddProject, loading }: ProjectSidebarProps) {
     const { user, signInWithGoogle, logout } = useAuth();
     const [isSaveDialogOpen, setSaveDialogOpen] = useState(false);
     
@@ -80,7 +79,7 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                             <AccordionTrigger asChild>
                                 <SidebarMenuButton>
                                     <Folder />
-                                    <span className="flex-1 text-left">Projects</span>
+                                    <span>Projects</span>
                                     <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 group-data-[disabled]:opacity-0 group-data-[state=open]:rotate-180" />
                                 </SidebarMenuButton>
                             </AccordionTrigger>
@@ -126,9 +125,11 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                             <AccordionContent className="pl-4 pt-1">
                                 <SidebarMenu>
                                     <SidebarMenuItem>
-                                        <SidebarMenuButton onClick={onSettingsClick} className="text-xs">
-                                            General
-                                        </SidebarMenuButton>
+                                        <Link href="/settings" passHref legacyBehavior>
+                                            <SidebarMenuButton asChild className="text-xs">
+                                                <a>General</a>
+                                            </SidebarMenuButton>
+                                        </Link>
                                     </SidebarMenuItem>
                                 </SidebarMenu>
                             </AccordionContent>

@@ -1,11 +1,11 @@
 
 "use client";
 
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Plus, Download, Trash2, Edit } from "lucide-react";
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import { Button, buttonVariants } from "@/components/ui/button";
+import 'jspdf-autotable';
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -23,8 +23,7 @@ import { addItemToProject as addItemToProjectDb, deleteItemFromProject as delete
 import { useToast } from "@/hooks/use-toast";
 import ProjectSummaryChart from './project-summary-chart';
 import { CHART_COLORS } from '@/lib/constants';
-import ProjectReport from './project-report';
-import { cn, getCurrencySymbol } from '@/lib/utils';
+import { getCurrencySymbol } from '@/lib/utils';
 import { ScrollArea } from './ui/scroll-area';
 
 interface ProjectViewProps {
@@ -57,21 +56,29 @@ const renderItemDimensions = (item: SteelItem) => {
     }
 };
 
+const getItemTypeLabel = (type: SteelItem['type']) => {
+    switch (type) {
+        case 'plate':
+            return 'Steel Plate (Quality)';
+        case 'plate-imperial':
+            return 'Steel Plate (Non-Quality)';
+        case 'pipe':
+            return 'Steel Pipe';
+        case 'girder':
+            return 'Steel Girder';
+        case 'circular':
+            return 'Circular Section';
+        default:
+            const itemType = type as string;
+            return itemType.charAt(0).toUpperCase() + itemType.slice(1);
+    }
+}
+
+
 const ItemCard = ({ item, onDelete, currencySymbol }: { item: SteelItem, onDelete: () => void, currencySymbol: string }) => {
     const girder = item as SteelGirder;
     const hasCost = item.cost !== null;
     const pricePerKg = hasCost && item.weight > 0 ? item.cost! / item.weight : null;
-
-    const getItemTypeLabel = (type: SteelItem['type']) => {
-        switch (type) {
-            case 'plate':
-                return 'Steel Plate (Quality)';
-            case 'plate-imperial':
-                return 'Steel Plate (Non-Quality)';
-            default:
-                return type.charAt(0).toUpperCase() + type.slice(1);
-        }
-    }
 
     const numberFormat = (value: number) => {
         return value.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
@@ -158,59 +165,183 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   const { toast } = useToast();
   const currencySymbol = getCurrencySymbol(organization?.currency);
   
-  const reportRef = useRef<HTMLDivElement>(null);
-
   const handleGeneratePdf = () => {
-    const input = reportRef.current;
-    if (!input) {
-      toast({
-        title: "Error",
-        description: "Could not generate report.",
-        variant: "destructive",
-      });
-      return;
+    const doc = new jsPDF();
+    
+    const numberFormat = (value: number) => value.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+    
+    // Margins
+    const pageMargin = 15;
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let currentY = pageMargin;
+
+    // Logo
+    if (organization?.logoUrl) {
+        // This is a simplified image handler. It requires CORS to be enabled on the image server.
+        // For a real app, you might proxy the image or use a base64 string.
+        try {
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.src = organization.logoUrl;
+            img.onload = () => {
+                 doc.addImage(img, 'PNG', pageWidth - pageMargin - 30, pageMargin, 30, 15);
+                 generateHeaderAndContent();
+                 finalizePdf();
+            }
+            img.onerror = () => {
+                console.error("Could not load image for PDF");
+                generateHeaderAndContent();
+                finalizePdf();
+            }
+        } catch (e) {
+            console.error("Error with image for PDF:", e);
+            generateHeaderAndContent();
+            finalizePdf();
+        }
+    } else {
+        generateHeaderAndContent();
+        finalizePdf();
     }
 
-    html2canvas(input, { scale: 3, useCORS: true })
-      .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
-        const ratio = canvasWidth / pdfWidth;
-        const pageHeight = canvasHeight / ratio;
-        
-        let heightLeft = pageHeight;
-        let position = 0;
-        
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pageHeight, undefined, 'FAST');
-        heightLeft -= pdfHeight;
 
-        while (heightLeft > 0) {
-          position = heightLeft - pageHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pageHeight, undefined, 'FAST');
-          heightLeft -= pdfHeight;
+    function generateHeaderAndContent() {
+        // Header
+        doc.setFontSize(22);
+        doc.setFont("helvetica", "bold");
+        doc.text(organization?.name || "MetalMetrica", pageMargin, currentY);
+        currentY += 8;
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        if(organization?.address) {
+            doc.text(organization.address, pageMargin, currentY);
+            currentY += 5;
         }
+        if(organization?.email) {
+            doc.text(`Email: ${organization.email}`, pageMargin, currentY);
+        }
+         if(organization?.contactNumber) {
+            doc.text(`Contact: ${organization.contactNumber}`, pageMargin + 60, currentY);
+        }
+        currentY += 5;
 
-        pdf.save(`${project.name}-report.pdf`);
-         toast({
+        doc.setLineWidth(0.5);
+        doc.line(pageMargin, currentY, pageWidth - pageMargin, currentY);
+        currentY += 10;
+        
+        // Project Details
+        doc.setFontSize(10);
+        doc.text(`Project Name: ${project.name}`, pageMargin, currentY);
+        doc.text(`Report Date: ${new Date().toLocaleDateString()}`, pageWidth / 2, currentY);
+        currentY += 5;
+        doc.text(`Client: ${project.customer}`, pageMargin, currentY);
+        doc.text(`Project ID: ${project.projectId}`, pageWidth / 2, currentY);
+        currentY += 10;
+
+        // Table
+        const hasCost = project.items.some(item => item.cost !== null);
+
+        const head = [
+            [
+                'Item Type', 
+                'Name & Dimensions', 
+                'Unit Wt(kg)', 
+                ...(hasCost ? [`Unit Cost (${currencySymbol})`] : []),
+                'Qty', 
+                'Total Wt(kg)', 
+                ...(hasCost ? [`Total Cost (${currencySymbol})`] : [])
+            ]
+        ];
+
+        const body = project.items.map(item => {
+            const totalWeight = item.weight * item.quantity;
+            const totalCost = item.cost !== null ? item.cost * item.quantity : null;
+            
+            let dimensions = renderItemDimensions(item);
+            if (item.type === 'girder') {
+                const girder = item as SteelGirder;
+                dimensions += `\nFlange Wt: ${numberFormat(girder.flangeWeight!)} kg | Web Wt: ${numberFormat(girder.webWeight!)} kg`;
+            }
+
+            const row = [
+                { content: getItemTypeLabel(item.type) },
+                { content: `${item.name}\n${dimensions}` },
+                { content: numberFormat(item.weight), styles: { halign: 'right' } },
+                ...(hasCost ? [{ content: item.cost !== null ? numberFormat(item.cost) : 'N/A', styles: { halign: 'right' } }] : []),
+                { content: item.quantity, styles: { halign: 'center' } },
+                { content: numberFormat(totalWeight), styles: { halign: 'right' } },
+                ...(hasCost ? [{ content: totalCost !== null ? numberFormat(totalCost) : 'N/A', styles: { halign: 'right' } }] : []),
+            ];
+            return row;
+        });
+        
+        const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0);
+        const totalCost = hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null;
+        
+        const totalRow = [
+             { content: 'Project Totals', colSpan: hasCost ? 4 : 3, styles: { halign: 'right', fontStyle: 'bold', fontSize: 12 } },
+             {},
+             {},
+             ...(hasCost ? [{}] : []),
+             { content: numberFormat(totalWeight) + ' kg', styles: { halign: 'right', fontStyle: 'bold', fontSize: 12 } },
+             ...(hasCost ? [{ content: currencySymbol + numberFormat(totalCost!), styles: { halign: 'right', fontStyle: 'bold', fontSize: 12 } }] : []),
+        ];
+        
+        body.push(totalRow as any);
+        
+        (doc as any).autoTable({
+            startY: currentY,
+            head: head,
+            body: body,
+            theme: 'grid',
+            headStyles: {
+                fillColor: [22, 163, 74], // green-600
+                textColor: 255,
+                fontStyle: 'bold',
+            },
+             footStyles: {
+                fontStyle: 'bold',
+                fillColor: [240, 240, 240]
+            },
+            styles: {
+                cellPadding: 2,
+                fontSize: 8,
+                overflow: 'linebreak'
+            },
+            didDrawPage: (data: any) => {
+                currentY = data.cursor.y;
+            }
+        });
+
+        // Terms and Conditions
+        if (organization?.termsAndConditions) {
+            const termsHeight = doc.getTextDimensions(organization.termsAndConditions, { maxWidth: pageWidth - pageMargin * 2 }).h;
+            if (currentY + termsHeight + 20 > pageHeight) {
+                doc.addPage();
+                currentY = pageMargin;
+            }
+            currentY += 10;
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.text("Terms & Conditions", pageMargin, currentY);
+            currentY += 5;
+            doc.setFontSize(8);
+            doc.setFont("helvetica", "normal");
+            doc.text(organization.termsAndConditions, pageMargin, currentY, { maxWidth: pageWidth - pageMargin * 2 });
+        }
+    }
+
+
+    function finalizePdf() {
+        doc.save(`${project.name}-report.pdf`);
+        toast({
             title: "Report Generated",
             description: "Your PDF report has been downloaded.",
         });
-      })
-      .catch(err => {
-        console.error("Error generating PDF:", err);
-        toast({
-            title: "Error",
-            description: "Failed to generate PDF report.",
-            variant: "destructive",
-        });
-      });
+    }
   };
+
 
   const numberFormat = (value: number) => {
     return value.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
@@ -299,11 +430,6 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
   return (
     <>
-      <div style={{ position: 'fixed', left: '-9999px', top: 0, width: '210mm' }}>
-        {project && (
-          <ProjectReport ref={reportRef} project={project} organization={organization} />
-        )}
-      </div>
       <div className="grid auto-rows-max items-start gap-4 lg:grid-cols-3 lg:gap-8 w-full h-full overflow-hidden">
         <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 h-full overflow-hidden flex-col flex">
           <Card>

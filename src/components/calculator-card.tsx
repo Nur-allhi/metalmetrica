@@ -137,6 +137,12 @@ interface CalculationResult {
   weightPerPiece: number;
   costPerPiece: number | null;
   unit: 'kg' | 'lbs';
+  // Girder specific
+  flangeWeight?: number;
+  webWeight?: number;
+  flangeRunningFeet?: number;
+  webRunningFeet?: number;
+  quantity: number;
 }
 
 export default function CalculatorCard() {
@@ -191,6 +197,7 @@ export default function CalculatorCard() {
     const density = STEEL_DENSITIES.MS;
 
     let weightKg = 0;
+    let girderDetails: Partial<CalculationResult> = {};
 
     if (data.type === "plate" && data.length && data.width && data.thickness) {
         const { length, width, thickness } = data;
@@ -211,11 +218,19 @@ export default function CalculatorCard() {
     } else if (data.type === "girder" && data.length && data.flangeWidth && data.flangeThickness && data.webHeight && data.webThickness) {
         const { length, flangeWidth, flangeThickness, webHeight, webThickness } = data;
         const MM_TO_M = 1 / 1000;
+        const MM_TO_FT = 1 / 304.8;
+        
         const flangeVolumeM3 = (flangeWidth * MM_TO_M) * (flangeThickness * MM_TO_M) * (length * MM_TO_M) * 2;
         const webVolumeM3 = (webHeight * MM_TO_M) * (webThickness * MM_TO_M) * (length * MM_TO_M);
+
         const flangeWeight = flangeVolumeM3 * density;
         const webWeight = webVolumeM3 * density;
         weightKg = flangeWeight + webWeight;
+
+        const flangeRunningFeet = (length * MM_TO_FT * flangeWidth * 2) / 12;
+        const webRunningFeet = (length * MM_TO_FT * webHeight) / 12;
+        
+        girderDetails = { flangeWeight, webWeight, flangeRunningFeet, webRunningFeet };
     } else if (data.type === "circular" && data.thickness && data.diameter) {
         const { thickness, diameter, innerDiameter } = data;
         const thicknessM = thickness / 1000;
@@ -237,7 +252,9 @@ export default function CalculatorCard() {
         totalCost: costPerPiece !== null ? costPerPiece * quantity : null,
         weightPerPiece: weightKg,
         costPerPiece: costPerPiece,
-        unit: itemType === 'plate-imperial' ? 'lbs' : 'kg'
+        unit: itemType === 'plate-imperial' ? 'lbs' : 'kg',
+        quantity,
+        ...girderDetails
     });
   }
   
@@ -474,20 +491,23 @@ export default function CalculatorCard() {
                     <CardHeader className='pb-4'>
                         <CardTitle className='text-xl'>Calculation Result</CardTitle>
                     </CardHeader>
-                    <CardContent className="grid grid-cols-2 gap-4 text-center">
-                        <div>
-                            <p className="text-sm text-muted-foreground">Total Weight</p>
-                            <p className="text-2xl font-bold">
-                                {(result.unit === 'lbs' ? result.totalWeight * KG_TO_LBS : result.totalWeight).toFixed(2)} {result.unit}
-                            </p>
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4 text-center">
+                            <div>
+                                <p className="text-sm text-muted-foreground">Total Weight</p>
+                                <p className="text-2xl font-bold">
+                                    {(result.unit === 'lbs' ? result.totalWeight * KG_TO_LBS : result.totalWeight).toFixed(2)} {result.unit}
+                                </p>
+                            </div>
+                             <div>
+                                <p className="text-sm text-muted-foreground">Total Cost</p>
+                                <p className="text-2xl font-bold text-green-600">
+                                    {result.totalCost !== null ? `$${result.totalCost.toFixed(2)}` : 'N/A'}
+                                </p>
+                            </div>
                         </div>
-                         <div>
-                            <p className="text-sm text-muted-foreground">Total Cost</p>
-                            <p className="text-2xl font-bold text-green-600">
-                                {result.totalCost !== null ? `$${result.totalCost.toFixed(2)}` : 'N/A'}
-                            </p>
-                        </div>
-                         <div className="col-span-2 border-t pt-4 grid grid-cols-2 gap-4">
+
+                         <div className="border-t pt-4 grid grid-cols-2 gap-4 text-center">
                             <div>
                                 <p className="text-sm text-muted-foreground">Weight / piece</p>
                                 <p className="text-lg font-semibold">
@@ -501,6 +521,15 @@ export default function CalculatorCard() {
                                 </p>
                             </div>
                          </div>
+                         
+                         {itemType === 'girder' && result.flangeWeight !== undefined && (
+                            <div className="border-t pt-4 text-sm text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-1">
+                                <p>Flange Wt:</p><p className="text-right font-medium text-foreground">{(result.flangeWeight).toFixed(2)} kg (Total: {(result.flangeWeight * result.quantity).toFixed(2)} kg)</p>
+                                <p>Web Wt:</p><p className="text-right font-medium text-foreground">{(result.webWeight!).toFixed(2)} kg (Total: {(result.webWeight! * result.quantity).toFixed(2)} kg)</p>
+                                <p>Flange Running Ft:</p><p className="text-right font-medium text-foreground">{(result.flangeRunningFeet!).toFixed(2)} (Total: {(result.flangeRunningFeet! * result.quantity).toFixed(2)})</p>
+                                <p>Web Running Ft:</p><p className="text-right font-medium text-foreground">{(result.webRunningFeet!).toFixed(2)} (Total: {(result.webRunningFeet! * result.quantity).toFixed(2)})</p>
+                            </div>
+                         )}
                     </CardContent>
                 </Card>
                )}
@@ -515,3 +544,5 @@ export default function CalculatorCard() {
     </Card>
   );
 }
+
+    

@@ -593,8 +593,8 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
   return (
     <>
-      <div className="grid auto-rows-max items-start gap-4 lg:grid-cols-3 lg:gap-8 w-full h-full overflow-hidden">
-        <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 h-full overflow-hidden flex-col flex">
+      <div className="grid auto-rows-max items-start gap-4 lg:grid-cols-3 lg:gap-8 w-full h-full">
+        <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 h-full flex-col flex">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
@@ -625,7 +625,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             ) : (
                 <div className="flex-1 flex flex-col gap-4 overflow-hidden">
                   <ScrollArea className="flex-1 -mr-4 pr-4">
-                      <div className="grid gap-4 md:grid-cols-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {project.items.map((item) => (
                           <ItemCard key={item.id} item={item} onEdit={() => setItemToEdit(item)} onDelete={() => setItemToDelete(item)} organization={organization} />
                           ))}

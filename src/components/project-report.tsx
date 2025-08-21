@@ -72,10 +72,9 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                             <TableRow className="bg-gray-100">
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Item Name</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Dimensions / Profile</TableHead>
-                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Qty</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Unit Weight (kg)</TableHead>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Qty</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Unit Cost ($)</TableHead>
-                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Total Weight (kg)</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Total Cost ($)</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -86,17 +85,16 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                                     <TableCell>
                                         <span className="capitalize">{item.type}</span> - {renderItemDimensions(item)}
                                     </TableCell>
-                                    <TableCell className="text-center">{item.quantity}</TableCell>
                                     <TableCell className="text-center">{item.weight.toFixed(2)}</TableCell>
+                                    <TableCell className="text-center">{item.quantity}</TableCell>
                                     <TableCell className="text-center">{(item.cost || 0).toFixed(2)}</TableCell>
-                                    <TableCell className="text-center font-medium">{(item.weight * item.quantity).toFixed(2)}</TableCell>
                                     <TableCell className="text-center font-medium">{((item.cost || 0) * item.quantity).toFixed(2)}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                         <TableFooter>
                         <TableRow className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2 bg-gray-100">
-                            <TableCell colSpan={5} className="text-right font-bold text-lg">Project Totals</TableCell>
+                            <TableCell colSpan={4} className="text-right font-bold text-lg">Project Totals</TableCell>
                             <TableCell className="text-right font-bold text-lg">{totalWeight.toFixed(2)} kg</TableCell>
                             <TableCell className="text-right font-bold text-lg">${totalCost.toFixed(2)}</TableCell>
                         </TableRow>

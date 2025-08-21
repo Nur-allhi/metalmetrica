@@ -120,7 +120,7 @@ const ItemCard = ({ item, onDelete, currencySymbol }: { item: SteelItem, onDelet
                      {hasCost && (
                          <div>
                             <p className="text-muted-foreground">Price ({currencySymbol}/kg)</p>
-                            <p>{currencySymbol}{(pricePerKg || 0).toFixed(2)}</p>
+                            <p>{pricePerKg !== null ? `${currencySymbol}${pricePerKg.toFixed(2)}` : 'N/A'}</p>
                         </div>
                     )}
                     <div>
@@ -129,7 +129,7 @@ const ItemCard = ({ item, onDelete, currencySymbol }: { item: SteelItem, onDelet
                     </div>
                      <div>
                         <p className="text-muted-foreground">Unit Cost</p>
-                        <p>{currencySymbol}{(item.cost || 0).toFixed(2)}</p>
+                        <p>{hasCost ? `${currencySymbol}${item.cost!.toFixed(2)}` : 'N/A'}</p>
                     </div>
                      <div>
                         <p className="text-muted-foreground">Total Wt (kg)</p>
@@ -167,19 +167,36 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
       return;
     }
 
-    html2canvas(input, { scale: 3 })
+    html2canvas(input, { scale: 3, useCORS: true })
       .then((canvas) => {
         const imgData = canvas.toDataURL('image/jpeg', 0.9);
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
-        const ratio = canvasHeight / canvasWidth;
-        const pdfHeight = pdfWidth * ratio;
+        const ratio = canvasWidth / pdfWidth;
+        const pageHeight = canvasHeight / ratio;
         
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+        let heightLeft = pageHeight;
+        let position = 0;
         
+        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pageHeight, undefined, 'FAST');
+        heightLeft -= pdfHeight;
+
+        while (heightLeft > 0) {
+          position = heightLeft - pageHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pageHeight, undefined, 'FAST');
+          heightLeft -= pdfHeight;
+        }
+
         pdf.save(`${project.name}-report.pdf`);
+         toast({
+            title: "Report Generated",
+            description: "Your PDF report has been downloaded.",
+        });
       })
       .catch(err => {
         console.error("Error generating PDF:", err);
@@ -369,7 +386,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
       />
       <EditProjectDialog
           open={isEditProjectDialogOpen}
-          onOpenChange={setEditProjectDialogOpen}
+          onOpen-change={setEditProjectDialogOpen}
           onEditProject={handleEditProject}
           project={project}
       />

@@ -40,7 +40,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
     const totalCost = project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0);
 
     return (
-        <div ref={ref} className="bg-white p-8 font-sans text-sm">
+        <div ref={ref} className="bg-white p-8 font-sans text-sm text-gray-800">
             <header className="flex justify-between items-center mb-8 border-b pb-4">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-800">{organization.name}</h1>
@@ -70,21 +70,21 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Item Name</TableHead>
-                            <TableHead>Type</TableHead>
-                            <TableHead>Dimensions / Profile</TableHead>
-                            <TableHead className="text-right">Qty</TableHead>
-                            <TableHead className="text-right">Weight (kg)</TableHead>
-                            <TableHead className="text-right">Cost ($)</TableHead>
-                            <TableHead className="text-right">Total Weight (kg)</TableHead>
-                            <TableHead className="text-right">Total Cost ($)</TableHead>
+                            <TableHead className="text-gray-600">Item Name</TableHead>
+                            <TableHead className="text-gray-600">Type</TableHead>
+                            <TableHead className="text-gray-600">Dimensions / Profile</TableHead>
+                            <TableHead className="text-right text-gray-600">Qty</TableHead>
+                            <TableHead className="text-right text-gray-600">Weight (kg)</TableHead>
+                            <TableHead className="text-right text-gray-600">Cost ($)</TableHead>
+                            <TableHead className="text-right text-gray-600">Total Weight (kg)</TableHead>
+                            <TableHead className="text-right text-gray-600">Total Cost ($)</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {project.items.map(item => (
                             <TableRow key={item.id}>
                                 <TableCell className="font-medium">{item.name}</TableCell>
-                                <TableCell><Badge variant="secondary" className="capitalize">{item.type}</Badge></TableCell>
+                                <TableCell><Badge variant="outline" className="capitalize">{item.type}</Badge></TableCell>
                                 <TableCell>
                                     {renderItemDimensions(item)}
                                 </TableCell>

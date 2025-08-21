@@ -86,34 +86,26 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
                 <p className="text-sm text-muted-foreground">{renderItemDimensions(item)}</p>
 
                 {item.type === 'girder' && (
-                  <div className="text-xs text-muted-foreground border-t pt-2 space-y-1">
-                      <div className="flex justify-between items-center">
-                          <p className='font-medium'>Flange Weight</p>
-                          <div className='text-right'>
-                            <p className='font-semibold text-foreground'>{(girder.flangeWeight)?.toFixed(2)} kg/piece</p>
-                            <p className='font-semibold text-foreground'>Total: {(girder.flangeWeight! * item.quantity).toFixed(2)} kg</p>
-                          </div>
+                  <div className="border rounded-lg p-2 text-xs text-muted-foreground space-y-1">
+                      <div className="grid grid-cols-3 items-center">
+                          <p className='font-medium col-span-1'>Flange Weight</p>
+                          <p className='font-semibold text-foreground text-center col-span-1'>{(girder.flangeWeight)?.toFixed(2)} kg/p</p>
+                          <p className='font-semibold text-foreground text-right col-span-1'>T: {(girder.flangeWeight! * item.quantity).toFixed(2)} kg</p>
                       </div>
-                      <div className="flex justify-between items-center">
-                          <p className='font-medium'>Web Weight</p>
-                           <div className='text-right'>
-                            <p className='font-semibold text-foreground'>{(girder.webWeight)?.toFixed(2)} kg/piece</p>
-                            <p className='font-semibold text-foreground'>Total: {(girder.webWeight! * item.quantity).toFixed(2)} kg</p>
-                          </div>
+                      <div className="grid grid-cols-3 items-center">
+                          <p className='font-medium col-span-1'>Web Weight</p>
+                           <p className='font-semibold text-foreground text-center col-span-1'>{(girder.webWeight)?.toFixed(2)} kg/p</p>
+                           <p className='font-semibold text-foreground text-right col-span-1'>T: {(girder.webWeight! * item.quantity).toFixed(2)} kg</p>
                       </div>
-                      <div className="flex justify-between items-center">
-                          <p className='font-medium'>Flange Length (ft)</p>
-                          <div className='text-right'>
-                            <p className='font-semibold text-foreground'>{(girder.flangeRunningFeet)?.toFixed(2)} ft/piece</p>
-                            <p className='font-semibold text-foreground'>Total: {(girder.flangeRunningFeet! * item.quantity).toFixed(2)} ft</p>
-                          </div>
+                      <div className="grid grid-cols-3 items-center">
+                          <p className='font-medium col-span-1'>Flange (ft)</p>
+                          <p className='font-semibold text-foreground text-center col-span-1'>{(girder.flangeRunningFeet)?.toFixed(2)} ft/p</p>
+                          <p className='font-semibold text-foreground text-right col-span-1'>T: {(girder.flangeRunningFeet! * item.quantity).toFixed(2)} ft</p>
                       </div>
-                      <div className="flex justify-between items-center">
-                          <p className='font-medium'>Web Length (ft)</p>
-                          <div className='text-right'>
-                            <p className='font-semibold text-foreground'>{(girder.webRunningFeet)?.toFixed(2)} ft/piece</p>
-                            <p className='font-semibold text-foreground'>Total: {(girder.webRunningFeet! * item.quantity).toFixed(2)} ft</p>
-                          </div>
+                      <div className="grid grid-cols-3 items-center">
+                          <p className='font-medium col-span-1'>Web (ft)</p>
+                          <p className='font-semibold text-foreground text-center col-span-1'>{(girder.webRunningFeet)?.toFixed(2)} ft/p</p>
+                          <p className='font-semibold text-foreground text-right col-span-1'>T: {(girder.webRunningFeet! * item.quantity).toFixed(2)} ft</p>
                       </div>
                   </div>
                 )}

@@ -135,7 +135,7 @@ const ItemCard = ({ item, onDelete, organization }: { item: SteelItem, onDelete:
                      {hasCost && (
                          <div>
                             <p className="text-muted-foreground">Price ({currencyCode}/kg)</p>
-                            <p>{pricePerKg !== null ? `${currencyCode} ${numberFormat(pricePerKg)}` : 'N/A'}</p>
+                            <p>{pricePerKg !== null ? `${getCurrencySymbol(organization?.currency)}${numberFormat(pricePerKg)}` : 'N/A'}</p>
                         </div>
                     )}
                     <div>
@@ -144,7 +144,7 @@ const ItemCard = ({ item, onDelete, organization }: { item: SteelItem, onDelete:
                     </div>
                      <div>
                         <p className="text-muted-foreground">Unit Cost</p>
-                        <p>{hasCost ? `${currencyCode} ${numberFormat(item.cost!)}` : 'N/A'}</p>
+                        <p>{hasCost ? `${getCurrencySymbol(organization?.currency)}${numberFormat(item.cost!)}` : 'N/A'}</p>
                     </div>
                      <div>
                         <p className="text-muted-foreground">Total Wt (kg)</p>
@@ -153,7 +153,7 @@ const ItemCard = ({ item, onDelete, organization }: { item: SteelItem, onDelete:
                     {hasCost && (
                          <div>
                             <p className="text-muted-foreground">Total Cost</p>
-                            <p className="font-semibold text-green-600">{currencyCode} {numberFormat((item.cost || 0) * item.quantity)}</p>
+                            <p className="font-semibold text-green-600">{getCurrencySymbol(organization?.currency)} {numberFormat((item.cost || 0) * item.quantity)}</p>
                         </div>
                     )}
                 </div>
@@ -256,7 +256,6 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         const head = [
             [
                 'S.No.',
-                'Item Type', 
                 'Name & Dimensions', 
                 `Unit Wt\n(kg)`, 
                 ...(hasCost ? [`Unit Cost\n(${currencyCode})`] : []),
@@ -276,14 +275,13 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 const mainDims = `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm`;
                 const weights = `Flange Wt: ${numberFormat(girder.flangeWeight!)} kg | Web Wt: ${numberFormat(girder.webWeight!)} kg`;
                 const feets = `Flange Ft: ${numberFormat(girder.flangeRunningFeet!)} ft | Web Ft: ${numberFormat(girder.webRunningFeet!)} ft`;
-                dimensions = `${item.name}\n${mainDims}\n${weights}\n${feets}`;
+                dimensions = `${item.name} (${getItemTypeLabel(item.type)})\n${mainDims}\n${weights}\n${feets}`;
             } else {
-                 dimensions = `${item.name}\n${renderItemDimensions(item)}`;
+                 dimensions = `${item.name} (${getItemTypeLabel(item.type)})\n${renderItemDimensions(item)}`;
             }
 
             const row = [
                 { content: (index + 1).toString(), styles: { halign: 'center' } },
-                { content: getItemTypeLabel(item.type) },
                 { content: dimensions },
                 { content: numberFormat(item.weight), styles: { halign: 'right' } },
                 ...(hasCost ? [{ content: item.cost !== null ? numberFormat(item.cost) : 'N/A', styles: { halign: 'right' } }] : []),
@@ -302,13 +300,13 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         // Sub-Total Row
         if (hasCost && subTotalCost !== null) {
             footerRows.push([
-                { content: 'Sub-Total', colSpan: hasCost ? 6 : 5, styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: 'Sub-Total', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
                 { content: `${numberFormat(totalWeight)} kg`, styles: { halign: 'right', fontStyle: 'bold' } },
                 { content: `${currencyCode} ${numberFormat(subTotalCost)}`, styles: { halign: 'right', fontStyle: 'bold' } },
             ]);
         } else {
              footerRows.push([
-                 { content: 'Total', colSpan: 5, styles: { halign: 'right', fontStyle: 'bold' } },
+                 { content: 'Total Weight', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
                  { content: `${numberFormat(totalWeight)} kg`, styles: { halign: 'right', fontStyle: 'bold' } },
             ]);
         }
@@ -318,7 +316,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         if (hasCost && grandTotal !== null) {
             additionalCosts.forEach(cost => {
                 footerRows.push([
-                    { content: cost.description, colSpan: 6, styles: { halign: 'right' } },
+                    { content: cost.description, colSpan: 5, styles: { halign: 'right' } },
                     { content: `${currencyCode} ${numberFormat(cost.amount)}`, styles: { halign: 'right' } },
                 ]);
             });
@@ -329,7 +327,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             // Grand Total Row
             if(additionalCosts.length > 0) {
                  footerRows.push([
-                    { content: 'Grand Total', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } },
+                    { content: 'Grand Total', colSpan: 5, styles: { halign: 'right', fontStyle: 'bold' } },
                     { content: `${currencyCode} ${numberFormat(grandTotal)}`, styles: { halign: 'right', fontStyle: 'bold' } },
                 ]);
             }
@@ -364,13 +362,12 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             },
             columnStyles: {
               0: { cellWidth: '6%' }, // S.No.
-              1: { cellWidth: '15%' }, // Item Type
-              2: { cellWidth: 'auto' }, // Name & Dimensions
-              3: { cellWidth: '10%' }, // Unit Wt
-              4: { cellWidth: hasCost ? '12%' : 0 }, // Unit Cost
-              5: { cellWidth: '8%' }, // Qty
-              6: { cellWidth: '12%' }, // Total Wt
-              7: { cellWidth: hasCost ? '15%' : 0 }, // Total Cost
+              1: { cellWidth: 'auto' }, // Name & Dimensions
+              2: { cellWidth: '10%' }, // Unit Wt
+              3: { cellWidth: hasCost ? '12%' : 0 }, // Unit Cost
+              4: { cellWidth: '8%' }, // Qty
+              5: { cellWidth: '12%' }, // Total Wt
+              6: { cellWidth: hasCost ? '15%' : 0 }, // Total Cost
             },
             didDrawPage: (data: any) => {
                 currentY = data.cursor.y;
@@ -558,7 +555,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
               {hasCost && totalCost !== null && (
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Total Cost</span>
-                  <span className="font-bold text-green-600">{currencyCode} {numberFormat(totalCost)}</span>
+                  <span className="font-bold text-green-600">{getCurrencySymbol(currencyCode)} {numberFormat(totalCost)}</span>
                 </div>
               )}
               <hr />
@@ -570,7 +567,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                   className="w-full"
                   disabled={!project || !organization}
                   onClick={() => hasCost ? setCostsDialogOpen(true) : handleGeneratePdf()}
-                  title={!organization ? "Please set up an organization first" : (!hasCost ? "Add item costs to enable this feature" : "Generate PDF Report")}
+                  title={!organization ? "Please set up an organization first" : ""}
               >
                   <Download />
                   Generate Report
@@ -606,5 +603,3 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
-
-    

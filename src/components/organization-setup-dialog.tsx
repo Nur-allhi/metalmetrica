@@ -8,7 +8,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
-import { ResponsiveDialog, ResponsiveDialogContent, ResponsiveDialogHeader, ResponsiveDialogTitle, ResponsiveDialogDescription, ResponsiveDialogFooter } from "@/components/ui/responsive-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -96,18 +103,18 @@ export default function OrganizationSetupDialog({
   }
 
   return (
-    <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="p-0">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <ResponsiveDialogHeader>
-              <ResponsiveDialogTitle>{organization ? "Edit Organization" : "Welcome to MetalMetrica"}</ResponsiveDialogTitle>
-              <ResponsiveDialogDescription>
+            <DialogHeader className="p-6 pb-4">
+              <DialogTitle>{organization ? "Edit Organization" : "Welcome to MetalMetrica"}</DialogTitle>
+              <DialogDescription>
                 {organization ? "Update your organization details." : "Set up your organization details. This will be used in your project reports."}
-              </ResponsiveDialogDescription>
-            </ResponsiveDialogHeader>
-            <ScrollArea className="max-h-[70vh] -mr-4 pr-4">
-              <div className="grid gap-4 py-4 px-4">
+              </DialogDescription>
+            </DialogHeader>
+            <ScrollArea className="max-h-[70vh]">
+              <div className="grid gap-4 p-6 pt-0">
                 <FormField
                   control={form.control}
                   name="name"
@@ -229,13 +236,13 @@ export default function OrganizationSetupDialog({
                   )}
               </div>
             </ScrollArea>
-            <ResponsiveDialogFooter className="pt-4 border-t px-4">
+            <DialogFooter className="p-6 pt-4 border-t">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button type="submit">Save</Button>
-            </ResponsiveDialogFooter>
+            </DialogFooter>
           </form>
         </Form>
-      </ResponsiveDialogContent>
-    </ResponsiveDialog>
+      </DialogContent>
+    </Dialog>
   );
 }

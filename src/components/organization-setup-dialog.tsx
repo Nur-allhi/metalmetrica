@@ -36,6 +36,7 @@ import {
 import type { Organization } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "./ui/textarea";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface OrganizationSetupDialogProps {
   open: boolean;
@@ -112,128 +113,130 @@ export default function OrganizationSetupDialog({
                 {organization ? "Update your organization details." : "Set up your organization details. This will be used in your project reports."}
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Organization Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Your Company LLC" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-               <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="contact@company.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-               <FormField
-                control={form.control}
-                name="contactNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contact Number</FormLabel>
-                    <FormControl>
-                      <Input placeholder="+1 234 567 890" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-               <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Address</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="123 Main St, Anytown, USA" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="termsAndConditions"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Terms & Conditions</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Payment is due within 30 days..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="currency"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Currency</FormLabel>
-                     <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select a currency" />
-                            </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                            <SelectItem value="USD">USD ($)</SelectItem>
-                            <SelectItem value="EUR">EUR (€)</SelectItem>
-                            <SelectItem value="GBP">GBP (£)</SelectItem>
-                            <SelectItem value="JPY">JPY (¥)</SelectItem>
-                            <SelectItem value="INR">INR (₹)</SelectItem>
-                            <SelectItem value="BDT">BDT (৳)</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="logoUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Logo URL (Optional)</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://placehold.co/150x50.png"
-                        {...field}
+            <ScrollArea className="max-h-[70vh] -mr-4 pr-4">
+              <div className="grid gap-4 py-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Organization Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your Company LLC" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="contact@company.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="contactNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contact Number</FormLabel>
+                      <FormControl>
+                        <Input placeholder="+1 234 567 890" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Address</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="123 Main St, Anytown, USA" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="termsAndConditions"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Terms & Conditions</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Payment is due within 30 days..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="currency"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Currency</FormLabel>
+                       <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                              <SelectTrigger>
+                                  <SelectValue placeholder="Select a currency" />
+                              </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                              <SelectItem value="USD">USD ($)</SelectItem>
+                              <SelectItem value="EUR">EUR (€)</SelectItem>
+                              <SelectItem value="GBP">GBP (£)</SelectItem>
+                              <SelectItem value="JPY">JPY (¥)</SelectItem>
+                              <SelectItem value="INR">INR (₹)</SelectItem>
+                              <SelectItem value="BDT">BDT (৳)</SelectItem>
+                          </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="logoUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Logo URL (Optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="https://placehold.co/150x50.png"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 {logoUrl && (
+                    <div className="flex flex-col items-center">
+                      <Label className="mb-2">Logo Preview</Label>
+                      <Image
+                        src={logoUrl}
+                        alt="Logo preview"
+                        width={150}
+                        height={50}
+                        className="rounded-md border object-contain"
+                        data-ai-hint="company logo"
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-               {logoUrl && (
-                  <div className="flex flex-col items-center">
-                    <Label className="mb-2">Logo Preview</Label>
-                    <Image
-                      src={logoUrl}
-                      alt="Logo preview"
-                      width={150}
-                      height={50}
-                      className="rounded-md border object-contain"
-                      data-ai-hint="company logo"
-                    />
-                  </div>
-                )}
-            </div>
-            <DialogFooter>
+                    </div>
+                  )}
+              </div>
+            </ScrollArea>
+            <DialogFooter className="pt-4 border-t">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button type="submit">Save</Button>
             </DialogFooter>

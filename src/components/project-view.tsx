@@ -277,8 +277,8 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
           <ProjectReport ref={reportRef} project={project} organization={organization} />
         )}
       </div>
-      <div className="grid auto-rows-max items-start gap-4 lg:grid-cols-3 lg:gap-8 w-full h-full">
-        <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 h-full">
+      <div className="grid auto-rows-max items-start gap-4 lg:grid-cols-3 lg:gap-8 w-full h-full overflow-hidden">
+        <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 h-full overflow-hidden">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
@@ -298,30 +298,30 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
           
           <div className="flex-1 flex flex-col gap-4 overflow-hidden">
             {project.items.length === 0 ? (
-                <Card className="mt-4 flex flex-col items-center justify-center border-dashed p-10 text-center h-full">
-                <CardTitle>No Items Yet</CardTitle>
-                <CardDescription className="mt-2">Add the first item to this project.</CardDescription>
-                <Button className="mt-4" onClick={() => setAddItemDialogOpen(true)}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Item
-                </Button>
+                <Card className="flex-1 flex flex-col items-center justify-center border-dashed p-10 text-center">
+                  <CardTitle>No Items Yet</CardTitle>
+                  <CardDescription className="mt-2">Add the first item to this project.</CardDescription>
+                  <Button className="mt-4" onClick={() => setAddItemDialogOpen(true)}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Item
+                  </Button>
                 </Card>
             ) : (
-                <>
-                <ScrollArea className="flex-1 -mr-4 pr-4">
-                    <div className="grid gap-4 md:grid-cols-2">
-                        {project.items.map((item) => (
-                        <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} />
-                        ))}
-                    </div>
-                </ScrollArea>
-                <div className="mt-auto pt-4">
-                    <Button className="w-full" onClick={() => setAddItemDialogOpen(true)}>
-                    <Plus />
-                    Add Item
-                    </Button>
+                <div className="flex-1 flex flex-col gap-4 overflow-hidden">
+                  <ScrollArea className="flex-1 -mr-4 pr-4">
+                      <div className="grid gap-4 md:grid-cols-2">
+                          {project.items.map((item) => (
+                          <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} />
+                          ))}
+                      </div>
+                  </ScrollArea>
+                  <div className="mt-auto pt-4">
+                      <Button className="w-full" onClick={() => setAddItemDialogOpen(true)}>
+                      <Plus />
+                      Add Item
+                      </Button>
+                  </div>
                 </div>
-                </>
             )}
           </div>
         </div>

@@ -72,7 +72,7 @@ export default function ProjectSummaryChart({ data }: ProjectSummaryChartProps) 
                     outerRadius={100}
                     innerRadius={60}
                     labelLine={false}
-                    label={({ payload, cornerRadius, tooltipPayload, maxRadius, midAngle, middleRadius, tooltipPosition, innerRadius, outerRadius, startAngle, endAngle, ...props }) => {
+                    label={({ payload, cornerRadius, tooltipPayload, maxRadius, midAngle, middleRadius, tooltipPosition, innerRadius, outerRadius, startAngle, endAngle, paddingAngle, ...props }) => {
                         const percent = totalWeight > 0 ? (payload.weight / totalWeight) * 100 : 0;
                         return (
                             <text

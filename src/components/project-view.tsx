@@ -265,7 +265,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             let dimensions = `${item.name}\n`;
             if (item.type === 'girder') {
                 const girder = item as SteelGirder;
-                dimensions += `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness}\nWeb:${girder.webHeight}x${girder.webThickness} mm`;
+                dimensions += `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm`;
                 dimensions += `\nFlange Wt: ${numberFormat(girder.flangeWeight!)} kg | Web Wt: ${numberFormat(girder.webWeight!)} kg`;
                 dimensions += `\nFlange Ft: ${numberFormat(girder.flangeRunningFeet!)} ft | Web Ft: ${numberFormat(girder.webRunningFeet!)} ft`;
             } else {
@@ -317,6 +317,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 fillColor: [245, 245, 245], // White smoke
                 fontStyle: 'bold',
                 textColor: 0,
+            },
+            columnStyles: {
+                1: { cellWidth: 'auto' }, // Name & Dimensions
             },
             styles: {
                 cellPadding: 2,
@@ -551,3 +554,5 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
+
+    

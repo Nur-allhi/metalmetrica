@@ -5,6 +5,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from '@/components/ui/table';
 import type { Project, Organization, SteelItem, SteelPlate, SteelPipe, SteelGirder, SteelCircular } from '@/types';
+import { getCurrencySymbol } from '@/lib/utils';
 
 interface ProjectReportProps {
     project: Project;
@@ -49,6 +50,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
     const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0);
     const hasCost = project.items.some(item => item.cost !== null);
     const totalCost = hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null;
+    const currencySymbol = getCurrencySymbol(organization?.currency);
     
     const colSpanTotal = hasCost ? 5 : 4;
 
@@ -88,10 +90,10 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                                 <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Item Name</TableHead>
                                 <TableHead className="text-black border border-gray-300 p-2 font-bold">Dimensions / Profile</TableHead>
                                 <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Unit Weight (kg)</TableHead>
-                                {hasCost && <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Unit Cost ($)</TableHead>}
+                                {hasCost && <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Unit Cost ({currencySymbol})</TableHead>}
                                 <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Qty</TableHead>
                                 <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Total Weight (kg)</TableHead>
-                                {hasCost && <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Total Cost ($)</TableHead>}
+                                {hasCost && <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Total Cost ({currencySymbol})</TableHead>}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -102,10 +104,10 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                                        <span className='capitalize font-semibold'>{item.type === 'plate' ? 'Steel Plate (Quality)' : item.type === 'plate-imperial' ? 'Steel Plate (Non-Quality)' : item.type}</span> - {renderItemDimensions(item)}
                                     </TableCell>
                                     <TableCell className="text-center">{item.weight.toFixed(2)}</TableCell>
-                                    {hasCost && <TableCell className="text-center">{item.cost !== null ? `$${item.cost.toFixed(2)}` : 'N/A'}</TableCell>}
+                                    {hasCost && <TableCell className="text-center">{item.cost !== null ? `${currencySymbol}${item.cost.toFixed(2)}` : 'N/A'}</TableCell>}
                                     <TableCell className="text-center">{item.quantity}</TableCell>
                                     <TableCell className="text-center font-medium">{ (item.weight * item.quantity).toFixed(2) }</TableCell>
-                                    {hasCost && <TableCell className="text-center font-medium">{item.cost !== null ? `$${(item.cost * item.quantity).toFixed(2)}` : 'N/A'}</TableCell>}
+                                    {hasCost && <TableCell className="text-center font-medium">{item.cost !== null ? `${currencySymbol}${(item.cost * item.quantity).toFixed(2)}` : 'N/A'}</TableCell>}
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -113,7 +115,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                             <TableRow className="[&>td]:border [&>td]:border-gray-300 [&>td]:p-2 bg-gray-100">
                                 <TableCell colSpan={colSpanTotal} className="text-right font-bold text-lg pr-4 text-black">Project Totals</TableCell>
                                 <TableCell className="text-center font-bold text-lg text-black">{totalWeight.toFixed(2)} kg</TableCell>
-                                {hasCost && <TableCell className="text-center font-bold text-lg text-black">${totalCost?.toFixed(2)}</TableCell>}
+                                {hasCost && <TableCell className="text-center font-bold text-lg text-black">{currencySymbol}{totalCost?.toFixed(2)}</TableCell>}
                             </TableRow>
                         </TableFooter>
                     </Table>

@@ -24,7 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import ProjectSummaryChart from './project-summary-chart';
 import { CHART_COLORS } from '@/lib/constants';
 import ProjectReport from './project-report';
-import { cn } from '@/lib/utils';
+import { cn, getCurrencySymbol } from '@/lib/utils';
 import { ScrollArea } from './ui/scroll-area';
 
 interface ProjectViewProps {
@@ -57,7 +57,7 @@ const renderItemDimensions = (item: SteelItem) => {
     }
 };
 
-const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void }) => {
+const ItemCard = ({ item, onDelete, currencySymbol }: { item: SteelItem, onDelete: () => void, currencySymbol: string }) => {
     const girder = item as SteelGirder;
     const hasCost = item.cost !== null;
     const pricePerKg = hasCost && item.weight > 0 ? item.cost! / item.weight : null;
@@ -119,8 +119,8 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
                     </div>
                      {hasCost && (
                          <div>
-                            <p className="text-muted-foreground">Price ($/kg)</p>
-                            <p>${(pricePerKg || 0).toFixed(2)}</p>
+                            <p className="text-muted-foreground">Price ({currencySymbol}/kg)</p>
+                            <p>{currencySymbol}{(pricePerKg || 0).toFixed(2)}</p>
                         </div>
                     )}
                     <div>
@@ -129,7 +129,7 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
                     </div>
                      <div>
                         <p className="text-muted-foreground">Unit Cost</p>
-                        <p>${(item.cost || 0).toFixed(2)}</p>
+                        <p>{currencySymbol}{(item.cost || 0).toFixed(2)}</p>
                     </div>
                      <div>
                         <p className="text-muted-foreground">Total Wt (kg)</p>
@@ -138,7 +138,7 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
                     {hasCost && (
                          <div>
                             <p className="text-muted-foreground">Total Cost</p>
-                            <p className="font-semibold text-green-600">${((item.cost || 0) * item.quantity).toFixed(2)}</p>
+                            <p className="font-semibold text-green-600">{currencySymbol}{((item.cost || 0) * item.quantity).toFixed(2)}</p>
                         </div>
                     )}
                 </div>
@@ -152,6 +152,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   const [isEditProjectDialogOpen, setEditProjectDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<SteelItem | null>(null);
   const { toast } = useToast();
+  const currencySymbol = getCurrencySymbol(organization?.currency);
   
   const reportRef = useRef<HTMLDivElement>(null);
 
@@ -322,7 +323,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                   <ScrollArea className="flex-1 -mr-4 pr-4">
                       <div className="grid gap-4 md:grid-cols-2">
                           {project.items.map((item) => (
-                          <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} />
+                          <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} currencySymbol={currencySymbol} />
                           ))}
                       </div>
                   </ScrollArea>
@@ -349,7 +350,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
               {hasCost && (
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Total Cost</span>
-                  <span className="font-bold text-green-600">${totalCost?.toFixed(2)}</span>
+                  <span className="font-bold text-green-600">{currencySymbol}{totalCost?.toFixed(2)}</span>
                 </div>
               )}
               <hr />
@@ -378,7 +379,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
       />
       <EditProjectDialog
           open={isEditProjectDialogOpen}
-          onOpen-change={setEditProjectDialogOpen}
+          onOpenChange={setEditProjectDialogOpen}
           onEditProject={handleEditProject}
           project={project}
       />

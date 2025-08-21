@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect } from "react";
@@ -163,6 +164,7 @@ export default function OrganizationSetupDialog({
                             <SelectItem value="GBP">GBP (£)</SelectItem>
                             <SelectItem value="JPY">JPY (¥)</SelectItem>
                             <SelectItem value="INR">INR (₹)</SelectItem>
+                            <SelectItem value="BDT">BDT (৳)</SelectItem>
                         </SelectContent>
                     </Select>
                     <FormMessage />

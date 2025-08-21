@@ -304,13 +304,11 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         const costColSpan = hasCost ? 5 : 4;
 
 
-        // Sub-Total Row
         if (hasCost && subTotalCost !== null) {
             const subTotalRow = [
                 { content: 'Sub-Total', colSpan: costColSpan, styles: { halign: 'right', fontStyle: 'bold' } },
                 { content: `${numberFormat(totalWeight)} kg`, styles: { halign: 'right', fontStyle: 'bold' } },
-                {}, // Empty cell for unit cost
-                { content: `${currencyCode} ${numberFormat(subTotalCost)}`, styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: `${currencyCode} ${numberFormat(subTotalCost)}`, colSpan: 2, styles: { halign: 'right', fontStyle: 'bold' } },
             ];
             footerRows.push(subTotalRow);
 
@@ -322,12 +320,11 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
              footerRows.push(subTotalRow);
         }
         
-        // Additional Costs Rows
         let grandTotal = subTotalCost;
         if (hasCost && grandTotal !== null) {
             additionalCosts.forEach(cost => {
                 const additionalCostRow = [
-                    { content: cost.description, colSpan: costColSpan + 2, styles: { halign: 'right' } },
+                    { content: cost.description, colSpan: costColSpan + 1, styles: { halign: 'right' } },
                     { content: `${currencyCode} ${numberFormat(cost.amount)}`, styles: { halign: 'right' } },
                 ]
                 footerRows.push(additionalCostRow);
@@ -336,10 +333,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             const additionalCostTotal = additionalCosts.reduce((acc, cost) => acc + cost.amount, 0);
             grandTotal += additionalCostTotal;
 
-            // Grand Total Row
             if(additionalCosts.length > 0) {
                  const grandTotalRow = [
-                    { content: 'Grand Total', colSpan: costColSpan + 2, styles: { halign: 'right', fontStyle: 'bold' } },
+                    { content: 'Grand Total', colSpan: costColSpan + 1, styles: { halign: 'right', fontStyle: 'bold' } },
                     { content: `${currencyCode} ${numberFormat(grandTotal)}`, styles: { halign: 'right', fontStyle: 'bold' } },
                  ]
                  footerRows.push(grandTotalRow);
@@ -347,18 +343,17 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         }
 
         const columnStyles: { [key: string]: any } = {
-          0: { cellWidth: '6%' },    // S.No.
-          1: { cellWidth: 'auto' },   // Name & Dimensions
-          2: { cellWidth: '10%' },  // Unit Wt
-          3: { cellWidth: '8%' },   // Qty
-          4: { cellWidth: '12%' },  // Total Wt
+          0: { cellWidth: '6%' },    
+          1: { cellWidth: 'auto' },  
+          2: { cellWidth: '12%' },  
+          3: { cellWidth: '8%' },   
+          4: { cellWidth: '12%' },  
         };
 
         if(hasCost) {
-          columnStyles[5] = { cellWidth: '12%' }; // Unit Cost
-          columnStyles[6] = { cellWidth: '15%' }; // Total Cost
+          columnStyles[5] = { cellWidth: '12%' }; 
+          columnStyles[6] = { cellWidth: '15%' }; 
         }
-
 
         (doc as any).autoTable({
             startY: currentY,
@@ -372,17 +367,21 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 fontSize: 10,
                 cellPadding: 2,
                 overflow: 'linebreak',
-                font: 'helvetica'
+                font: 'helvetica',
+                lineColor: [0, 0, 0],
+                lineWidth: 0.1,
             },
             headStyles: {
-                fillColor: [47, 79, 79], // Dark Slate Gray
-                textColor: 255,
+                fillColor: [255, 255, 255],
+                textColor: 0,
                 fontStyle: 'bold',
                 halign: 'center',
                 fontSize: 10,
+                lineColor: [0, 0, 0],
+                lineWidth: 0.1,
             },
             footStyles: {
-                fillColor: [245, 245, 245], // White smoke
+                fillColor: [255, 255, 255],
                 textColor: 0,
                 fontSize: 10,
                 lineWidth: 0.1,

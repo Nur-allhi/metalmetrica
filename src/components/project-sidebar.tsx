@@ -1,7 +1,8 @@
+
 "use client";
 
 import React from 'react';
-import { Plus, Workflow } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -14,7 +15,7 @@ import {
     SidebarMenuSkeleton
 } from '@/components/ui/sidebar';
 import type { Project } from '@/types';
-import { cn } from '@/lib/utils';
+import Logo from './logo';
 
 interface ProjectSidebarProps {
     projects: Project[];
@@ -29,7 +30,7 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
         <>
             <SidebarHeader>
                 <div className="flex items-center gap-2 p-2">
-                    <Workflow className="h-6 w-6 text-primary" />
+                    <Logo className="h-6 w-6 text-primary" />
                     <h1 className="text-xl font-bold">MetalMetrica</h1>
                 </div>
             </SidebarHeader>

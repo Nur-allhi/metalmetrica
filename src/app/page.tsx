@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, Workflow } from "lucide-react";
+import { Plus } from "lucide-react";
 import useLocalStorage from "@/hooks/use-local-storage";
 import { useAuth } from "@/components/auth-provider";
 import { getProjects, addProject as addProjectToDb } from "@/services/firestore";
@@ -25,6 +25,7 @@ import ProjectView from "@/components/project-view";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarTrigger } from "@/components/ui/sidebar";
 import AddProjectDialog from "@/components/add-project-dialog";
 import { useToast } from "@/hooks/use-toast";
+import Logo from "@/components/logo";
 
 export default function Home() {
   const { user, loading: authLoading } = useAuth();
@@ -108,7 +109,7 @@ export default function Home() {
       return (
         <div className="flex-1 flex items-center justify-center h-full">
             <Card className="flex flex-col items-center justify-center p-10 text-center bg-transparent border-dashed">
-                <Workflow size={48} className="text-muted-foreground mb-4" />
+                <Logo className="h-12 w-12 text-muted-foreground mb-4" />
                 <CardTitle>No Project Selected</CardTitle>
                 <CardDescription className="mt-2">Select a project or create a new one.</CardDescription>
                 <Button className="mt-4" onClick={() => setAddProjectDialogOpen(true)}>

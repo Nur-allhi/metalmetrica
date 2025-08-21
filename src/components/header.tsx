@@ -1,11 +1,13 @@
+
 "use client";
 
 import React from "react";
 import Image from "next/image";
-import { Settings, Workflow } from "lucide-react";
+import { Settings } from "lucide-react";
 import type { Organization } from "@/types";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import Logo from "./logo";
 
 interface HeaderProps {
   organization: Organization | null;
@@ -18,7 +20,7 @@ export default function Header({ organization, onSettingsClick }: HeaderProps) {
        <div className="flex items-center gap-2">
          <SidebarTrigger className="flex md:hidden" />
           <div className="hidden items-center gap-2 md:flex">
-             <Workflow className="h-6 w-6 text-primary" />
+             <Logo className="h-6 w-6 text-primary" />
              <h1 className="text-xl font-bold">MetalMetrica</h1>
           </div>
       </div>

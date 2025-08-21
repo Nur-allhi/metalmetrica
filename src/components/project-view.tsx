@@ -173,7 +173,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
     html2canvas(input, { scale: 3, useCORS: true })
       .then((canvas) => {
-        const imgData = canvas.toDataURL('image/jpeg', 0.9);
+        const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
@@ -186,13 +186,13 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         let heightLeft = pageHeight;
         let position = 0;
         
-        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pageHeight, undefined, 'FAST');
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pageHeight, undefined, 'FAST');
         heightLeft -= pdfHeight;
 
         while (heightLeft > 0) {
           position = heightLeft - pageHeight;
           pdf.addPage();
-          pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pageHeight, undefined, 'FAST');
+          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pageHeight, undefined, 'FAST');
           heightLeft -= pdfHeight;
         }
 
@@ -407,5 +407,3 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
-
-    

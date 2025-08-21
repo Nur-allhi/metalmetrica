@@ -291,7 +291,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                 Select the item type and enter its specifications.
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto pr-6">
               <FormField
                 control={form.control}
                 name="name"
@@ -517,7 +517,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                     />
                 </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="pt-4 border-t">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button type="submit">Add Item</Button>
             </DialogFooter>

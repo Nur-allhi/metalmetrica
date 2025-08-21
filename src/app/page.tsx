@@ -144,7 +144,7 @@ export default function Home() {
               </Sidebar>
               <SidebarInset>
                   <Header organization={organization} onSettingsClick={() => setOrgSetupOpen(true)} />
-                  <main className="flex flex-1 flex-col gap-4 p-4 sm:p-6">
+                  <main className="flex flex-1 flex-col gap-4 p-4 lg:p-6">
                       <Tabs defaultValue="projects" className="flex flex-col h-full">
                       <div className="flex items-center">
                           <TabsList>

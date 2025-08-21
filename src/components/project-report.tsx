@@ -5,7 +5,7 @@ import React from 'react';
 import Image from 'next/image';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import type { Project, Organization, SteelItem, SteelPlate, SteelPipe, SteelGirder } from '@/types';
+import type { Project, Organization, SteelItem, SteelPlate, SteelPipe, SteelGirder, SteelCircular } from '@/types';
 
 interface ProjectReportProps {
     project: Project;
@@ -16,13 +16,19 @@ const renderItemDimensions = (item: SteelItem) => {
     switch (item.type) {
         case 'plate':
             const plate = item as SteelPlate;
-            return `${plate.length} x ${plate.width} x ${plate.thickness} mm`;
+            return `L:${plate.length} x W:${plate.width} x T:${plate.thickness} mm`;
         case 'pipe':
             const pipe = item as SteelPipe;
-            return `Ø${pipe.outerDiameter} x ${pipe.wallThickness}mm (L: ${pipe.length}mm)`;
+            return `L:${pipe.length} Ø:${pipe.outerDiameter} Wall:${pipe.wallThickness} mm`;
         case 'girder':
              const girder = item as SteelGirder;
-            return `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness}`;
+            return `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm`;
+        case 'circular':
+            const circular = item as SteelCircular;
+            if (circular.innerDiameter && circular.innerDiameter > 0) {
+                 return `T:${circular.thickness} Ø:${circular.diameter} Inner Ø:${circular.innerDiameter} mm`;
+            }
+            return `T:${circular.thickness} Ø:${circular.diameter} mm`;
         default:
             return '';
     }

@@ -22,22 +22,29 @@ export interface SteelPlate extends BaseSteelItem {
 }
 
 export interface SteelGirder extends BaseSteelItem {
-    type: "girder";
-    length: number;
-    flangeWidth: number;
-    flangeThickness: number;
-    webWidth: number;
-    webHeight: number;
+  type: "girder";
+  length: number;
+  flangeWidth: number;
+  flangeThickness: number;
+  webHeight: number;
+  webThickness: number;
 }
 
 export interface SteelPipe extends BaseSteelItem {
-    type: "pipe";
-    length: number;
-    outerDiameter: number;
-    wallThickness: number;
+  type: "pipe";
+  length: number;
+  outerDiameter: number;
+  wallThickness: number;
 }
 
-export type SteelItem = SteelPlate | SteelGirder | SteelPipe;
+export interface SteelCircular extends BaseSteelItem {
+  type: "circular";
+  thickness: number;
+  diameter: number;
+  innerDiameter?: number;
+}
+
+export type SteelItem = SteelPlate | SteelGirder | SteelPipe | SteelCircular;
 
 export interface Project {
   id: string;

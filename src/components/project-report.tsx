@@ -24,8 +24,10 @@ const renderItemDimensions = (item: SteelItem) => {
             return (
               <>
                 <p>L:{girder.length} Flange:{girder.flangeWidth}x{girder.flangeThickness} Web:{girder.webHeight}x{girder.webThickness} mm</p>
-                <p className="text-xs text-gray-500">Flange Wt: {girder.flangeWeight?.toFixed(2)} kg, Web Wt: {girder.webWeight?.toFixed(2)} kg</p>
-                <p className="text-xs text-gray-500">Flange Ft: {girder.flangeRunningFeet?.toFixed(2)}, Web Ft: {girder.webRunningFeet?.toFixed(2)}</p>
+                <p className="text-xs text-gray-500">Flange Wt: {girder.flangeWeight?.toFixed(2)} kg (Total: {(girder.flangeWeight! * girder.quantity).toFixed(2)} kg)</p>
+                <p className="text-xs text-gray-500">Web Wt: {girder.webWeight?.toFixed(2)} kg (Total: {(girder.webWeight! * girder.quantity).toFixed(2)} kg)</p>
+                <p className="text-xs text-gray-500">Flange Ft: {girder.flangeRunningFeet?.toFixed(2)} (Total: {(girder.flangeRunningFeet! * girder.quantity).toFixed(2)})</p>
+                <p className="text-xs text-gray-500">Web Ft: {girder.webRunningFeet?.toFixed(2)} (Total: {(girder.webRunningFeet! * girder.quantity).toFixed(2)})</p>
               </>
             )
         case 'circular':
@@ -78,8 +80,8 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                             <TableRow className="bg-gray-100">
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Item Name</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Dimensions / Profile</TableHead>
-                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Weight(kg)</TableHead>
-                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Cost ($)</TableHead>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Unit Weight (kg)</TableHead>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Unit Cost ($)</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Qty</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Total Weight (kg)</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Total Cost ($)</TableHead>

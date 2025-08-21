@@ -53,50 +53,53 @@ const renderItemDimensions = (item: SteelItem) => {
     }
 };
 
-const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void }) => (
-    <Card>
-        <CardContent className="p-4 flex flex-col gap-4">
-            <div className="flex justify-between items-start">
-                <div>
-                    <h3 className="font-semibold">{item.name}</h3>
-                    <Badge variant="secondary" className="capitalize mt-1">{item.type}</Badge>
+const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void }) => {
+    const girder = item as SteelGirder;
+    return (
+        <Card>
+            <CardContent className="p-4 flex flex-col gap-4">
+                <div className="flex justify-between items-start">
+                    <div>
+                        <h3 className="font-semibold">{item.name}</h3>
+                        <Badge variant="secondary" className="capitalize mt-1">{item.type}</Badge>
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 -mt-2" onClick={onDelete}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 -mt-2" onClick={onDelete}>
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-            </div>
-            <p className="text-sm text-muted-foreground">{renderItemDimensions(item)}</p>
+                <p className="text-sm text-muted-foreground">{renderItemDimensions(item)}</p>
 
-            {item.type === 'girder' && (
-              <div className="text-xs text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-1">
-                <p>Flange Wt:</p><p className="text-right font-medium">{(item as SteelGirder).flangeWeight?.toFixed(2)} kg</p>
-                <p>Web Wt:</p><p className="text-right font-medium">{(item as SteelGirder).webWeight?.toFixed(2)} kg</p>
-                <p>Flange Running Ft:</p><p className="text-right font-medium">{(item as SteelGirder).flangeRunningFeet?.toFixed(2)}</p>
-                <p>Web Running Ft:</p><p className="text-right font-medium">{(item as SteelGirder).webRunningFeet?.toFixed(2)}</p>
-              </div>
-            )}
-            
-            <div className="grid grid-cols-2 gap-4 text-sm pt-2 border-t">
-                <div>
-                    <p className="text-muted-foreground">Qty</p>
-                    <p>{item.quantity}</p>
+                {item.type === 'girder' && (
+                  <div className="text-xs text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-1">
+                    <p>Flange Wt:</p><p className="text-right font-medium">{(girder.flangeWeight)?.toFixed(2)} kg (Total: {(girder.flangeWeight! * item.quantity).toFixed(2)} kg)</p>
+                    <p>Web Wt:</p><p className="text-right font-medium">{(girder.webWeight)?.toFixed(2)} kg (Total: {(girder.webWeight! * item.quantity).toFixed(2)} kg)</p>
+                    <p>Flange Running Ft:</p><p className="text-right font-medium">{(girder.flangeRunningFeet)?.toFixed(2)} (Total: {(girder.flangeRunningFeet! * item.quantity).toFixed(2)})</p>
+                    <p>Web Running Ft:</p><p className="text-right font-medium">{(girder.webRunningFeet)?.toFixed(2)} (Total: {(girder.webRunningFeet! * item.quantity).toFixed(2)})</p>
+                  </div>
+                )}
+                
+                <div className="grid grid-cols-2 gap-4 text-sm pt-2 border-t">
+                    <div>
+                        <p className="text-muted-foreground">Qty</p>
+                        <p>{item.quantity}</p>
+                    </div>
+                    <div>
+                        <p className="text-muted-foreground">Unit Wt (kg)</p>
+                        <p>{item.weight.toFixed(2)}</p>
+                    </div>
+                     <div>
+                        <p className="text-muted-foreground">Total Wt (kg)</p>
+                        <p className="font-semibold">{(item.weight * item.quantity).toFixed(2)}</p>
+                    </div>
+                    <div>
+                        <p className="text-muted-foreground">Total Cost</p>
+                        <p className="font-semibold text-green-600">${((item.cost || 0) * item.quantity).toFixed(2)}</p>
+                    </div>
                 </div>
-                <div>
-                    <p className="text-muted-foreground">Unit Wt (kg)</p>
-                    <p>{item.weight.toFixed(2)}</p>
-                </div>
-                 <div>
-                    <p className="text-muted-foreground">Total Wt (kg)</p>
-                    <p className="font-semibold">{(item.weight * item.quantity).toFixed(2)}</p>
-                </div>
-                <div>
-                    <p className="text-muted-foreground">Total Cost</p>
-                    <p className="font-semibold text-green-600">${((item.cost || 0) * item.quantity).toFixed(2)}</p>
-                </div>
-            </div>
-        </CardContent>
-    </Card>
-);
+            </CardContent>
+        </Card>
+    )
+};
 
 export default function ProjectView({ project, organization }: ProjectViewProps) {
   const [isAddItemDialogOpen, setAddItemDialogOpen] = useState(false);
@@ -119,7 +122,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
     html2canvas(input, { scale: 2 })
       .then((canvas) => {
-        const imgData = canvas.toDataURL('image/jpeg', 0.9); // Use JPEG format with quality 0.9
+        const imgData = canvas.toDataURL('image/jpeg', 0.9);
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();

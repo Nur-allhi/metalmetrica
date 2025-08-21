@@ -4,7 +4,6 @@
 import React from 'react';
 import Image from 'next/image';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import type { Project, Organization, SteelItem, SteelPlate, SteelPipe, SteelGirder, SteelCircular } from '@/types';
 
 interface ProjectReportProps {
@@ -84,7 +83,11 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                         {project.items.map(item => (
                             <TableRow key={item.id}>
                                 <TableCell className="font-medium">{item.name}</TableCell>
-                                <TableCell><Badge variant="outline" className="capitalize">{item.type}</Badge></TableCell>
+                                <TableCell>
+                                    <span className="capitalize border rounded-full px-2.5 py-0.5 text-xs font-semibold">
+                                        {item.type}
+                                    </span>
+                                </TableCell>
                                 <TableCell>
                                     {renderItemDimensions(item)}
                                 </TableCell>

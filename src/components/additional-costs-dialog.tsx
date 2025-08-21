@@ -56,8 +56,10 @@ export default function AdditionalCostsDialog({ open, onOpenChange, onConfirm, c
   });
   
   useEffect(() => {
-    form.reset({ costs: existingCosts });
-  }, [existingCosts, form, open]);
+    if (open) {
+      form.reset({ costs: existingCosts });
+    }
+  }, [existingCosts, form.reset, open]);
 
 
   const { fields, append, remove } = useFieldArray({

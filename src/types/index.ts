@@ -41,7 +41,7 @@ export interface SteelCircular extends BaseSteelItem {
   type: "circular";
   thickness: number;
   diameter: number;
-  innerDiameter?: number;
+  innerDiameter?: number | null;
 }
 
 export type SteelItem = SteelPlate | SteelGirder | SteelPipe | SteelCircular;

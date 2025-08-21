@@ -230,7 +230,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
         }
         const weightKg = volumeM3 * density;
         newItem = {
-            name: data.name, type: 'circular', quantity, thickness, diameter, innerDiameter,
+            name: data.name, type: 'circular', quantity, thickness, diameter, innerDiameter: innerDiameter || null,
             weight: weightKg, cost: weightKg * pricePerKg,
         };
     }

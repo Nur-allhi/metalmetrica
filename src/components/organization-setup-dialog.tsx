@@ -51,6 +51,8 @@ const formSchema = z.object({
   logoUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   email: z.string().email({ message: "Please enter a valid email." }).optional().or(z.literal('')),
   address: z.string().optional(),
+  contactNumber: z.string().optional(),
+  termsAndConditions: z.string().optional(),
   currency: z.string().optional(),
 });
 
@@ -68,6 +70,8 @@ export default function OrganizationSetupDialog({
       logoUrl: "",
       email: "",
       address: "",
+      contactNumber: "",
+      termsAndConditions: "",
       currency: "USD",
     },
   });
@@ -79,6 +83,8 @@ export default function OrganizationSetupDialog({
         logoUrl: organization.logoUrl || "",
         email: organization.email || "",
         address: organization.address || "",
+        contactNumber: organization.contactNumber || "",
+        termsAndConditions: organization.termsAndConditions || "",
         currency: organization.currency || "USD",
       });
     }
@@ -135,12 +141,38 @@ export default function OrganizationSetupDialog({
               />
                <FormField
                 control={form.control}
+                name="contactNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contact Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="+1 234 567 890" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
                 name="address"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Address</FormLabel>
                     <FormControl>
                       <Textarea placeholder="123 Main St, Anytown, USA" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="termsAndConditions"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Terms & Conditions</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Payment is due within 30 days..." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

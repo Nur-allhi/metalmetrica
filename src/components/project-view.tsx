@@ -26,6 +26,8 @@ import EditProjectDialog from './edit-project-dialog';
 import DeleteItemDialog from './delete-item-dialog';
 import { addItemToProject as addItemToProjectDb, deleteItemFromProject as deleteItemFromProjectDb, updateProject as updateProjectDb } from '@/services/firestore';
 import { useToast } from "@/hooks/use-toast";
+import ProjectSummaryChart from './project-summary-chart';
+import { CHART_COLORS } from '@/lib/constants';
 
 interface ProjectViewProps {
     project: Project;
@@ -49,6 +51,12 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
     acc[item.type] += item.weight * item.quantity;
     return acc;
   }, {} as Record<string, number>) || {};
+
+  const chartData = Object.entries(weightByType).map(([type, weight], index) => ({
+    type: type.charAt(0).toUpperCase() + type.slice(1),
+    weight: parseFloat(weight.toFixed(2)),
+    fill: CHART_COLORS[index % CHART_COLORS.length],
+  }));
 
   const handleAddItem = async (item: Omit<SteelItem, 'id'>) => {
     try {
@@ -189,15 +197,8 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
                         <span className="font-bold text-green-600">${totalCost.toFixed(2)}</span>
                     </div>
                     <hr/>
-                    <h4 className="text-sm font-medium">Weight by Type</h4>
-                    {Object.keys(weightByType).length > 0 ? Object.entries(weightByType).map(([type, weight]) => (
-                        <div key={type} className="flex items-center justify-between">
-                            <span className="text-muted-foreground capitalize">{type}</span>
-                            <span className="font-medium">{weight.toFixed(2)} kg</span>
-                        </div>
-                    )) : (
-                        <p className="text-xs text-muted-foreground">No items to summarize.</p>
-                    )}
+                    <h4 className="text-sm font-medium text-center mb-2">Weight by Type</h4>
+                    <ProjectSummaryChart data={chartData} />
                 </CardContent>
                 <CardFooter className="no-print">
                     <Button className="w-full" onClick={() => onPrint(project)} disabled={!project}>

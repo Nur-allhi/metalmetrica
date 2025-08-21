@@ -13,3 +13,12 @@ export const DENSITY_UNITS = {
 export const KG_TO_LBS = 2.20462;
 export const M_TO_FT = 3.28084;
 export const MM_TO_IN = 0.0393701;
+
+// Chart Colors
+export const CHART_COLORS = [
+  "hsl(var(--chart-1))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
+];

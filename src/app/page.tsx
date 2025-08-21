@@ -18,7 +18,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "@/components/header";
 import OrganizationSetupDialog from "@/components/organization-setup-dialog";
 import CalculatorCard from "@/components/calculator-card";
-import ProjectReport from "@/components/project-report";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProjectSidebar from "@/components/project-sidebar";
 import ProjectView from "@/components/project-view";
@@ -39,7 +38,6 @@ export default function Home() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
-  const reportRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!authLoading && !organization) {
@@ -137,46 +135,42 @@ export default function Home() {
 
   return (
     <>
-      <div className="sr-only print:not-sr-only">
-          {activeProject && organization && <ProjectReport project={activeProject} organization={organization} />}
-      </div>
-      <div className="print-container no-print">
-        <SidebarProvider>
-            <div className="flex min-h-screen w-full flex-col bg-muted/40">
-                <Sidebar>
-                    <ProjectSidebar 
-                        projects={projects}
-                        activeProject={activeProject}
-                        onProjectSelect={setActiveProject}
-                        onAddProject={() => setAddProjectDialogOpen(true)}
-                        loading={loading}
-                    />
-                </Sidebar>
-                <SidebarInset>
-                    <Header organization={organization} onSettingsClick={() => setOrgSetupOpen(true)} />
-                    <main className="flex flex-1 flex-col gap-4 p-4 sm:p-6">
-                        <Tabs defaultValue="projects" className="flex flex-col h-full">
-                        <div className="flex items-center no-print">
-                            <TabsList>
-                            <TabsTrigger value="single">Single Calc</TabsTrigger>
-                            <TabsTrigger value="projects">Projects</TabsTrigger>
-                            </TabsList>
-                             <div className="ml-auto flex items-center gap-2">
-                                <SidebarTrigger className="md:hidden" />
-                            </div>
-                        </div>
-                        <TabsContent value="single" className="mt-4">
-                            <CalculatorCard />
-                        </TabsContent>
-                        <TabsContent value="projects" className="flex-1 mt-4">
-                           {renderProjectContent()}
-                        </TabsContent>
-                        </Tabs>
-                    </main>
-                </SidebarInset>
-            </div>
-        </SidebarProvider>
-      </div>
+      <SidebarProvider>
+          <div className="flex min-h-screen w-full flex-col bg-muted/40">
+              <Sidebar>
+                  <ProjectSidebar 
+                      projects={projects}
+                      activeProject={activeProject}
+                      onProjectSelect={setActiveProject}
+                      onAddProject={() => setAddProjectDialogOpen(true)}
+                      loading={loading}
+                  />
+              </Sidebar>
+              <SidebarInset>
+                  <Header organization={organization} onSettingsClick={() => setOrgSetupOpen(true)} />
+                  <main className="flex flex-1 flex-col gap-4 p-4 sm:p-6 no-print">
+                      <Tabs defaultValue="projects" className="flex flex-col h-full">
+                      <div className="flex items-center no-print">
+                          <TabsList>
+                          <TabsTrigger value="single">Single Calc</TabsTrigger>
+                          <TabsTrigger value="projects">Projects</TabsTrigger>
+                          </TabsList>
+                           <div className="ml-auto flex items-center gap-2">
+                              <SidebarTrigger className="md:hidden" />
+                          </div>
+                      </div>
+                      <TabsContent value="single" className="mt-4">
+                          <CalculatorCard />
+                      </TabsContent>
+                      <TabsContent value="projects" className="flex-1 mt-4">
+                         {renderProjectContent()}
+                      </TabsContent>
+                      </Tabs>
+                  </main>
+              </SidebarInset>
+          </div>
+      </SidebarProvider>
+
       <OrganizationSetupDialog
         open={isOrgSetupOpen}
         onOpenChange={setOrgSetupOpen}

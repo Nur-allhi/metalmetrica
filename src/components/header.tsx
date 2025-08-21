@@ -49,40 +49,7 @@ export default function Header({ onSettingsClick }: HeaderProps) {
           <h1 className="text-xl font-bold">MetalMetrica</h1>
         </div>
         <div className="ml-auto flex items-center gap-4">
-          {user && !user.isAnonymous ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="overflow-hidden rounded-full"
-                >
-                  <Avatar>
-                    <AvatarImage src={user.photoURL || undefined} alt={user.displayName || "User"} data-ai-hint="user avatar" />
-                    <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>{user.displayName || "My Account"}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={onSettingsClick}>
-                  <Settings className="mr-2" />
-                  Settings
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>
-                  <LogOut className="mr-2" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button onClick={handleSignIn}>
-              <LogIn />
-              Sign In to Save
-            </Button>
-          )}
+          
         </div>
       </header>
       <SaveProgressDialog 

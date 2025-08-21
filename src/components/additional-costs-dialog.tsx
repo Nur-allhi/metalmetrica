@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -34,10 +34,12 @@ interface AdditionalCostsDialogProps {
   onOpenChange: (open: boolean) => void;
   onConfirm: (costs: AdditionalCost[]) => void;
   currencyCode: string;
+  existingCosts?: AdditionalCost[];
 }
 
 const formSchema = z.object({
   costs: z.array(z.object({
+    id: z.string().optional(),
     description: z.string().min(1, "Description is required."),
     amount: z.coerce.number().min(0, "Amount must be positive."),
   })),
@@ -45,13 +47,18 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function AdditionalCostsDialog({ open, onOpenChange, onConfirm, currencyCode }: AdditionalCostsDialogProps) {
+export default function AdditionalCostsDialog({ open, onOpenChange, onConfirm, currencyCode, existingCosts = [] }: AdditionalCostsDialogProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      costs: [],
+      costs: existingCosts,
     },
   });
+  
+  useEffect(() => {
+    form.reset({ costs: existingCosts });
+  }, [existingCosts, form, open]);
+
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -63,11 +70,10 @@ export default function AdditionalCostsDialog({ open, onOpenChange, onConfirm, c
   function onSubmit(data: FormData) {
     const costsWithIds = data.costs.map((cost, index) => ({
         ...cost,
-        id: `cost_${Date.now()}_${index}`
+        id: cost.id || `cost_${Date.now()}_${index}`
     }));
     onConfirm(costsWithIds);
     onOpenChange(false);
-    form.reset();
   }
 
   return (
@@ -79,9 +85,9 @@ export default function AdditionalCostsDialog({ open, onOpenChange, onConfirm, c
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
-              <DialogTitle>Additional Costs</DialogTitle>
+              <DialogTitle>Manage Additional Costs</DialogTitle>
               <DialogDescription>
-                Add any additional costs like transport, labor, or taxes. These will be added to the report.
+                Add or edit additional costs like transport, labor, or taxes. These will be saved to the project.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4 max-h-96 overflow-y-auto pr-2">
@@ -125,7 +131,7 @@ export default function AdditionalCostsDialog({ open, onOpenChange, onConfirm, c
             </div>
             <DialogFooter className="pt-4">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-              <Button type="submit">Generate with Costs</Button>
+              <Button type="submit">Save Costs</Button>
             </DialogFooter>
           </form>
         </Form>

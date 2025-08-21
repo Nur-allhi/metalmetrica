@@ -65,6 +65,7 @@ export interface Project {
   projectId: string;
   items: SteelItem[];
   createdAt: string;
+  additionalCosts?: AdditionalCost[];
 }
 
 export interface AdditionalCost {

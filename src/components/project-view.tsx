@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import { Plus, Download, Trash2, Edit } from "lucide-react";
+import { Plus, Download, Trash2, Edit, FilePlus2, Receipt } from "lucide-react";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { Button } from "@/components/ui/button";
@@ -177,7 +177,8 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   const [itemToEdit, setItemToEdit] = useState<SteelItem | null>(null);
   const { toast } = useToast();
   
-  const handleGeneratePdf = (additionalCosts: AdditionalCost[] = []) => {
+  const handleGeneratePdf = () => {
+    const additionalCosts = project.additionalCosts || [];
     const doc = new jsPDF();
     doc.setFont("helvetica", "normal");
 
@@ -454,8 +455,12 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   }
 
   const totalWeight = useMemo(() => project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0) || 0, [project.items]);
-  const hasCost = useMemo(() => project.items.some(item => item.cost !== null), [project.items]);
-  const totalCost = useMemo(() => hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null, [project.items, hasCost]);
+  const hasCost = useMemo(() => project.items.some(item => item.cost !== null) || (project.additionalCosts && project.additionalCosts.length > 0), [project.items, project.additionalCosts]);
+  
+  const subTotalCost = useMemo(() => project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0), [project.items]);
+  const additionalCostsTotal = useMemo(() => (project.additionalCosts || []).reduce((acc, cost) => acc + cost.amount, 0), [project.additionalCosts]);
+  const totalCost = useMemo(() => hasCost ? subTotalCost + additionalCostsTotal : null, [hasCost, subTotalCost, additionalCostsTotal]);
+
   const currencyCode = organization?.currency || 'USD';
   const currencySymbol = getCurrencySymbol(currencyCode);
 
@@ -562,6 +567,24 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     }
   };
 
+  const handleSaveCosts = async (costs: AdditionalCost[]) => {
+    try {
+        await updateProjectDb(project.id, { additionalCosts: costs });
+        toast({
+            title: "Costs Saved",
+            description: "The additional costs have been saved to the project.",
+        });
+        setCostsDialogOpen(false);
+    } catch (error) {
+         console.error("Error saving costs:", error);
+         toast({
+            title: "Error",
+            description: "Failed to save additional costs.",
+            variant: "destructive",
+        });
+    }
+  }
+
   return (
     <>
       <div className="grid auto-rows-max items-start gap-4 lg:grid-cols-3 lg:gap-8 w-full h-full overflow-hidden">
@@ -624,10 +647,22 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                     <span className="font-bold">{numberFormat(totalWeight)} kg</span>
                 </div>
                 {hasCost && totalCost !== null && (
-                    <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Total Cost</span>
-                    <span className="font-bold text-green-600">{currencySymbol} {numberFormat(totalCost)}</span>
-                    </div>
+                    <>
+                     <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground pl-2">Item Sub-total</span>
+                        <span className="font-medium text-green-600">{currencySymbol} {numberFormat(subTotalCost)}</span>
+                      </div>
+                      {(project.additionalCosts || []).map(cost => (
+                        <div key={cost.id} className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground pl-2">{cost.description}</span>
+                            <span className="font-medium text-green-600">{currencySymbol} {numberFormat(cost.amount)}</span>
+                        </div>
+                      ))}
+                      <div className="flex items-center justify-between font-bold border-t pt-2 mt-1">
+                        <span className="text-muted-foreground">Grand Total</span>
+                        <span className="text-green-600">{currencySymbol} {numberFormat(totalCost)}</span>
+                      </div>
+                    </>
                 )}
                </div>
 
@@ -656,11 +691,20 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
               
               <ProjectSummaryChart data={summaryData} />
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex-col gap-2">
+               <Button
+                  className="w-full"
+                  disabled={!project || !organization || !hasCost}
+                  onClick={() => setCostsDialogOpen(true)}
+                  title={!organization ? "Please set up an organization first" : !hasCost ? "Add item costs to manage additional costs" : ""}
+              >
+                  <Receipt />
+                  Manage Additional Costs
+              </Button>
               <Button
                   className="w-full"
                   disabled={!project || !organization}
-                  onClick={() => hasCost ? setCostsDialogOpen(true) : handleGeneratePdf()}
+                  onClick={() => handleGeneratePdf()}
                   title={!organization ? "Please set up an organization first" : ""}
               >
                   <Download />
@@ -697,8 +741,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
       <AdditionalCostsDialog
         open={isCostsDialogOpen}
         onOpenChange={setCostsDialogOpen}
-        onConfirm={handleGeneratePdf}
+        onConfirm={handleSaveCosts}
         currencyCode={organization?.currency || 'USD'}
+        existingCosts={project.additionalCosts}
        />
     </>
   )

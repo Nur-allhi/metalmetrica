@@ -177,6 +177,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
 
     let newItem: Omit<SteelItem, 'id'> | null = null;
     const density = STEEL_DENSITIES.MS;
+    const densityGcm3 = density / 1000; // 7.85
 
     if (data.type === "plate" && data.length && data.width && data.thickness) {
         const { length, width, thickness } = data;
@@ -199,17 +200,10 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
         };
     } else if (data.type === "girder" && data.length && data.flangeWidth && data.flangeThickness && data.webHeight && data.webThickness) {
         const { length, flangeWidth, flangeThickness, webHeight, webThickness } = data;
-        const lengthM = length / 1000;
-        const flangeWidthM = flangeWidth / 1000;
-        const flangeThicknessM = flangeThickness / 1000;
-        const webHeightM = webHeight / 1000;
-        const webThicknessM = webThickness / 1000;
-
-        const flangeVolume = 2 * flangeWidthM * flangeThicknessM * lengthM;
-        const webVolume = webHeightM * webThicknessM * lengthM;
-        const totalVolumeM3 = flangeVolume + webVolume;
-        const weightKg = totalVolumeM3 * density;
         
+        // Using "Girder by Running Feet" logic from blueprint, adapted for kg
+        const weightKg = ((flangeWidth * flangeThickness * 2) + (webHeight * webThickness)) * (length / 1000) * (densityGcm3 / 1000);
+
         newItem = {
             name: data.name, type: 'girder', quantity, length, flangeWidth, flangeThickness, webHeight, webThickness,
             weight: weightKg, cost: weightKg * pricePerKg,
@@ -491,3 +485,5 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
     </Dialog>
   );
 }
+
+    

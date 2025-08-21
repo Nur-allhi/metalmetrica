@@ -2,7 +2,7 @@
 "use client";
 
 import React from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -22,10 +22,11 @@ interface ProjectSidebarProps {
     activeProject: Project | null;
     onProjectSelect: (project: Project) => void;
     onAddProject: () => void;
+    onSettingsClick: () => void;
     loading: boolean;
 }
 
-export default function ProjectSidebar({ projects, activeProject, onProjectSelect, onAddProject, loading }: ProjectSidebarProps) {
+export default function ProjectSidebar({ projects, activeProject, onProjectSelect, onAddProject, onSettingsClick, loading }: ProjectSidebarProps) {
     return (
         <>
             <SidebarHeader>
@@ -57,10 +58,14 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                     )}
                 </SidebarMenu>
             </SidebarContent>
-            <SidebarFooter>
-                 <Button onClick={onAddProject} className="w-full">
+            <SidebarFooter className='flex flex-row gap-2'>
+                 <Button onClick={onAddProject} className="flex-1">
                     <Plus />
                     <span>Create Project</span>
+                </Button>
+                <Button variant="outline" size="icon" onClick={onSettingsClick}>
+                    <Settings className="h-4 w-4" />
+                    <span className="sr-only">Settings</span>
                 </Button>
             </SidebarFooter>
         </>

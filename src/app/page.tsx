@@ -63,7 +63,7 @@ export default function Home() {
       });
       return () => unsubscribe();
     }
-  }, [user]);
+  }, [user, activeProject?.id]);
 
   // Set initial active project
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function Home() {
     if (!loading && projects.length === 0) {
         setActiveProject(null);
     }
-  }, [loading, projects, activeProject]);
+  }, [loading, projects]);
 
   
   const handleAddProject = async (data: { name: string; customer: string; }) => {
@@ -149,13 +149,14 @@ export default function Home() {
                       activeProject={activeProject}
                       onProjectSelect={setActiveProject}
                       onAddProject={() => setAddProjectDialogOpen(true)}
+                      onSettingsClick={() => setOrgSetupOpen(true)}
                       loading={loading}
                   />
               </Sidebar>
               <SidebarInset>
-                  <Header organization={organization} onSettingsClick={() => setOrgSetupOpen(true)} />
+                  <Header organization={organization} />
                   <main className="flex flex-1 flex-col gap-4 p-4 lg:p-6 overflow-hidden">
-                      <Tabs defaultValue="projects" className="flex-1 flex flex-col overflow-hidden">
+                      <Tabs defaultValue="projects" className="flex-1 flex flex-col overflow-hidden h-full">
                         <div className="flex items-center">
                             <TabsList>
                             <TabsTrigger value="single">Single Calc</TabsTrigger>

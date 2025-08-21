@@ -25,8 +25,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { Organization } from "@/types";
 import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "./ui/textarea";
 
 interface OrganizationSetupDialogProps {
   open: boolean;
@@ -40,6 +48,9 @@ const formSchema = z.object({
     message: "Organization name must be at least 2 characters.",
   }),
   logoUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
+  email: z.string().email({ message: "Please enter a valid email." }).optional().or(z.literal('')),
+  address: z.string().optional(),
+  currency: z.string().optional(),
 });
 
 export default function OrganizationSetupDialog({
@@ -54,6 +65,9 @@ export default function OrganizationSetupDialog({
     defaultValues: {
       name: "",
       logoUrl: "",
+      email: "",
+      address: "",
+      currency: "USD",
     },
   });
 
@@ -62,6 +76,9 @@ export default function OrganizationSetupDialog({
       form.reset({
         name: organization.name,
         logoUrl: organization.logoUrl || "",
+        email: organization.email || "",
+        address: organization.address || "",
+        currency: organization.currency || "USD",
       });
     }
   }, [organization, form]);
@@ -79,7 +96,7 @@ export default function OrganizationSetupDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
@@ -98,6 +115,56 @@ export default function OrganizationSetupDialog({
                     <FormControl>
                       <Input placeholder="Your Company LLC" {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="contact@company.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Address</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="123 Main St, Anytown, USA" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="currency"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Currency</FormLabel>
+                     <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a currency" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="USD">USD ($)</SelectItem>
+                            <SelectItem value="EUR">EUR (€)</SelectItem>
+                            <SelectItem value="GBP">GBP (£)</SelectItem>
+                            <SelectItem value="JPY">JPY (¥)</SelectItem>
+                            <SelectItem value="INR">INR (₹)</SelectItem>
+                        </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -133,7 +200,8 @@ export default function OrganizationSetupDialog({
                 )}
             </div>
             <DialogFooter>
-              <Button type="submit">Save and Continue</Button>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+              <Button type="submit">Save</Button>
             </DialogFooter>
           </form>
         </Form>

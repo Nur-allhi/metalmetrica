@@ -3,22 +3,19 @@
 
 import React from "react";
 import Image from "next/image";
-import { Settings } from "lucide-react";
 import type { Organization } from "@/types";
-import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import Logo from "./logo";
 
 interface HeaderProps {
   organization: Organization | null;
-  onSettingsClick: () => void;
 }
 
-export default function Header({ organization, onSettingsClick }: HeaderProps) {
+export default function Header({ organization }: HeaderProps) {
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 no-print">
        <SidebarTrigger className="flex md:hidden" />
-        <div className="hidden items-center gap-2 md:flex">
+       <div className="hidden items-center gap-2 md:flex">
            <Logo className="h-6 w-6 text-primary" />
            <h1 className="text-xl font-bold">MetalMetrica</h1>
         </div>
@@ -37,15 +34,6 @@ export default function Header({ organization, onSettingsClick }: HeaderProps) {
             {organization?.name || "No Organization Set"}
           </span>
         </div>
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8"
-          onClick={onSettingsClick}
-        >
-          <Settings className="h-4 w-4" />
-          <span className="sr-only">Settings</span>
-        </Button>
       </div>
     </header>
   );

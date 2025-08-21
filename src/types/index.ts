@@ -1,8 +1,12 @@
 
 
+
 export interface Organization {
   name: string;
   logoUrl?: string;
+  email?: string;
+  address?: string;
+  currency?: string;
 }
 
 export type UnitSystem = "quality" | "non-quality";

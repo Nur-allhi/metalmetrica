@@ -116,11 +116,11 @@ export default function Home() {
 
     if (!activeProject) {
       return (
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center h-full">
             <Card className="flex flex-col items-center justify-center p-10 text-center bg-transparent border-dashed">
                 <Workflow size={48} className="text-muted-foreground mb-4" />
                 <CardTitle>No Project Selected</CardTitle>
-                <CardDescription className="mt-2">Select a project from the list or create a new one.</CardDescription>
+                <CardDescription className="mt-2">Select a project or create a new one.</CardDescription>
                 <Button className="mt-4" onClick={() => setAddProjectDialogOpen(true)}>
                     <Plus className="mr-2 h-4 w-4" />
                     Create New Project
@@ -158,24 +158,22 @@ export default function Home() {
                 </Sidebar>
                 <SidebarInset>
                     <Header organization={organization} onSettingsClick={() => setOrgSetupOpen(true)} />
-                    <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-                        <Tabs defaultValue="projects">
+                    <main className="flex flex-1 flex-col gap-4 p-4 sm:p-6">
+                        <Tabs defaultValue="projects" className="flex flex-col h-full">
                         <div className="flex items-center no-print">
                             <TabsList>
-                            <TabsTrigger value="single">Single Calculation</TabsTrigger>
+                            <TabsTrigger value="single">Single Calc</TabsTrigger>
                             <TabsTrigger value="projects">Projects</TabsTrigger>
                             </TabsList>
                              <div className="ml-auto flex items-center gap-2">
                                 <SidebarTrigger className="md:hidden" />
                             </div>
                         </div>
-                        <TabsContent value="single">
+                        <TabsContent value="single" className="mt-4">
                             <CalculatorCard />
                         </TabsContent>
-                        <TabsContent value="projects">
-                            <div className="flex h-[calc(100vh-12rem)]">
-                                {renderProjectContent()}
-                            </div>
+                        <TabsContent value="projects" className="flex-1 mt-4">
+                           {renderProjectContent()}
                         </TabsContent>
                         </Tabs>
                     </main>

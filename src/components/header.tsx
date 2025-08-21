@@ -16,7 +16,11 @@ export default function Header({ organization, onSettingsClick }: HeaderProps) {
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 no-print">
        <div className="flex items-center gap-2">
-         <SidebarTrigger className="hidden md:flex" />
+         <SidebarTrigger className="flex md:hidden" />
+          <div className="hidden items-center gap-2 md:flex">
+             <Workflow className="h-6 w-6 text-primary" />
+             <h1 className="text-xl font-bold">MetalMetrica</h1>
+          </div>
       </div>
       <div className="ml-auto flex items-center gap-4">
         <div className="flex items-center gap-2">
@@ -29,7 +33,7 @@ export default function Header({ organization, onSettingsClick }: HeaderProps) {
               className="rounded-sm object-contain"
             />
           )}
-          <span className="text-sm text-muted-foreground hidden md:inline">
+          <span className="text-sm text-muted-foreground hidden sm:inline">
             {organization?.name || "No Organization Set"}
           </span>
         </div>

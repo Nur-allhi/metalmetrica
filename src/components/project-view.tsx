@@ -11,14 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import type { Project, Organization, SteelItem, SteelPlate, SteelPipe, SteelGirder, SteelCircular } from '@/types';
 import AddItemDialog from './add-item-dialog';
@@ -56,6 +48,41 @@ const renderItemDimensions = (item: SteelItem) => {
             return '';
     }
 };
+
+const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void }) => (
+    <Card>
+        <CardContent className="p-4 flex flex-col gap-4">
+            <div className="flex justify-between items-start">
+                <div>
+                    <h3 className="font-semibold">{item.name}</h3>
+                    <Badge variant="secondary" className="capitalize mt-1">{item.type}</Badge>
+                </div>
+                <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 -mt-2" onClick={onDelete}>
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+            </div>
+            <p className="text-sm text-muted-foreground">{renderItemDimensions(item)}</p>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <p className="text-muted-foreground">Qty</p>
+                    <p>{item.quantity}</p>
+                </div>
+                <div>
+                    <p className="text-muted-foreground">Unit Wt (kg)</p>
+                    <p>{item.weight.toFixed(2)}</p>
+                </div>
+                 <div>
+                    <p className="text-muted-foreground">Total Wt (kg)</p>
+                    <p className="font-semibold">{(item.weight * item.quantity).toFixed(2)}</p>
+                </div>
+                <div>
+                    <p className="text-muted-foreground">Total Cost</p>
+                    <p className="font-semibold text-green-600">${(item.cost * item.quantity).toFixed(2)}</p>
+                </div>
+            </div>
+        </CardContent>
+    </Card>
+);
 
 export default function ProjectView({ project, organization, onPrint }: ProjectViewProps) {
   const [isAddItemDialogOpen, setAddItemDialogOpen] = useState(false);
@@ -119,7 +146,6 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
   const handleDeleteItem = async () => {
     if (!itemToDelete) return;
     try {
-      // We need to find the full item object from the project state to pass to firestore
       const fullItem = project.items.find(i => i.id === itemToDelete.id);
       if(!fullItem) throw new Error("Item not found in project");
 
@@ -128,7 +154,7 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
         title: "Item Deleted",
         description: `${itemToDelete.name} has been removed from the project.`,
       });
-      setItemToDelete(null); // Close the dialog
+      setItemToDelete(null); 
     } catch (error) {
       console.error("Error deleting item:", error);
       toast({
@@ -141,9 +167,9 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
 
   return (
     <>
-    <div className="grid gap-4 md:gap-8 lg:grid-cols-3 flex-1">
-        <div className="lg:col-span-2">
-            <Card className="h-full">
+    <div className="grid gap-6 md:gap-8 flex-1">
+        <div>
+            <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                     <CardTitle>{project.name}</CardTitle>
@@ -153,59 +179,39 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
                 </div>
                 <div className="flex gap-2 no-print">
                     <Button size="sm" variant="outline" onClick={() => setEditProjectDialogOpen(true)}>
-                    <Edit />
-                    Edit Details
-                    </Button>
-                    <Button size="sm" onClick={() => setAddItemDialogOpen(true)}>
-                    <Plus />
-                    Add Item
+                        <Edit className="h-4 w-4" />
                     </Button>
                 </div>
                 </CardHeader>
-                <CardContent>
-                <Table>
-                    <TableHeader>
-                    <TableRow>
-                        <TableHead>Item</TableHead>
-                        <TableHead>Dimensions</TableHead>
-                        <TableHead className="text-right">Weight (kg)</TableHead>
-                        <TableHead className="text-right">Qty</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                    {project.items.length === 0 ? (
-                        <TableRow>
-                            <TableCell colSpan={6} className="h-24 text-center">
-                                No items in this project yet.
-                            </TableCell>
-                        </TableRow>
-                    ) : (
-                        project.items.map((item) => (
-                            <TableRow key={item.id}>
-                            <TableCell className="font-medium">
-                                <div className="font-medium">{item.name}</div>
-                                <div className="text-xs text-muted-foreground capitalize">{item.type}</div>
-                            </TableCell>
-                            <TableCell className="text-muted-foreground text-xs">
-                                {renderItemDimensions(item)}
-                            </TableCell>
-                            <TableCell className="text-right">{(item.weight * item.quantity).toFixed(2)}</TableCell>
-                            <TableCell className="text-right">{item.quantity}</TableCell>
-                            <TableCell className="text-right no-print">
-                                <Button variant="ghost" size="icon" onClick={() => setItemToDelete(item)}>
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
-                            </TableCell>
-                            </TableRow>
-                        ))
-                    )}
-                    </TableBody>
-                </Table>
-                </CardContent>
             </Card>
-            </div>
-            <div className="lg:col-span-1 flex flex-col gap-4">
+        </div>
+
+        <div className="grid gap-4">
+             {project.items.length === 0 ? (
+                 <Card className="flex flex-col items-center justify-center p-10 text-center bg-transparent border-dashed">
+                    <CardTitle>No Items Yet</CardTitle>
+                    <CardDescription className="mt-2">Add the first item to this project.</CardDescription>
+                    <Button className="mt-4" onClick={() => setAddItemDialogOpen(true)}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Item
+                    </Button>
+                </Card>
+            ) : (
+                project.items.map((item) => (
+                    <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} />
+                ))
+            )}
+        </div>
+        
+        <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm p-4 -mx-4 no-print">
+            <Button className="w-full" onClick={() => setAddItemDialogOpen(true)}>
+                <Plus />
+                Add Item
+            </Button>
+        </div>
+
+
+        <div className="flex flex-col gap-4">
             <Card>
                 <CardHeader>
                     <CardTitle>Project Summary</CardTitle>

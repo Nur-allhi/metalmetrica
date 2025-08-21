@@ -90,14 +90,14 @@ export default function CalculatorCard() {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle>Single Item Calculator</CardTitle>
         <CardDescription>Calculate the weight and cost of a single steel item.</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="grid gap-6">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Unit System</Label>
                 <RadioGroup defaultValue="metric" onValueChange={(val) => setUnitSystem(val as UnitSystem)} className="mt-2">
@@ -125,7 +125,7 @@ export default function CalculatorCard() {
                   </Select>
                </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="length">Length ({dimUnit})</Label>
               <Input id="length" type="number" step="any" {...register("length")} />
@@ -147,7 +147,7 @@ export default function CalculatorCard() {
               {errors.quantity && <p className="text-destructive text-xs mt-1">{errors.quantity.message}</p>}
             </div>
           </div>
-           <div className="grid grid-cols-2 gap-4">
+           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
              <div>
                 <Label htmlFor="density">Density ({unitSystem === 'metric' ? 'kg/m³' : 'lb/ft³'})</Label>
                 <Input id="density" type="number" step="any" {...register("density")} readOnly={steelType !== 'Custom'} />

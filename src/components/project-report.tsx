@@ -22,7 +22,7 @@ const renderItemDimensions = (item: SteelItem) => {
             return `Ø${pipe.outerDiameter} x ${pipe.wallThickness}mm (L: ${pipe.length}mm)`;
         case 'girder':
              const girder = item as SteelGirder;
-            return `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webWidth}`;
+            return `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness}`;
         default:
             return '';
     }

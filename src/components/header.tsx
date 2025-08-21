@@ -52,3 +52,5 @@ export default function Header({ organization, onSettingsClick }: HeaderProps) {
     </header>
   );
 }
+
+    

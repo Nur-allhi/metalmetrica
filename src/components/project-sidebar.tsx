@@ -77,11 +77,11 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                     </SidebarMenuItem>
                     <Accordion type="single" collapsible defaultValue="projects" className="w-full">
                         <AccordionItem value="projects" className="border-none">
-                            <AccordionTrigger>
+                            <AccordionTrigger asChild>
                                 <SidebarMenuButton>
                                     <Folder />
-                                    <span>Projects</span>
-                                    <ChevronDown className="h-4 w-4 ml-auto shrink-0 transition-transform duration-200 group-data-[disabled]:opacity-0 group-data-[state=open]:rotate-180" />
+                                    <span className="flex-1 text-left">Projects</span>
+                                    <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 group-data-[disabled]:opacity-0 group-data-[state=open]:rotate-180" />
                                 </SidebarMenuButton>
                             </AccordionTrigger>
                             <AccordionContent className="pl-4 pt-1">
@@ -116,11 +116,11 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                             </AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="settings" className="border-none">
-                             <AccordionTrigger>
+                             <AccordionTrigger asChild>
                                  <SidebarMenuButton>
                                      <Settings />
-                                     <span>Settings</span>
-                                     <ChevronDown className="h-4 w-4 ml-auto shrink-0 transition-transform duration-200 group-data-[disabled]:opacity-0 group-data-[state=open]:rotate-180" />
+                                     <span className="flex-1 text-left">Settings</span>
+                                     <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 group-data-[disabled]:opacity-0 group-data-[state=open]:rotate-180" />
                                  </SidebarMenuButton>
                             </AccordionTrigger>
                             <AccordionContent className="pl-4 pt-1">

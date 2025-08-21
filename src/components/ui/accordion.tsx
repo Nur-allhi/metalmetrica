@@ -4,6 +4,7 @@
 import * as React from "react"
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import { ChevronDown } from "lucide-react"
+import { Slot } from "@radix-ui/react-slot"
 
 import { cn } from "@/lib/utils"
 
@@ -23,21 +24,25 @@ AccordionItem.displayName = "AccordionItem"
 
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
-  <AccordionPrimitive.Header className="flex">
-    <AccordionPrimitive.Trigger
-      ref={ref}
-      className={cn(
-        "group flex flex-1 items-center justify-between font-medium transition-all",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </AccordionPrimitive.Trigger>
-  </AccordionPrimitive.Header>
-))
+  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger> & { asChild?: boolean }
+>(({ className, children, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button"
+    return (
+      <AccordionPrimitive.Header className="flex">
+        <AccordionPrimitive.Trigger
+          ref={ref}
+          asChild={asChild}
+          className={cn(
+            "group flex w-full items-center justify-between font-medium transition-all",
+            className
+          )}
+          {...props}
+        >
+            {children}
+        </AccordionPrimitive.Trigger>
+      </AccordionPrimitive.Header>
+    )
+})
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
 
 const AccordionContent = React.forwardRef<

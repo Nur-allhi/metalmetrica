@@ -101,7 +101,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center bg-muted/40 p-4 sm:p-6 lg:p-8 animate-in fade-in-0 slide-in-from-top-4 duration-500">
+    <div className="flex min-h-screen w-full flex-col items-center bg-muted/40 p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-2xl">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -250,14 +250,14 @@ export default function SettingsPage() {
                       </div>
                     )}
                 </CardContent>
-                <CardFooter className="flex justify-between border-t pt-6 mt-6">
-                   <Button variant="outline" asChild>
+                <CardFooter className="flex flex-col-reverse sm:flex-row sm:justify-between border-t pt-6 mt-6 gap-2">
+                   <Button variant="outline" asChild className="w-full sm:w-auto">
                      <Link href="/">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Projects
                     </Link>
                    </Button>
-                  <Button type="submit">Save</Button>
+                  <Button type="submit" className="w-full sm:w-auto">Save</Button>
                 </CardFooter>
               </Card>
             </form>

@@ -117,7 +117,7 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                         </AccordionItem>
                         <AccordionItem value="settings" className="border-none">
                              <AccordionTrigger>
-                                <SidebarMenuButton>
+                                 <SidebarMenuButton>
                                      <Settings />
                                      <span>Settings</span>
                                      <ChevronDown className="h-4 w-4 ml-auto shrink-0 transition-transform duration-200 group-data-[disabled]:opacity-0 group-data-[state=open]:rotate-180" />

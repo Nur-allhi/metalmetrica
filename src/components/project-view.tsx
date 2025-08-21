@@ -22,8 +22,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { Project, Organization, SteelItem } from '@/types';
 import AddItemDialog from './add-item-dialog';
+import EditProjectDialog from './edit-project-dialog';
 import DeleteItemDialog from './delete-item-dialog';
-import { addItemToProject as addItemToProjectDb, deleteItemFromProject as deleteItemFromProjectDb } from '@/services/firestore';
+import { addItemToProject as addItemToProjectDb, deleteItemFromProject as deleteItemFromProjectDb, updateProject as updateProjectDb } from '@/services/firestore';
 import { useToast } from "@/hooks/use-toast";
 
 interface ProjectViewProps {
@@ -34,6 +35,7 @@ interface ProjectViewProps {
 
 export default function ProjectView({ project, organization, onPrint }: ProjectViewProps) {
   const [isAddItemDialogOpen, setAddItemDialogOpen] = useState(false);
+  const [isEditProjectDialogOpen, setEditProjectDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<SteelItem | null>(null);
   const { toast } = useToast();
 
@@ -63,6 +65,24 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
         description: "Failed to add item to the project.",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleEditProject = async (data: { name: string; customer: string; }) => {
+    try {
+        await updateProjectDb(project.id, data);
+        toast({
+            title: "Project Updated",
+            description: "The project details have been successfully updated.",
+        });
+        setEditProjectDialogOpen(false);
+    } catch (error) {
+        console.error("Error updating project:", error);
+        toast({
+            title: "Error",
+            description: "Failed to update project details.",
+            variant: "destructive",
+        });
     }
   };
 
@@ -102,7 +122,7 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
                     </CardDescription>
                 </div>
                 <div className="flex gap-2 no-print">
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="outline" onClick={() => setEditProjectDialogOpen(true)}>
                     <Edit />
                     Edit Details
                     </Button>
@@ -193,6 +213,12 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
         onOpenChange={setAddItemDialogOpen}
         onAddItem={handleAddItem}
     />
+     <EditProjectDialog
+        open={isEditProjectDialogOpen}
+        onOpenChange={setEditProjectDialogOpen}
+        onEditProject={handleEditProject}
+        project={project}
+     />
      <DeleteItemDialog
         open={!!itemToDelete}
         onOpenChange={(open) => !open && setItemToDelete(null)}

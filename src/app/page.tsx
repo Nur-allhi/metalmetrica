@@ -46,25 +46,35 @@ export default function Home() {
     }
   }, [organization, authLoading]);
 
+  // Fetch projects
   useEffect(() => {
     if (user) {
       setLoading(true);
       const unsubscribe = getProjects(user.uid, (fetchedProjects) => {
         setProjects(fetchedProjects);
-        if (fetchedProjects.length > 0 && !activeProject) {
-          setActiveProject(fetchedProjects[0]);
-        } else if (fetchedProjects.length === 0) {
-          setActiveProject(null);
-        } else if (activeProject) {
-            // Refresh active project data
+        
+        // If there's an active project, find its updated version
+        if (activeProject) {
             const refreshedProject = fetchedProjects.find(p => p.id === activeProject.id) || null;
             setActiveProject(refreshedProject);
         }
+        
         setLoading(false);
       });
       return () => unsubscribe();
     }
-  }, [user, activeProject?.id]);
+  }, [user]);
+
+  // Set initial active project
+  useEffect(() => {
+    if (!loading && projects.length > 0 && !activeProject) {
+        setActiveProject(projects[0]);
+    }
+    if (!loading && projects.length === 0) {
+        setActiveProject(null);
+    }
+  }, [loading, projects, activeProject]);
+
   
   const handleAddProject = async (data: { name: string; customer: string; }) => {
     if (!user) return;

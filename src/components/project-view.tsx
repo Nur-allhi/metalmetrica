@@ -47,11 +47,11 @@ const renderItemDimensions = (item: SteelItem) => {
             return `L:${pipe.length} Ø:${pipe.outerDiameter} Wall:${pipe.wallThickness} mm`;
         case 'girder':
             const girder = item as SteelGirder;
-            return `L:${girder.length}\nFlange:${girder.flangeWidth}x${girder.flangeThickness}\nWeb:${girder.webHeight}x${girder.webThickness} mm`;
+            return `L:${girder.length} | Flange:${girder.flangeWidth}x${girder.flangeThickness} | Web:${girder.webHeight}x${girder.webThickness} mm`;
         case 'circular':
             const circular = item as SteelCircular;
             if (circular.innerDiameter && circular.innerDiameter > 0) {
-                 return `T:${circular.thickness} Ø:${circular.diameter}\nInner Ø:${circular.innerDiameter} mm`;
+                 return `T:${circular.thickness} Ø:${circular.diameter} Inner Ø:${circular.innerDiameter} mm`;
             }
             return `T:${circular.thickness} Ø:${circular.diameter} mm`;
         default:
@@ -108,29 +108,25 @@ const ItemCard = ({ item, onDelete, onEdit, organization }: { item: SteelItem, o
                         </Button>
                     </div>
                 </div>
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{renderItemDimensions(item)}</p>
+                <div className="text-sm text-muted-foreground">{renderItemDimensions(item)}</div>
 
                 {item.type === 'girder' && girder.flangeWeight && girder.webWeight && (
-                  <div className="border rounded-lg p-2 text-xs text-muted-foreground space-y-1 bg-background/50">
-                      <div className="grid grid-cols-3 items-center">
-                          <p className='font-medium col-span-1'>Flange Weight</p>
-                          <p className='font-semibold text-foreground text-center col-span-1'>{numberFormat(girder.flangeWeight!)} kg/p</p>
-                          <p className='font-semibold text-foreground text-right col-span-1'>T: {numberFormat(girder.flangeWeight! * item.quantity)} kg</p>
+                  <div className="border rounded-lg p-2 text-xs text-muted-foreground space-y-2 bg-background/50 grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+                      <div className="flex justify-between items-center">
+                          <p className='font-medium'>Flange Wt:</p>
+                          <p className='font-semibold text-foreground text-right'>{numberFormat(girder.flangeWeight!)} kg/p | T: {numberFormat(girder.flangeWeight! * item.quantity)} kg</p>
                       </div>
-                      <div className="grid grid-cols-3 items-center">
-                          <p className='font-medium col-span-1'>Web Weight</p>
-                           <p className='font-semibold text-foreground text-center col-span-1'>{numberFormat(girder.webWeight!)} kg/p</p>
-                           <p className='font-semibold text-foreground text-right col-span-1'>T: {numberFormat(girder.webWeight! * item.quantity)} kg</p>
+                      <div className="flex justify-between items-center">
+                          <p className='font-medium'>Web Wt:</p>
+                           <p className='font-semibold text-foreground text-right'>{numberFormat(girder.webWeight!)} kg/p | T: {numberFormat(girder.webWeight! * item.quantity)} kg</p>
                       </div>
-                      <div className="grid grid-cols-3 items-center">
-                          <p className='font-medium col-span-1'>Flange Length (ft)</p>
-                          <p className='font-semibold text-foreground text-center col-span-1'>{numberFormat(girder.flangeRunningFeet!)} ft/p</p>
-                          <p className='font-semibold text-foreground text-right col-span-1'>T: {numberFormat(girder.flangeRunningFeet! * item.quantity)} ft</p>
+                      <div className="flex justify-between items-center">
+                          <p className='font-medium'>Flange (ft):</p>
+                          <p className='font-semibold text-foreground text-right'>{numberFormat(girder.flangeRunningFeet!)} ft/p | T: {numberFormat(girder.flangeRunningFeet! * item.quantity)} ft</p>
                       </div>
-                      <div className="grid grid-cols-3 items-center">
-                          <p className='font-medium col-span-1'>Web Length (ft)</p>
-                          <p className='font-semibold text-foreground text-center col-span-1'>{numberFormat(girder.webRunningFeet!)} ft/p</p>
-                          <p className='font-semibold text-foreground text-right col-span-1'>T: {numberFormat(girder.webRunningFeet! * item.quantity)} ft</p>
+                      <div className="flex justify-between items-center">
+                          <p className='font-medium'>Web (ft):</p>
+                          <p className='font-semibold text-foreground text-right'>{numberFormat(girder.webRunningFeet!)} ft/p | T: {numberFormat(girder.webRunningFeet! * item.quantity)} ft</p>
                       </div>
                   </div>
                 )}
@@ -754,3 +750,5 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
+
+    

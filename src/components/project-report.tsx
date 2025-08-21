@@ -71,7 +71,6 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                         <TableHeader>
                             <TableRow className="bg-gray-100">
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Item Name</TableHead>
-                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Type</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Dimensions / Profile</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Qty</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Weight (kg)</TableHead>
@@ -84,9 +83,6 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                             {project.items.map(item => (
                                 <TableRow key={item.id} className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2">
                                     <TableCell className="font-medium text-center">{item.name}</TableCell>
-                                    <TableCell className="capitalize text-center">
-                                        {item.type}
-                                    </TableCell>
                                     <TableCell>
                                         {renderItemDimensions(item)}
                                     </TableCell>
@@ -100,7 +96,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                         </TableBody>
                         <TableFooter>
                         <TableRow className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2 bg-gray-100">
-                            <TableCell colSpan={6} className="text-right font-bold text-lg">Project Totals</TableCell>
+                            <TableCell colSpan={5} className="text-right font-bold text-lg">Project Totals</TableCell>
                             <TableCell className="text-right font-bold text-lg">{totalWeight.toFixed(2)} kg</TableCell>
                             <TableCell className="text-right font-bold text-lg">${totalCost.toFixed(2)}</TableCell>
                         </TableRow>
@@ -118,3 +114,4 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
 });
 ProjectReport.displayName = 'ProjectReport';
 export default ProjectReport;
+

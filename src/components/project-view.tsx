@@ -197,20 +197,22 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
                     </Button>
                 </Card>
             ) : (
-                project.items.map((item) => (
-                    <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} />
-                ))
+                 <>
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {project.items.map((item) => (
+                            <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} />
+                        ))}
+                    </div>
+                     <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm py-4 -mx-4 -mb-4 no-print mt-4">
+                        <Button className="w-full" onClick={() => setAddItemDialogOpen(true)}>
+                            <Plus />
+                            Add Item
+                        </Button>
+                    </div>
+                </>
             )}
         </div>
         
-        <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm p-4 -mx-4 no-print">
-            <Button className="w-full" onClick={() => setAddItemDialogOpen(true)}>
-                <Plus />
-                Add Item
-            </Button>
-        </div>
-
-
         <div className="flex flex-col gap-4">
             <Card>
                 <CardHeader>
@@ -230,7 +232,12 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
                     <ProjectSummaryChart data={chartData} />
                 </CardContent>
                 <CardFooter className="no-print">
-                    <Button className="w-full" onClick={() => onPrint(project)} disabled={!project}>
+                     <Button 
+                        className="w-full" 
+                        onClick={() => onPrint(project)} 
+                        disabled={!project || !organization}
+                        title={!organization ? "Please set up an organization first" : "" }
+                    >
                         <Download />
                         Generate Report
                     </Button>
@@ -245,7 +252,7 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
     />
      <EditProjectDialog
         open={isEditProjectDialogOpen}
-        onOpenChange={setEditProjectDialogOpen}
+        onOpen-change={setEditProjectDialogOpen}
         onEditProject={handleEditProject}
         project={project}
      />

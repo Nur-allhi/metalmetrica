@@ -129,57 +129,57 @@ export default function Home() {
   }
 
   return (
-      <div>
-        <SidebarProvider>
-            <div className="flex min-h-screen w-full flex-col bg-muted/40">
-                <Sidebar>
-                    <ProjectSidebar 
-                        projects={projects}
-                        activeProject={activeProject}
-                        onProjectSelect={setActiveProject}
-                        onAddProject={() => setAddProjectDialogOpen(true)}
-                        loading={loading}
-                    />
-                </Sidebar>
-                <SidebarInset>
-                    <Header organization={organization} onSettingsClick={() => setOrgSetupOpen(true)} />
-                    <main className="flex flex-1 flex-col gap-4 p-4 sm:p-6">
-                        <Tabs defaultValue="projects" className="flex flex-col h-full">
-                        <div className="flex items-center">
-                            <TabsList>
-                            <TabsTrigger value="single">Single Calc</TabsTrigger>
-                            <TabsTrigger value="projects">Projects</TabsTrigger>
-                            </TabsList>
-                             <div className="ml-auto flex items-center gap-2">
-                                <SidebarTrigger className="md:hidden" />
-                            </div>
-                        </div>
-                        <TabsContent value="single" className="mt-4">
-                            <CalculatorCard />
-                        </TabsContent>
-                        <TabsContent value="projects" className="flex-1 mt-4">
-                           {renderProjectContent()}
-                        </TabsContent>
-                        </Tabs>
-                    </main>
-                </SidebarInset>
-            </div>
-        </SidebarProvider>
+    <>
+      <SidebarProvider>
+          <div className="flex min-h-screen w-full flex-col bg-muted/40">
+              <Sidebar>
+                  <ProjectSidebar 
+                      projects={projects}
+                      activeProject={activeProject}
+                      onProjectSelect={setActiveProject}
+                      onAddProject={() => setAddProjectDialogOpen(true)}
+                      loading={loading}
+                  />
+              </Sidebar>
+              <SidebarInset>
+                  <Header organization={organization} onSettingsClick={() => setOrgSetupOpen(true)} />
+                  <main className="flex flex-1 flex-col gap-4 p-4 sm:p-6">
+                      <Tabs defaultValue="projects" className="flex flex-col h-full">
+                      <div className="flex items-center">
+                          <TabsList>
+                          <TabsTrigger value="single">Single Calc</TabsTrigger>
+                          <TabsTrigger value="projects">Projects</TabsTrigger>
+                          </TabsList>
+                            <div className="ml-auto flex items-center gap-2">
+                              <SidebarTrigger className="md:hidden" />
+                          </div>
+                      </div>
+                      <TabsContent value="single" className="mt-4">
+                          <CalculatorCard />
+                      </TabsContent>
+                      <TabsContent value="projects" className="flex-1 mt-4">
+                          {renderProjectContent()}
+                      </TabsContent>
+                      </Tabs>
+                  </main>
+              </SidebarInset>
+          </div>
+      </SidebarProvider>
 
-        <OrganizationSetupDialog
-          open={isOrgSetupOpen}
-          onOpenChange={setOrgSetupOpen}
-          onSave={(org) => {
-              setOrganization(org);
-              setOrgSetupOpen(false);
-          }}
-          organization={organization}
+      <OrganizationSetupDialog
+        open={isOrgSetupOpen}
+        onOpenChange={setOrgSetupOpen}
+        onSave={(org) => {
+            setOrganization(org);
+            setOrgSetupOpen(false);
+        }}
+        organization={organization}
+      />
+      <AddProjectDialog
+        open={isAddProjectDialogOpen}
+        onOpenChange={setAddProjectDialogOpen}
+        onAddProject={handleAddProject}
         />
-        <AddProjectDialog
-          open={isAddProjectDialogOpen}
-          onOpenChange={setAddProjectDialogOpen}
-          onAddProject={handleAddProject}
-         />
-      </div>
+    </>
   );
 }

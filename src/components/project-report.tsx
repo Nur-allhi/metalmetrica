@@ -40,13 +40,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
     const totalCost = project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0);
 
     return (
-        <div ref={ref} className="print-container font-sans text-sm">
-            <style type="text/css" media="print">
-            {`
-                @page { size: auto; margin: 0.5in; }
-                body { -webkit-print-color-adjust: exact; }
-            `}
-            </style>
+        <div ref={ref} className="bg-white p-8 font-sans text-sm">
             <header className="flex justify-between items-center mb-8 border-b pb-4">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-800">{organization.name}</h1>

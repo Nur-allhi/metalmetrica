@@ -3,7 +3,8 @@
 
 import React, { useState, useRef } from 'react';
 import { Plus, Download, Trash2, Edit } from "lucide-react";
-import { useReactToPrint } from 'react-to-print';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -80,7 +81,7 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
                 </div>
                 <div>
                     <p className="text-muted-foreground">Total Cost</p>
-                    <p className="font-semibold text-green-600">${(item.cost * item.quantity).toFixed(2)}</p>
+                    <p className="font-semibold text-green-600">${((item.cost || 0) * item.quantity).toFixed(2)}</p>
                 </div>
             </div>
         </CardContent>
@@ -95,12 +96,49 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   
   const reportRef = useRef<HTMLDivElement>(null);
 
-  const handlePrint = useReactToPrint({
-      content: () => reportRef.current,
-  });
+  const handleGeneratePdf = () => {
+    const input = reportRef.current;
+    if (!input) {
+      toast({
+        title: "Error",
+        description: "Could not generate report.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    html2canvas(input, { scale: 2 })
+      .then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const ratio = canvasWidth / canvasHeight;
+        const width = pdfWidth - 20; // with margin
+        const height = width / ratio;
+        
+        let position = 0;
+        let pageHeight = pdf.internal.pageSize.height;
+        let remainingHeight = canvasHeight;
+
+        pdf.addImage(imgData, 'PNG', 10, 10, width, height);
+        
+        pdf.save(`${project.name}-report.pdf`);
+      })
+      .catch(err => {
+        console.error("Error generating PDF:", err);
+        toast({
+            title: "Error",
+            description: "Failed to generate PDF report.",
+            variant: "destructive",
+        });
+      });
+  };
 
   const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0) || 0;
-  const totalCost = project.items.reduce((acc, item) => acc + item.cost * item.quantity, 0) || 0;
+  const totalCost = project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) || 0;
 
   const weightByType = project.items.reduce((acc, item) => {
     if (!acc[item.type]) {
@@ -176,86 +214,87 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
   return (
     <>
-        <div style={{ display: "none" }}>
-            {project && organization && (
-                <ProjectReport ref={reportRef} project={project} organization={organization} />
-            )}
-        </div>
-        <div className="grid gap-6 md:gap-8 flex-1">
-            <div>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                    <div>
-                        <CardTitle>{project.name}</CardTitle>
-                        <CardDescription>
-                        {project.projectId} - For {project.customer}
-                        </CardDescription>
-                    </div>
-                    <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={() => setEditProjectDialogOpen(true)}>
-                            <Edit className="h-4 w-4" />
-                        </Button>
-                    </div>
-                    </CardHeader>
-                </Card>
+      <div style={{ position: 'fixed', left: '-9999px', top: 0, width: '210mm' }}>
+        {project && organization && (
+          <ProjectReport ref={reportRef} project={project} organization={organization} />
+        )}
+      </div>
+      <div className="grid gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="lg:col-span-2 xl:col-span-3">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>{project.name}</CardTitle>
+                <CardDescription>
+                  {project.projectId} - For {project.customer}
+                </CardDescription>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={() => setEditProjectDialogOpen(true)}>
+                  <Edit className="h-4 w-4" />
+                  <span className="sr-only">Edit Project</span>
+                </Button>
+              </div>
+            </CardHeader>
+          </Card>
 
-                {project.items.length === 0 ? (
-                    <Card className="flex flex-col items-center justify-center p-10 text-center bg-transparent border-dashed mt-4">
-                        <CardTitle>No Items Yet</CardTitle>
-                        <CardDescription className="mt-2">Add the first item to this project.</CardDescription>
-                        <Button className="mt-4" onClick={() => setAddItemDialogOpen(true)}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Item
-                        </Button>
-                    </Card>
-                ) : (
-                    <>
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
-                            {project.items.map((item) => (
-                                <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} />
-                            ))}
-                        </div>
-                         <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm py-4 -mx-4 -mb-4 mt-4 px-4 md:px-0">
-                            <Button className="w-full" onClick={() => setAddItemDialogOpen(true)}>
-                                <Plus />
-                                Add Item
-                            </Button>
-                        </div>
-                    </>
-                )}
-            </div>
-            <div>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Project Summary</CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid gap-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-muted-foreground">Total Weight</span>
-                            <span className="font-bold">{totalWeight.toFixed(2)} kg</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <span className="text-muted-foreground">Total Cost</span>
-                            <span className="font-bold text-green-600">${totalCost.toFixed(2)}</span>
-                        </div>
-                        <hr/>
-                        <h4 className="text-sm font-medium text-center mb-2">Weight by Type</h4>
-                        <ProjectSummaryChart data={chartData} />
-                    </CardContent>
-                    <CardFooter>
-                         <button
-                            className={cn(buttonVariants(), "w-full")}
-                            disabled={!project || !organization}
-                            onClick={handlePrint}
-                            title={!organization ? "Please set up an organization first" : ""}
-                        >
-                            <Download />
-                            Generate Report
-                        </button>
-                    </CardFooter>
-                </Card>
-            </div>
+          {project.items.length === 0 ? (
+            <Card className="mt-4 flex flex-col items-center justify-center border-dashed p-10 text-center">
+              <CardTitle>No Items Yet</CardTitle>
+              <CardDescription className="mt-2">Add the first item to this project.</CardDescription>
+              <Button className="mt-4" onClick={() => setAddItemDialogOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Item
+              </Button>
+            </Card>
+          ) : (
+            <>
+              <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {project.items.map((item) => (
+                  <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} />
+                ))}
+              </div>
+              <div className="sticky bottom-0 mt-4 bg-background/95 py-4 backdrop-blur-sm">
+                <Button className="w-full" onClick={() => setAddItemDialogOpen(true)}>
+                  <Plus />
+                  Add Item
+                </Button>
+              </div>
+            </>
+          )}
         </div>
+        <div className="lg:col-span-1 xl:col-span-1">
+          <Card>
+            <CardHeader>
+              <CardTitle>Project Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Total Weight</span>
+                <span className="font-bold">{totalWeight.toFixed(2)} kg</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Total Cost</span>
+                <span className="font-bold text-green-600">${totalCost.toFixed(2)}</span>
+              </div>
+              <hr />
+              <h4 className="mb-2 text-center text-sm font-medium">Weight by Type</h4>
+              <ProjectSummaryChart data={chartData} />
+            </CardContent>
+            <CardFooter>
+              <Button
+                  className="w-full"
+                  disabled={!project || !organization}
+                  onClick={handleGeneratePdf}
+                  title={!organization ? "Please set up an organization first" : ""}
+              >
+                  <Download />
+                  Generate Report
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
 
       <AddItemDialog
           open={isAddItemDialogOpen}

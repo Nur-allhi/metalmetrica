@@ -135,24 +135,24 @@ const ItemCard = ({ item, onDelete, onEdit, organization }: { item: SteelItem, o
                   </div>
                 )}
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm pt-2 border-t">
+                <div className="grid grid-cols-2 gap-4 text-xs pt-2 border-t">
                     <div>
                         <p className="text-muted-foreground">Qty</p>
-                        <p>{item.quantity}</p>
+                        <p className="font-medium">{item.quantity}</p>
                     </div>
                      {hasCost && (
                          <div>
                             <p className="text-muted-foreground">Price ({currencySymbol}/kg)</p>
-                            <p>{pricePerKg !== null ? `${currencySymbol}${numberFormat(pricePerKg)}` : 'N/A'}</p>
+                            <p className="font-medium">{pricePerKg !== null ? `${currencySymbol}${numberFormat(pricePerKg)}` : 'N/A'}</p>
                         </div>
                     )}
                     <div>
                         <p className="text-muted-foreground">Unit Wt (kg)</p>
-                        <p>{numberFormat(item.weight)}</p>
+                        <p className="font-medium">{numberFormat(item.weight)}</p>
                     </div>
                      <div>
                         <p className="text-muted-foreground">Unit Cost</p>
-                        <p>{hasCost ? `${currencySymbol}${numberFormat(item.cost!)}` : 'N/A'}</p>
+                        <p className="font-medium">{hasCost ? `${currencySymbol}${numberFormat(item.cost!)}` : 'N/A'}</p>
                     </div>
                      <div>
                         <p className="text-muted-foreground">Total Wt (kg)</p>

@@ -45,6 +45,24 @@ const renderItemDimensions = (item: SteelItem) => {
     }
 };
 
+const getItemTypeLabel = (type: SteelItem['type']) => {
+    switch (type) {
+        case 'plate':
+            return 'Steel Plate (Quality)';
+        case 'plate-imperial':
+            return 'Steel Plate (Non-Quality)';
+        case 'pipe':
+            return 'Steel Pipe';
+        case 'girder':
+            return 'Steel Girder';
+        case 'circular':
+            return 'Circular Section';
+        default:
+            const itemType = type as string;
+            return itemType.charAt(0).toUpperCase() + itemType.slice(1);
+    }
+}
+
 
 const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ project, organization }, ref) => {
     const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0);
@@ -56,8 +74,20 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
 
 
     return (
-        <div ref={ref} className="bg-white px-12 py-8 font-sans text-lg text-black">
-            <header className="flex justify-between items-start mb-8 border-b pb-4">
+        <div ref={ref} className="bg-white px-8 py-8 font-sans text-lg text-black">
+             <style type="text/css" media="print">
+                {`
+                    @page { size: auto;  margin: 0; }
+                    body { margin: 0; }
+                    .report-table-header, .report-table-footer, .report-table-row {
+                        page-break-inside: avoid !important;
+                    }
+                    .report-section {
+                        page-break-inside: avoid;
+                    }
+                `}
+            </style>
+            <header className="flex justify-between items-start mb-8 border-b pb-4 report-section">
                 <div>
                      {organization?.name && <h1 className="text-4xl font-bold text-black">{organization.name}</h1>}
                      {organization?.address && <p className="text-sm text-gray-600 mt-1">{organization.address}</p>}
@@ -73,7 +103,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
             </header>
 
             <main>
-                <div className="grid grid-cols-2 gap-8 mb-10">
+                <div className="grid grid-cols-2 gap-8 mb-10 report-section">
                     <div>
                         <h2 className="text-xl font-bold mb-2 text-black">Project Details</h2>
                         <p className="text-black"><span className="font-semibold">Project Name:</span> {project.name}</p>
@@ -87,13 +117,13 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                     </div>
                 </div>
 
-                <h2 className="text-2xl font-bold mb-4 text-black">Itemized List</h2>
+                <h2 className="text-2xl font-bold mb-4 text-black report-section">Itemized List</h2>
                 <div className="border border-gray-300">
                     <Table className="border-collapse">
-                        <TableHeader>
+                        <TableHeader className="report-table-header">
                             <TableRow className="bg-gray-100">
-                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-center text-base">Item Name</TableHead>
-                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-base">Dimensions / Profile</TableHead>
+                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-center text-base">Item Type</TableHead>
+                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-base">Name & Dimensions</TableHead>
                                 <TableHead className="text-black border border-gray-300 p-2 font-bold text-center text-base">Unit Weight (kg)</TableHead>
                                 {hasCost && <TableHead className="text-black border border-gray-300 p-2 font-bold text-center text-base">Unit Cost ({currencySymbol})</TableHead>}
                                 <TableHead className="text-black border border-gray-300 p-2 font-bold text-center text-base">Qty</TableHead>
@@ -103,10 +133,10 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                         </TableHeader>
                         <TableBody>
                             {project.items.map(item => (
-                                <TableRow key={item.id} className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2 text-black text-base">
-                                    <TableCell className="font-medium text-center">{item.name}</TableCell>
+                                <TableRow key={item.id} className="report-table-row [&_td]:border [&_td]:border-gray-300 [&_td]:p-2 text-black text-base">
+                                    <TableCell className="font-medium text-center">{getItemTypeLabel(item.type)}</TableCell>
                                     <TableCell>
-                                       <span className='capitalize font-semibold'>{item.type === 'plate' ? 'Steel Plate (Quality)' : item.type === 'plate-imperial' ? 'Steel Plate (Non-Quality)' : item.type}</span> - {renderItemDimensions(item)}
+                                       <span className='capitalize font-semibold'>{item.name}</span> - {renderItemDimensions(item)}
                                     </TableCell>
                                     <TableCell className="text-center">{item.weight.toFixed(2)}</TableCell>
                                     {hasCost && <TableCell className="text-center">{item.cost !== null ? <><span className='font-bold'>{currencySymbol}</span>{item.cost.toFixed(2)}</> : 'N/A'}</TableCell>}
@@ -116,7 +146,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                                 </TableRow>
                             ))}
                         </TableBody>
-                         <TableFooter>
+                         <TableFooter className="report-table-footer">
                             <TableRow className="[&>td]:border [&>td]:border-gray-300 [&>td]:p-2 bg-gray-100">
                                 <TableCell colSpan={colSpanTotal} className="text-right font-bold text-xl pr-4 text-black">Project Totals</TableCell>
                                 <TableCell className="text-center font-bold text-xl text-black">{totalWeight.toFixed(2)} kg</TableCell>
@@ -128,13 +158,13 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
             </main>
 
              {organization?.termsAndConditions && (
-                <section className="mt-10 pt-4 border-t border-gray-300">
+                <section className="mt-10 pt-4 border-t border-gray-300 report-section">
                     <h2 className="text-lg font-bold text-black mb-2">Terms & Conditions</h2>
                     <p className="text-xs text-gray-700 whitespace-pre-wrap">{organization.termsAndConditions}</p>
                 </section>
             )}
 
-            <footer className="mt-16 text-center text-sm text-gray-700">
+            <footer className="mt-16 text-center text-sm text-gray-700 report-section">
                 <p>Report generated by MetalMetrica on {new Date().toLocaleString()}</p>
                  {organization?.name && <p>{organization.name}</p>}
             </footer>
@@ -143,3 +173,5 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
 });
 ProjectReport.displayName = 'ProjectReport';
 export default ProjectReport;
+
+    

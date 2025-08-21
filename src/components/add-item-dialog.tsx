@@ -32,7 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { STEEL_DENSITIES } from "@/lib/constants";
-import type { SteelItem, SteelPlate } from "@/types";
+import type { SteelItem, SteelPlate, SteelPipe } from "@/types";
 
 interface AddItemDialogProps {
   open: boolean;
@@ -42,12 +42,38 @@ interface AddItemDialogProps {
 
 const formSchema = z.object({
   name: z.string().min(2, "Item name is required."),
-  type: z.enum(["plate", "girder", "pipe"]),
-  length: z.coerce.number().min(1, "Length is required."),
-  width: z.coerce.number().min(1, "Width is required."),
-  thickness: z.coerce.number().min(0.1, "Thickness is required."),
+  type: z.enum(["plate", "pipe", "girder"]),
   quantity: z.coerce.number().int().min(1, "Quantity must be at least 1."),
   price: z.coerce.number().min(0).optional(), // Price per kg
+
+  // Plate dimensions
+  length: z.coerce.number().min(0.1, "Required"),
+  width: z.coerce.number().optional(),
+  thickness: z.coerce.number().optional(),
+
+  // Pipe dimensions
+  outerDiameter: z.coerce.number().optional(),
+  wallThickness: z.coerce.number().optional(),
+}).superRefine((data, ctx) => {
+    if (data.type === 'plate') {
+        if (!data.width) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Width is required", path: ['width'] });
+        }
+        if (!data.thickness) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Thickness is required", path: ['thickness'] });
+        }
+    }
+    if (data.type === 'pipe') {
+        if (!data.outerDiameter) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Outer Diameter is required", path: ['outerDiameter'] });
+        }
+        if (!data.wallThickness) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Wall Thickness is required", path: ['wallThickness'] });
+        }
+        if (data.outerDiameter && data.wallThickness && data.wallThickness >= data.outerDiameter / 2) {
+             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Thickness too large", path: ['wallThickness'] });
+        }
+    }
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -63,31 +89,61 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
     },
   });
 
-  function onSubmit(data: FormData) {
-    // For now, only plate is implemented
-    if (data.type === "plate") {
-        const { length, width, thickness, quantity, price } = data;
+  const itemType = form.watch("type");
 
-        // Calculations are in metric (mm -> m)
+  function onSubmit(data: FormData) {
+    const { quantity, price } = data;
+    const pricePerKg = price || 0;
+
+    if (data.type === "plate" && data.length && data.width && data.thickness) {
+        const { length, width, thickness } = data;
+
         const lengthM = length / 1000;
         const widthM = width / 1000;
         const thicknessM = thickness / 1000;
 
         const volumeM3 = lengthM * widthM * thicknessM;
-        const weightKg = volumeM3 * STEEL_DENSITIES.MS; // Using MS density for now
-        const cost = weightKg * (price || 0);
+        const weightKg = volumeM3 * STEEL_DENSITIES.MS;
+        const cost = weightKg * pricePerKg;
 
         const newItem: Omit<SteelPlate, 'id'> = {
             name: data.name,
             type: 'plate',
-            quantity: quantity,
-            length: length,
-            width: width,
-            thickness: thickness,
+            quantity,
+            length,
+            width,
+            thickness,
             weight: weightKg,
             cost: cost,
         };
         onAddItem(newItem);
+        form.reset();
+        onOpenChange(false);
+    } else if (data.type === "pipe" && data.length && data.outerDiameter && data.wallThickness) {
+        const { length, outerDiameter, wallThickness } = data;
+        const innerDiameter = outerDiameter - 2 * wallThickness;
+
+        const lengthM = length / 1000;
+        const outerRadiusM = outerDiameter / 2 / 1000;
+        const innerRadiusM = innerDiameter / 2 / 1000;
+        
+        const volumeM3 = Math.PI * (Math.pow(outerRadiusM, 2) - Math.pow(innerRadiusM, 2)) * lengthM;
+        const weightKg = volumeM3 * STEEL_DENSITIES.MS;
+        const cost = weightKg * pricePerKg;
+
+        const newItem: Omit<SteelPipe, 'id'> = {
+            name: data.name,
+            type: 'pipe',
+            quantity,
+            length,
+            outerDiameter,
+            wallThickness,
+            weight: weightKg,
+            cost: cost,
+        };
+        onAddItem(newItem);
+        form.reset();
+        onOpenChange(false);
     }
   }
 
@@ -99,7 +155,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
             <DialogHeader>
               <DialogTitle>Add New Item</DialogTitle>
               <DialogDescription>
-                Select the item type and enter its specifications.
+                Select the item type and enter its specifications. All dimensions in mm.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -130,49 +186,81 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                         </FormControl>
                         <SelectContent>
                             <SelectItem value="plate">Steel Plate</SelectItem>
+                            <SelectItem value="pipe">Steel Pipe</SelectItem>
                             <SelectItem value="girder" disabled>Girder (coming soon)</SelectItem>
-                            <SelectItem value="pipe" disabled>Pipe (coming soon)</SelectItem>
                         </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-               <div className="grid grid-cols-3 gap-4">
-                 <FormField
-                    control={form.control}
-                    name="length"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Length (mm)</FormLabel>
-                        <FormControl><Input type="number" {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="width"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Width (mm)</FormLabel>
-                        <FormControl><Input type="number" {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                   <FormField
-                    control={form.control}
-                    name="thickness"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Thickness (mm)</FormLabel>
-                        <FormControl><Input type="number" {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-               </div>
+
+              <FormField
+                  control={form.control}
+                  name="length"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Length (mm)</FormLabel>
+                      <FormControl><Input type="number" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+               {itemType === 'plate' && (
+                 <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="width"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Width (mm)</FormLabel>
+                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="thickness"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Thickness (mm)</FormLabel>
+                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                 </div>
+               )}
+
+              {itemType === 'pipe' && (
+                 <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="outerDiameter"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Outer Dia. (mm)</FormLabel>
+                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="wallThickness"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Wall Thick. (mm)</FormLabel>
+                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                 </div>
+               )}
+
                 <div className="grid grid-cols-2 gap-4">
                     <FormField
                         control={form.control}

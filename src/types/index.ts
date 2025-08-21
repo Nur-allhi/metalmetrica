@@ -9,8 +9,8 @@ interface BaseSteelItem {
   id: string;
   name: string;
   quantity: number;
-  weight: number;
-  cost: number;
+  weight: number; // Always in kg
+  cost: number; // Always in USD
 }
 
 export interface SteelPlate extends BaseSteelItem {
@@ -29,8 +29,8 @@ export interface SteelGirder extends BaseSteelItem {
 export interface SteelPipe extends BaseSteelItem {
     type: "pipe";
     length: number;
-    diameter: number;
-    thickness: number;
+    outerDiameter: number;
+    wallThickness: number;
 }
 
 export type SteelItem = SteelPlate | SteelGirder | SteelPipe;

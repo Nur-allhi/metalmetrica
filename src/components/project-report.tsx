@@ -4,16 +4,31 @@ import React from 'react';
 import Image from 'next/image';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableFooter } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import type { Project, Organization } from '@/types';
+import type { Project, Organization, SteelItem, SteelPlate, SteelPipe } from '@/types';
 
 interface ProjectReportProps {
     project: Project;
     organization: Organization;
 }
 
+const renderItemDimensions = (item: SteelItem) => {
+    switch (item.type) {
+        case 'plate':
+            const plate = item as SteelPlate;
+            return `${plate.length} x ${plate.width} x ${plate.thickness} mm`;
+        case 'pipe':
+            const pipe = item as SteelPipe;
+            return `Ø${pipe.outerDiameter} x ${pipe.wallThickness}mm (L: ${pipe.length}mm)`;
+        case 'girder':
+            return item.profile;
+        default:
+            return '';
+    }
+};
+
 export default function ProjectReport({ project, organization }: ProjectReportProps) {
   const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0);
-  const totalCost = project.items.reduce((acc, item) => acc + item.cost * item.quantity, 0);
+  const totalCost = project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0);
 
   return (
     <div className="print-container font-sans text-sm">
@@ -62,15 +77,13 @@ export default function ProjectReport({ project, organization }: ProjectReportPr
                             <TableCell className="font-medium">{item.name}</TableCell>
                             <TableCell><Badge variant="secondary" className="capitalize">{item.type}</Badge></TableCell>
                             <TableCell>
-                                {item.type === 'plate' ? `${item.length}x${item.width}x${item.thickness} mm` : ''}
-                                {item.type === 'girder' ? item.profile : ''}
-                                {item.type === 'pipe' ? `Ø${item.diameter}x${item.thickness}mm L:${item.length}mm` : ''}
+                                {renderItemDimensions(item)}
                             </TableCell>
                             <TableCell className="text-right">{item.quantity}</TableCell>
                             <TableCell className="text-right">{item.weight.toFixed(2)}</TableCell>
-                            <TableCell className="text-right">{item.cost.toFixed(2)}</TableCell>
+                            <TableCell className="text-right">{(item.cost || 0).toFixed(2)}</TableCell>
                             <TableCell className="text-right font-medium">{(item.weight * item.quantity).toFixed(2)}</TableCell>
-                            <TableCell className="text-right font-medium">{(item.cost * item.quantity).toFixed(2)}</TableCell>
+                            <TableCell className="text-right font-medium">{((item.cost || 0) * item.quantity).toFixed(2)}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

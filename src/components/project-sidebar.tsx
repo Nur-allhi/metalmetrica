@@ -77,7 +77,7 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                     </SidebarMenuItem>
                     <Accordion type="single" collapsible defaultValue="projects" className="w-full">
                         <AccordionItem value="projects" className="border-none">
-                            <AccordionTrigger asChild>
+                            <AccordionTrigger>
                                 <SidebarMenuButton>
                                     <Folder />
                                     <span>Projects</span>
@@ -115,7 +115,7 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                             </AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="settings" className="border-none">
-                            <AccordionTrigger asChild>
+                            <AccordionTrigger>
                                <SidebarMenuButton>
                                     <Settings />
                                     <span>Settings</span>

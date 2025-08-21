@@ -172,22 +172,12 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         const imgData = canvas.toDataURL('image/jpeg', 0.9);
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
-        const ratio = canvasWidth / canvasHeight;
-        let width = pdfWidth;
-        let height = width / ratio;
-
-        if (height > pdfHeight) {
-            height = pdfHeight;
-            width = height * ratio;
-        }
-
-        const marginX = (pdfWidth - width) / 2;
-        const marginY = (pdfHeight - height) / 2;
+        const ratio = canvasHeight / canvasWidth;
+        const pdfHeight = pdfWidth * ratio;
         
-        pdf.addImage(imgData, 'JPEG', marginX, marginY, width, height, undefined, 'MEDIUM');
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
         
         pdf.save(`${project.name}-report.pdf`);
       })

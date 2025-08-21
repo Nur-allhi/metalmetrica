@@ -33,11 +33,9 @@ const chartConfig = {
 
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, index, payload }: any) => {
-    const radius = outerRadius + 15;
+    const radius = outerRadius + 25;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-    if (percent < 0.05) return null;
 
     return (
         <text
@@ -47,7 +45,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, index, 
             textAnchor={x > cx ? 'start' : 'end'}
             dominantBaseline="central"
         >
-            {`${(percent * 100).toFixed(0)}%`}
+            {`${payload.type} (${(percent * 100).toFixed(0)}%)`}
         </text>
     );
 };
@@ -69,10 +67,10 @@ export default function ProjectSummaryChart({ data }: ProjectSummaryChartProps) 
   return (
       <ChartContainer
         config={chartConfig}
-        className="mx-auto aspect-square h-[200px]"
+        className="mx-auto aspect-square h-[250px]"
       >
         <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
+            <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <Tooltip
                     cursor={false}
                     content={<ChartTooltipContent hideLabel />}
@@ -82,6 +80,7 @@ export default function ProjectSummaryChart({ data }: ProjectSummaryChartProps) 
                     dataKey="weight"
                     nameKey="type"
                     innerRadius={60}
+                    outerRadius={80}
                     strokeWidth={5}
                     labelLine={true}
                     label={renderCustomizedLabel}

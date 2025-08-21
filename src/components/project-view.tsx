@@ -86,7 +86,7 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
                 <p className="text-sm text-muted-foreground">{renderItemDimensions(item)}</p>
 
                 {item.type === 'girder' && (
-                  <div className="border rounded-lg p-2 text-xs text-muted-foreground space-y-1">
+                  <div className="border rounded-lg p-2 text-xs text-muted-foreground space-y-1 bg-background/50">
                       <div className="grid grid-cols-3 items-center">
                           <p className='font-medium col-span-1'>Flange Weight</p>
                           <p className='font-semibold text-foreground text-center col-span-1'>{(girder.flangeWeight)?.toFixed(2)} kg/p</p>
@@ -98,12 +98,12 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
                            <p className='font-semibold text-foreground text-right col-span-1'>T: {(girder.webWeight! * item.quantity).toFixed(2)} kg</p>
                       </div>
                       <div className="grid grid-cols-3 items-center">
-                          <p className='font-medium col-span-1'>Flange (ft)</p>
+                          <p className='font-medium col-span-1'>Flange Length (ft)</p>
                           <p className='font-semibold text-foreground text-center col-span-1'>{(girder.flangeRunningFeet)?.toFixed(2)} ft/p</p>
                           <p className='font-semibold text-foreground text-right col-span-1'>T: {(girder.flangeRunningFeet! * item.quantity).toFixed(2)} ft</p>
                       </div>
                       <div className="grid grid-cols-3 items-center">
-                          <p className='font-medium col-span-1'>Web (ft)</p>
+                          <p className='font-medium col-span-1'>Web Length (ft)</p>
                           <p className='font-semibold text-foreground text-center col-span-1'>{(girder.webRunningFeet)?.toFixed(2)} ft/p</p>
                           <p className='font-semibold text-foreground text-right col-span-1'>T: {(girder.webRunningFeet! * item.quantity).toFixed(2)} ft</p>
                       </div>
@@ -194,9 +194,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
 
   const weightByType = project.items.reduce((acc, item) => {
-    let typeName = item.type;
-    if(item.type === 'plate') typeName = 'Plate (Quality)';
-    if(item.type === 'plate-imperial') typeName = 'Plate (Non-Quality)';
+    let typeName = item.type.charAt(0).toUpperCase() + item.type.slice(1);
+    if(item.type === 'plate') typeName = 'Plate (Q)';
+    if(item.type === 'plate-imperial') typeName = 'Plate (NQ)';
 
     if (!acc[typeName]) {
       acc[typeName] = 0;
@@ -206,7 +206,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   }, {} as Record<string, number>) || {};
 
   const chartData = Object.entries(weightByType).map(([type, weight], index) => ({
-    type: type.charAt(0).toUpperCase() + type.slice(1),
+    type: type,
     weight: parseFloat(weight.toFixed(2)),
     fill: CHART_COLORS[index % CHART_COLORS.length],
   }));
@@ -375,5 +375,3 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
-
-    

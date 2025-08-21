@@ -24,7 +24,7 @@ import { CHART_COLORS } from '@/lib/constants';
 interface ProjectViewProps {
     project: Project;
     organization: Organization | null;
-    onPrint: (project: Project) => void;
+    onPrint: () => void;
 }
 
 const renderItemDimensions = (item: SteelItem) => {
@@ -234,7 +234,7 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
                 <CardFooter className="no-print">
                      <Button 
                         className="w-full" 
-                        onClick={() => onPrint(project)} 
+                        onClick={onPrint} 
                         disabled={!project || !organization}
                         title={!organization ? "Please set up an organization first" : "" }
                     >
@@ -252,7 +252,7 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
     />
      <EditProjectDialog
         open={isEditProjectDialogOpen}
-        onOpen-change={setEditProjectDialogOpen}
+        onOpenChange={setEditProjectDialogOpen}
         onEditProject={handleEditProject}
         project={project}
      />

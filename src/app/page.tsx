@@ -39,7 +39,7 @@ export default function Home() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
-  const [reportData, setReportData] = useState<Project | null>(null);
+  const reportRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!authLoading && !organization) {
@@ -67,12 +67,8 @@ export default function Home() {
     }
   }, [user, activeProject?.id]);
 
-  const handlePrint = (project: Project) => {
-    setReportData(project);
-    setTimeout(() => {
-      window.print();
-      setReportData(null);
-    }, 100);
+  const handlePrint = () => {
+    window.print();
   };
   
   const handleAddProject = async (data: { name: string; customer: string; }) => {
@@ -141,10 +137,10 @@ export default function Home() {
 
   return (
     <>
-      <div className={reportData ? "" : "print-container"}>
-        <div className="hidden">
-           {reportData && organization && <ProjectReport project={reportData} organization={organization} />}
-        </div>
+      <div className="sr-only print:not-sr-only">
+          {activeProject && organization && <ProjectReport project={activeProject} organization={organization} />}
+      </div>
+      <div className="print-container no-print">
         <SidebarProvider>
             <div className="flex min-h-screen w-full flex-col bg-muted/40">
                 <Sidebar>

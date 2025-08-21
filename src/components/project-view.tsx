@@ -175,106 +175,104 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
   return (
     <>
-        <div className="hidden">
-          {project && organization && (
-              <ProjectReport ref={reportRef} project={project} organization={organization} />
-          )}
-        </div>
-        <div className="grid gap-6 md:gap-8 md:grid-cols-1">
-            <div className="grid gap-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                    <div>
-                        <CardTitle>{project.name}</CardTitle>
-                        <CardDescription>
-                        {project.projectId} - For {project.customer}
-                        </CardDescription>
-                    </div>
-                    <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={() => setEditProjectDialogOpen(true)}>
-                            <Edit className="h-4 w-4" />
-                        </Button>
-                    </div>
-                    </CardHeader>
-                </Card>
+      <div className="grid gap-6 md:gap-8 flex-1">
+          <div>
+              <Card>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                      <CardTitle>{project.name}</CardTitle>
+                      <CardDescription>
+                      {project.projectId} - For {project.customer}
+                      </CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                      <Button size="sm" variant="outline" onClick={() => setEditProjectDialogOpen(true)}>
+                          <Edit className="h-4 w-4" />
+                      </Button>
+                  </div>
+                  </CardHeader>
+              </Card>
 
-                {project.items.length === 0 ? (
-                    <Card className="flex flex-col items-center justify-center p-10 text-center bg-transparent border-dashed">
-                        <CardTitle>No Items Yet</CardTitle>
-                        <CardDescription className="mt-2">Add the first item to this project.</CardDescription>
-                        <Button className="mt-4" onClick={() => setAddItemDialogOpen(true)}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Item
-                        </Button>
-                    </Card>
-                ) : (
-                    <>
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {project.items.map((item) => (
-                                <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} />
-                            ))}
-                        </div>
-                        <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm py-4 -mx-4 -mb-4 mt-4 px-4">
-                            <Button className="w-full" onClick={() => setAddItemDialogOpen(true)}>
-                                <Plus />
-                                Add Item
-                            </Button>
-                        </div>
-                    </>
-                )}
-            </div>
-            
-            <div className="flex flex-col gap-4">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Project Summary</CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid gap-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-muted-foreground">Total Weight</span>
-                            <span className="font-bold">{totalWeight.toFixed(2)} kg</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <span className="text-muted-foreground">Total Cost</span>
-                            <span className="font-bold text-green-600">${totalCost.toFixed(2)}</span>
-                        </div>
-                        <hr/>
-                        <h4 className="text-sm font-medium text-center mb-2">Weight by Type</h4>
-                        <ProjectSummaryChart data={chartData} />
-                    </CardContent>
-                    <CardFooter>
-                         <Button 
-                            className="w-full" 
-                            disabled={!project || !organization}
-                            onClick={handlePrint}
-                            title={!organization ? "Please set up an organization first" : ""}
-                        >
-                            <Download />
-                            Generate Report
-                        </Button>
-                    </CardFooter>
-                </Card>
-            </div>
-        </div>
-        <AddItemDialog
-            open={isAddItemDialogOpen}
-            onOpenChange={setAddItemDialogOpen}
-            onAddItem={handleAddItem}
-        />
-        <EditProjectDialog
-            open={isEditProjectDialogOpen}
-            onOpenChange={setEditProjectDialogOpen}
-            onEditProject={handleEditProject}
-            project={project}
-        />
-        <DeleteItemDialog
-            open={!!itemToDelete}
-            onOpenChange={(open) => !open && setItemToDelete(null)}
-            onConfirm={handleDeleteItem}
-            itemName={itemToDelete?.name || ''}
-        />
+              {project.items.length === 0 ? (
+                  <Card className="flex flex-col items-center justify-center p-10 text-center bg-transparent border-dashed mt-4">
+                      <CardTitle>No Items Yet</CardTitle>
+                      <CardDescription className="mt-2">Add the first item to this project.</CardDescription>
+                      <Button className="mt-4" onClick={() => setAddItemDialogOpen(true)}>
+                          <Plus className="mr-2 h-4 w-4" />
+                          Add Item
+                      </Button>
+                  </Card>
+              ) : (
+                  <>
+                      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-4">
+                          {project.items.map((item) => (
+                              <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} />
+                          ))}
+                      </div>
+                       <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm py-4 -mx-4 -mb-4 mt-4 px-4 md:px-0">
+                          <Button className="w-full" onClick={() => setAddItemDialogOpen(true)}>
+                              <Plus />
+                              Add Item
+                          </Button>
+                      </div>
+                  </>
+              )}
+          </div>
+          <div>
+              <Card>
+                  <CardHeader>
+                      <CardTitle>Project Summary</CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid gap-4">
+                      <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Total Weight</span>
+                          <span className="font-bold">{totalWeight.toFixed(2)} kg</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Total Cost</span>
+                          <span className="font-bold text-green-600">${totalCost.toFixed(2)}</span>
+                      </div>
+                      <hr/>
+                      <h4 className="text-sm font-medium text-center mb-2">Weight by Type</h4>
+                      <ProjectSummaryChart data={chartData} />
+                  </CardContent>
+                  <CardFooter>
+                       <Button 
+                          className="w-full" 
+                          disabled={!project || !organization}
+                          onClick={handlePrint}
+                          title={!organization ? "Please set up an organization first" : ""}
+                      >
+                          <Download />
+                          Generate Report
+                      </Button>
+                  </CardFooter>
+              </Card>
+          </div>
+      </div>
+      <div style={{ display: "none" }}>
+        {project && organization && (
+          <ProjectReport ref={reportRef} project={project} organization={organization} />
+        )}
+      </div>
+
+      <AddItemDialog
+          open={isAddItemDialogOpen}
+          onOpenChange={setAddItemDialogOpen}
+          onAddItem={handleAddItem}
+      />
+      <EditProjectDialog
+          open={isEditProjectDialogOpen}
+          onOpenChange={setEditProjectDialogOpen}
+          onEditProject={handleEditProject}
+          project={project}
+      />
+      <DeleteItemDialog
+          open={!!itemToDelete}
+          onOpenChange={(open) => !open && setItemToDelete(null)}
+          onConfirm={handleDeleteItem}
+          itemName={itemToDelete?.name || ''}
+      />
     </>
   )
 }
-
-    

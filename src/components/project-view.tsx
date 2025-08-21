@@ -60,6 +60,7 @@ const renderItemDimensions = (item: SteelItem) => {
 const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void }) => {
     const girder = item as SteelGirder;
     const hasCost = item.cost !== null;
+    const pricePerKg = hasCost && item.weight > 0 ? item.cost! / item.weight : null;
 
     const getItemTypeLabel = (type: SteelItem['type']) => {
         switch (type) {
@@ -116,19 +117,20 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
                         <p className="text-muted-foreground">Qty</p>
                         <p>{item.quantity}</p>
                     </div>
-                     <div>
-                        {/* Spacer */}
-                    </div>
+                     {hasCost && (
+                         <div>
+                            <p className="text-muted-foreground">Price ($/kg)</p>
+                            <p>${(pricePerKg || 0).toFixed(2)}</p>
+                        </div>
+                    )}
                     <div>
                         <p className="text-muted-foreground">Unit Wt (kg)</p>
                         <p>{item.weight.toFixed(2)}</p>
                     </div>
-                     {hasCost && (
-                         <div>
-                            <p className="text-muted-foreground">Unit Cost</p>
-                            <p>${(item.cost || 0).toFixed(2)}</p>
-                        </div>
-                    )}
+                     <div>
+                        <p className="text-muted-foreground">Unit Cost</p>
+                        <p>${(item.cost || 0).toFixed(2)}</p>
+                    </div>
                      <div>
                         <p className="text-muted-foreground">Total Wt (kg)</p>
                         <p className="font-semibold">{(item.weight * item.quantity).toFixed(2)}</p>
@@ -376,7 +378,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
       />
       <EditProjectDialog
           open={isEditProjectDialogOpen}
-          onOpenChange={setEditProjectDialogOpen}
+          onOpen-change={setEditProjectDialogOpen}
           onEditProject={handleEditProject}
           project={project}
       />

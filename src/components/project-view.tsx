@@ -176,6 +176,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     doc.setFont("helvetica", "normal");
 
     const currencyCode = organization?.currency || 'USD';
+    const currencySymbol = getCurrencySymbol(currencyCode, true);
     
     const numberFormat = (value: number) => value.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
     
@@ -259,10 +260,10 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             'S.No.',
             'Name & Dimensions',
             'Unit Wt\n(kg)',
-            ...(hasCost ? [`Unit Cost\n(${currencyCode})`] : []),
+            ...(hasCost ? [`Unit Cost\n(${currencySymbol})`] : []),
             'Qty',
             'Total Wt\n(kg)',
-            ...(hasCost ? [`Total Cost\n(${currencyCode})`] : [])
+            ...(hasCost ? [`Total Cost\n(${currencySymbol})`] : [])
         ]];
         
         const body = project.items.map((item, index) => {
@@ -282,48 +283,61 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                  nameAndDims = `${nameAndType}\n${itemDims}`;
             }
 
-            const row = [
-                { content: (index + 1).toString(), styles: { halign: 'center' } },
-                { content: nameAndDims },
-                { content: numberFormat(item.weight), styles: { halign: 'right' } },
+            const rowData: (string|number)[] = [
+                (index + 1).toString(),
+                nameAndDims,
+                numberFormat(item.weight),
             ];
             
             if (hasCost) {
-                row.push({ content: item.cost !== null ? numberFormat(item.cost) : 'N/A', styles: { halign: 'right' } });
+                rowData.push(item.cost !== null ? numberFormat(item.cost) : 'N/A');
             }
 
-            row.push(
-                { content: item.quantity, styles: { halign: 'center' } },
-                { content: numberFormat(totalWeight), styles: { halign: 'right' } },
+            rowData.push(
+                item.quantity,
+                numberFormat(totalWeight),
             );
             
             if (hasCost) {
-                row.push({ content: totalCost !== null ? numberFormat(totalCost) : 'N/A', styles: { halign: 'right' } });
+                rowData.push(totalCost !== null ? numberFormat(totalCost) : 'N/A');
             }
-            return row;
+            return rowData;
         });
 
         const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0);
         const subTotalCost = hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null;
         
         const footerRows = [];
-        
-        // Sub-total
-        const subTotalRow = [];
-        subTotalRow.push({ content: 'Sub-Total', colSpan: hasCost ? 4 : 3, styles: { halign: 'right', fontStyle: 'bold' } });
-        subTotalRow.push({ content: `${numberFormat(totalWeight)}\nkg`, styles: { halign: 'right', fontStyle: 'bold' } });
-        if(hasCost && subTotalCost !== null) {
-            subTotalRow.push({ content: `${numberFormat(subTotalCost)}\n${currencyCode}`, styles: { halign: 'right', fontStyle: 'bold' } });
+        const rightAlignBold = { halign: 'right', fontStyle: 'bold' };
+
+        if (hasCost && subTotalCost !== null) {
+            const subTotalRow = [
+                '', '', '',
+                { content: 'Sub-Total', styles: rightAlignBold },
+                '',
+                { content: `${numberFormat(totalWeight)}\nkg`, styles: rightAlignBold },
+                { content: `${numberFormat(subTotalCost)}\n${currencySymbol}`, styles: rightAlignBold },
+            ];
+            footerRows.push(subTotalRow);
+        } else {
+             const subTotalRow = [
+                 '', '',
+                { content: 'Sub-Total', colSpan: 3, styles: rightAlignBold },
+                { content: `${numberFormat(totalWeight)}\nkg`, styles: rightAlignBold },
+            ];
+            if (hasCost) footerRows.push('');
+            footerRows.push(subTotalRow);
         }
-        footerRows.push(subTotalRow);
         
         let grandTotal = subTotalCost;
         if (hasCost && grandTotal !== null) {
             additionalCosts.forEach(cost => {
                 const additionalCostRow = [
-                    { content: cost.description, colSpan: hasCost ? 5 : 4, styles: { halign: 'right' } },
-                    { content: `${numberFormat(cost.amount)}\n${currencyCode}`, styles: { halign: 'right' } },
-                ]
+                   '', '', '',
+                   { content: cost.description, styles: { halign: 'right' } },
+                   '', '',
+                   { content: `${numberFormat(cost.amount)}\n${currencySymbol}`, styles: { halign: 'right' } }
+                ];
                 footerRows.push(additionalCostRow);
             });
             
@@ -332,8 +346,10 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
             if(additionalCosts.length > 0) {
                  const grandTotalRow = [
-                    { content: 'Grand Total', colSpan: hasCost ? 5 : 4, styles: { halign: 'right', fontStyle: 'bold' } },
-                    { content: `${numberFormat(grandTotal)}\n${currencyCode}`, styles: { halign: 'right', fontStyle: 'bold' } },
+                    '', '', '',
+                    { content: 'Grand Total', styles: rightAlignBold },
+                    '', '',
+                    { content: `${numberFormat(grandTotal)}\n${currencySymbol}`, styles: rightAlignBold },
                  ]
                  footerRows.push(grandTotalRow);
             }
@@ -373,13 +389,13 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 lineColor: [0, 0, 0]
             },
             columnStyles: {
-              0: { cellWidth: '6%' },    // S.No
+              0: { halign: 'center', cellWidth: '6%' },    // S.No
               1: { cellWidth: 'auto' },  // Name & Dims
-              2: { cellWidth: '12%' },  // Unit Wt
-              3: { cellWidth: '12%' },  // Unit Cost
-              4: { cellWidth: '8%' },   // Qty
-              5: { cellWidth: '12%' },  // Total Wt
-              6: { cellWidth: '12%' },  // Total Cost
+              2: { halign: 'right', cellWidth: '12%' },  // Unit Wt
+              3: { halign: 'right', cellWidth: '12%' },  // Unit Cost
+              4: { halign: 'center', cellWidth: '8%' },   // Qty
+              5: { halign: 'right', cellWidth: '12%' },  // Total Wt
+              6: { halign: 'right', cellWidth: '12%' },  // Total Cost
             },
             didDrawPage: (data: any) => {
                 currentY = data.cursor.y;

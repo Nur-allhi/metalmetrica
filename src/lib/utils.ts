@@ -5,7 +5,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function getCurrencySymbol(currencyCode?: string) {
+export function getCurrencySymbol(currencyCode?: string, useCodeFallback = false) {
+    if (useCodeFallback) {
+        return currencyCode || 'USD';
+    }
     switch(currencyCode) {
         case 'USD': return '$';
         case 'EUR': return '€';

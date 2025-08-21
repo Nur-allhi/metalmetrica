@@ -32,10 +32,10 @@ const renderItemDimensions = (item: SteelItem) => {
             return (
               <>
                 <p>L:{girder.length} Flange:{girder.flangeWidth}x{girder.flangeThickness} Web:{girder.webHeight}x{girder.webThickness} mm</p>
-                <p className="text-xs text-gray-700">Flange Wt: {numberFormat(girder.flangeWeight!)} kg (Total: {numberFormat(girder.flangeWeight! * girder.quantity)} kg)</p>
-                <p className="text-xs text-gray-700">Web Wt: {numberFormat(girder.webWeight!)} kg (Total: {numberFormat(girder.webWeight! * girder.quantity)} kg)</p>
-                <p className="text-xs text-gray-700">Flange Ft: {numberFormat(girder.flangeRunningFeet!)} (Total: {numberFormat(girder.flangeRunningFeet! * girder.quantity)})</p>
-                <p className="text-xs text-gray-700">Web Ft: {numberFormat(girder.webRunningFeet!)} (Total: {numberFormat(girder.webRunningFeet! * girder.quantity)})</p>
+                <p className="text-xs text-black">Flange Wt: {numberFormat(girder.flangeWeight!)} kg (Total: {numberFormat(girder.flangeWeight! * girder.quantity)} kg)</p>
+                <p className="text-xs text-black">Web Wt: {numberFormat(girder.webWeight!)} kg (Total: {numberFormat(girder.webWeight! * girder.quantity)} kg)</p>
+                <p className="text-xs text-black">Flange Ft: {numberFormat(girder.flangeRunningFeet!)} (Total: {numberFormat(girder.flangeRunningFeet! * girder.quantity)})</p>
+                <p className="text-xs text-black">Web Ft: {numberFormat(girder.webRunningFeet!)} (Total: {numberFormat(girder.webRunningFeet! * girder.quantity)})</p>
               </>
             )
         case 'circular':
@@ -78,7 +78,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
 
 
     return (
-        <div ref={ref} className="bg-white px-8 py-8 font-sans text-lg text-black">
+        <div ref={ref} className="bg-white p-8 font-sans text-base text-black">
              <style type="text/css" media="print">
                 {`
                     @page { size: auto;  margin: 0; }
@@ -94,12 +94,12 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
             <header className="flex justify-between items-start mb-8 border-b pb-4 report-section">
                 <div>
                      {organization?.name && <h1 className="text-4xl font-bold text-black">{organization.name}</h1>}
-                     {organization?.address && <p className="text-sm text-gray-600 mt-1">{organization.address}</p>}
+                     {organization?.address && <p className="text-sm text-black mt-1">{organization.address}</p>}
                      <div className='flex gap-4'>
-                        {organization?.email && <p className="text-sm text-gray-600">{organization.email}</p>}
-                        {organization?.contactNumber && <p className="text-sm text-gray-600">{organization.contactNumber}</p>}
+                        {organization?.email && <p className="text-sm text-black">{organization.email}</p>}
+                        {organization?.contactNumber && <p className="text-sm text-black">{organization.contactNumber}</p>}
                      </div>
-                    <p className="text-xl text-gray-700 mt-2">Project Weight {hasCost && '& Cost'} Report</p>
+                    <p className="text-xl text-black mt-2">Project Weight {hasCost && '& Cost'} Report</p>
                 </div>
                 {organization?.logoUrl && (
                     <Image src={organization.logoUrl} alt="Organization Logo" width={150} height={50} className="object-contain" data-ai-hint="company logo" />
@@ -125,7 +125,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                 <div className="border border-gray-300">
                     <Table className="border-collapse">
                         <TableHeader className="report-table-header">
-                            <TableRow className="bg-gray-100">
+                            <TableRow className="bg-gray-200">
                                 <TableHead className="text-black border border-gray-300 p-2 font-bold text-center text-base">Item Type</TableHead>
                                 <TableHead className="text-black border border-gray-300 p-2 font-bold text-base">Name & Dimensions</TableHead>
                                 <TableHead className="text-black border border-gray-300 p-2 font-bold text-center text-base">Unit Weight (kg)</TableHead>
@@ -151,7 +151,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                             ))}
                         </TableBody>
                          <TableFooter className="report-table-footer">
-                            <TableRow className="[&>td]:border [&>td]:border-gray-300 [&>td]:p-2 bg-gray-100">
+                            <TableRow className="[&>td]:border [&>td]:border-gray-300 [&>td]:p-2 bg-gray-200">
                                 <TableCell colSpan={colSpanTotal} className="text-right font-bold text-xl pr-4 text-black">Project Totals</TableCell>
                                 <TableCell className="text-center font-bold text-xl text-black">{numberFormat(totalWeight)} kg</TableCell>
                                 {hasCost && <TableCell className="text-center font-bold text-xl text-black"><span className="font-bold">{currencySymbol}</span>{numberFormat(totalCost!)}</TableCell>}
@@ -164,11 +164,11 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
              {organization?.termsAndConditions && (
                 <section className="mt-10 pt-4 border-t border-gray-300 report-section">
                     <h2 className="text-lg font-bold text-black mb-2">Terms & Conditions</h2>
-                    <p className="text-xs text-gray-700 whitespace-pre-wrap">{organization.termsAndConditions}</p>
+                    <p className="text-xs text-black whitespace-pre-wrap">{organization.termsAndConditions}</p>
                 </section>
             )}
 
-            <footer className="mt-16 text-center text-sm text-gray-700 report-section">
+            <footer className="mt-16 text-center text-sm text-black report-section">
                 <p>Report generated by MetalMetrica on {new Date().toLocaleString()}</p>
                  {organization?.name && <p>{organization.name}</p>}
             </footer>
@@ -177,5 +177,3 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
 });
 ProjectReport.displayName = 'ProjectReport';
 export default ProjectReport;
-
-    

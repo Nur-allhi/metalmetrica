@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { Plus, Download, Trash2, Edit } from "lucide-react";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -55,6 +55,8 @@ const renderItemDimensions = (item: SteelItem) => {
 
 const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void }) => {
     const girder = item as SteelGirder;
+    const hasCost = item.cost !== null;
+
     return (
         <Card>
             <CardContent className="p-4 flex flex-col gap-4">
@@ -91,10 +93,12 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
                         <p className="text-muted-foreground">Total Wt (kg)</p>
                         <p className="font-semibold">{(item.weight * item.quantity).toFixed(2)}</p>
                     </div>
-                    <div>
-                        <p className="text-muted-foreground">Total Cost</p>
-                        <p className="font-semibold text-green-600">${((item.cost || 0) * item.quantity).toFixed(2)}</p>
-                    </div>
+                    {hasCost && (
+                         <div>
+                            <p className="text-muted-foreground">Total Cost</p>
+                            <p className="font-semibold text-green-600">${((item.cost || 0) * item.quantity).toFixed(2)}</p>
+                        </div>
+                    )}
                 </div>
             </CardContent>
         </Card>
@@ -154,8 +158,10 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
       });
   };
 
-  const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0) || 0;
-  const totalCost = project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) || 0;
+  const totalWeight = useMemo(() => project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0) || 0, [project.items]);
+  const hasCost = useMemo(() => project.items.some(item => item.cost !== null), [project.items]);
+  const totalCost = useMemo(() => hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null, [project.items, hasCost]);
+
 
   const weightByType = project.items.reduce((acc, item) => {
     if (!acc[item.type]) {
@@ -290,10 +296,12 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 <span className="text-muted-foreground">Total Weight</span>
                 <span className="font-bold">{totalWeight.toFixed(2)} kg</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Total Cost</span>
-                <span className="font-bold text-green-600">${totalCost.toFixed(2)}</span>
-              </div>
+              {hasCost && (
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Total Cost</span>
+                  <span className="font-bold text-green-600">${totalCost?.toFixed(2)}</span>
+                </div>
+              )}
               <hr />
               <h4 className="mb-2 text-center text-sm font-medium">Weight by Type</h4>
               <ProjectSummaryChart data={chartData} />
@@ -333,3 +341,5 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
+
+    

@@ -11,7 +11,7 @@ interface BaseSteelItem {
   name: string;
   quantity: number;
   weight: number; // Always in kg
-  cost: number; // Always in USD
+  cost: number | null; // Always in USD, null if not provided
 }
 
 export interface SteelPlate extends BaseSteelItem {
@@ -60,3 +60,5 @@ export interface Project {
   items: SteelItem[];
   createdAt: string;
 }
+
+    

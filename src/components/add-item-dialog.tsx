@@ -44,7 +44,7 @@ const formSchema = z.object({
   name: z.string().min(2, "Item name is required."),
   type: z.enum(["plate", "pipe", "girder", "circular"]),
   quantity: z.coerce.number().int().min(1, "Quantity must be at least 1."),
-  price: z.coerce.number().min(0).optional(), // Price per kg
+  price: z.union([z.coerce.number().min(0), z.literal('')]).optional(), // Price per kg
 
   // Shared dimensions
   length: z.coerce.number().optional(),
@@ -136,7 +136,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
       name: "",
       type: "plate",
       quantity: 1,
-      price: 0.8,
+      price: "",
       length: undefined,
       width: undefined,
       thickness: undefined,
@@ -173,7 +173,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
 
   function onSubmit(data: FormData) {
     const { quantity, price } = data;
-    const pricePerKg = price || 0;
+    const pricePerKg = typeof price === 'number' ? price : null;
 
     let newItem: Omit<SteelItem, 'id'> | null = null;
     const density = STEEL_DENSITIES.MS;
@@ -184,7 +184,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
         const weightKg = volumeM3 * density;
         newItem = {
             name: data.name, type: 'plate', quantity, length, width, thickness,
-            weight: weightKg, cost: weightKg * pricePerKg,
+            weight: weightKg, cost: pricePerKg !== null ? weightKg * pricePerKg : null,
         };
     } else if (data.type === "pipe" && data.length && data.outerDiameter && data.wallThickness) {
         const { length, outerDiameter, wallThickness } = data;
@@ -195,7 +195,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
         const weightKg = volumeM3 * density;
         newItem = {
             name: data.name, type: 'pipe', quantity, length, outerDiameter, wallThickness,
-            weight: weightKg, cost: weightKg * pricePerKg,
+            weight: weightKg, cost: pricePerKg !== null ? weightKg * pricePerKg : null,
         };
     } else if (data.type === "girder" && data.length && data.flangeWidth && data.flangeThickness && data.webHeight && data.webThickness) {
         const { length, flangeWidth, flangeThickness, webHeight, webThickness } = data;
@@ -215,7 +215,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
 
         newItem = {
             name: data.name, type: 'girder', quantity, length, flangeWidth, flangeThickness, webHeight, webThickness,
-            weight: weightKg, cost: weightKg * pricePerKg, 
+            weight: weightKg, cost: pricePerKg !== null ? weightKg * pricePerKg : null, 
             flangeWeight, webWeight,
             flangeRunningFeet, webRunningFeet,
         };
@@ -236,7 +236,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
         const weightKg = volumeM3 * density;
         newItem = {
             name: data.name, type: 'circular', quantity, thickness, diameter, innerDiameter: innerDiameter || null,
-            weight: weightKg, cost: weightKg * pricePerKg,
+            weight: weightKg, cost: pricePerKg !== null ? weightKg * pricePerKg : null,
         };
     }
 
@@ -478,7 +478,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                         name="price"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Price ($/kg)</FormLabel>
+                            <FormLabel>Price ($/kg) (Opt.)</FormLabel>
                             <FormControl>{renderInput(field)}</FormControl>
                             <FormMessage />
                         </FormItem>
@@ -496,5 +496,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
     </Dialog>
   );
 }
+
+    
 
     

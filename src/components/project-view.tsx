@@ -131,7 +131,7 @@ const ItemCard = ({ item, onDelete, currencySymbol }: { item: SteelItem, onDelet
                      {hasCost && (
                          <div>
                             <p className="text-muted-foreground">Price ({currencySymbol}/kg)</p>
-                            <p>{pricePerKg !== null ? `${currencySymbol}${numberFormat(pricePerKg)}` : 'N/A'}</p>
+                            <p>{pricePerKg !== null ? `${getCurrencySymbol(organization?.currency)}${numberFormat(pricePerKg)}` : 'N/A'}</p>
                         </div>
                     )}
                     <div>
@@ -140,7 +140,7 @@ const ItemCard = ({ item, onDelete, currencySymbol }: { item: SteelItem, onDelet
                     </div>
                      <div>
                         <p className="text-muted-foreground">Unit Cost</p>
-                        <p>{hasCost ? `${currencySymbol}${numberFormat(item.cost!)}` : 'N/A'}</p>
+                        <p>{hasCost ? `${getCurrencySymbol(organization?.currency)}${numberFormat(item.cost!)}` : 'N/A'}</p>
                     </div>
                      <div>
                         <p className="text-muted-foreground">Total Wt (kg)</p>
@@ -149,7 +149,7 @@ const ItemCard = ({ item, onDelete, currencySymbol }: { item: SteelItem, onDelet
                     {hasCost && (
                          <div>
                             <p className="text-muted-foreground">Total Cost</p>
-                            <p className="font-semibold text-green-600">{currencySymbol}{numberFormat((item.cost || 0) * item.quantity)}</p>
+                            <p className="font-semibold text-green-600">{getCurrencySymbol(organization?.currency)}{numberFormat((item.cost || 0) * item.quantity)}</p>
                         </div>
                     )}
                 </div>
@@ -266,8 +266,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             let dimensions = `${item.name}\n${renderItemDimensions(item)}`;
             if (item.type === 'girder') {
                 const girder = item as SteelGirder;
-                dimensions += `\nFlange Wt: ${numberFormat(girder.flangeWeight!)} kg | Web Wt: ${numberFormat(girder.webWeight!)} kg`;
-                dimensions += `\nFlange Ft: ${numberFormat(girder.flangeRunningFeet!)} ft | Web Ft: ${numberFormat(girder.webRunningFeet!)} ft`;
+                dimensions = `${item.name}\nL:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm\nFlange Wt: ${numberFormat(girder.flangeWeight!)} kg | Web Wt: ${numberFormat(girder.webWeight!)} kg\nFlange Ft: ${numberFormat(girder.flangeRunningFeet!)} ft | Web Ft: ${numberFormat(girder.webRunningFeet!)} ft`;
+            } else {
+                 dimensions = `${item.name}\n${renderItemDimensions(item)}`;
             }
 
             const row = [
@@ -286,19 +287,18 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         const totalCost = hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null;
         
         const footColSpan = hasCost ? 5 : 4;
-        let footContent = [
+        let footContent: any[] = [
              { content: 'Project Totals', colSpan: footColSpan, styles: { halign: 'right', fontStyle: 'bold' } },
-             { content: numberFormat(totalWeight) + ' kg', styles: { halign: 'right', fontStyle: 'bold' } },
+             { content: `${numberFormat(totalWeight)} kg`, styles: { halign: 'right', fontStyle: 'bold' } },
         ];
         
         if (hasCost && totalCost != null) {
-            footContent.push({ content: currencyCode + ' ' + numberFormat(totalCost), styles: { halign: 'right', fontStyle: 'bold' } });
+            footContent.push({ content: `${currencyCode} ${numberFormat(totalCost)}`, styles: { halign: 'right', fontStyle: 'bold' } });
         }
 
         const foot = [ footContent ];
 
         let columnStyles: { [key: string]: any } = {};
-
         if (hasCost) {
             columnStyles = {
                 0: { cellWidth: 25 }, // Item Type
@@ -319,6 +319,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             };
         }
 
+
         (doc as any).autoTable({
             startY: currentY,
             head: head,
@@ -330,16 +331,18 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 textColor: 255,
                 fontStyle: 'bold',
                 halign: 'center',
+                fontSize: 10,
             },
              footStyles: {
                 fillColor: [245, 245, 245], // White smoke
                 fontStyle: 'bold',
                 textColor: 0,
+                fontSize: 10,
             },
             columnStyles: columnStyles,
             styles: {
                 cellPadding: 2,
-                fontSize: 8,
+                fontSize: 10,
                 overflow: 'linebreak'
             },
             didDrawPage: (data: any) => {
@@ -526,7 +529,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
               {hasCost && totalCost !== null && (
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Total Cost</span>
-                  <span className="font-bold text-green-600">{currencySymbol}{numberFormat(totalCost)}</span>
+                  <span className="font-bold text-green-600">{getCurrencySymbol(organization?.currency)}{numberFormat(totalCost)}</span>
                 </div>
               )}
               <hr />
@@ -568,5 +571,3 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
-
-    

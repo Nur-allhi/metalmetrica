@@ -523,11 +523,27 @@ export default function CalculatorCard() {
                          </div>
                          
                          {itemType === 'girder' && result.flangeWeight !== undefined && (
-                            <div className="border-t pt-4 text-sm text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-1">
-                                <p>Flange Wt:</p><p className="text-right font-medium text-foreground">{(result.flangeWeight).toFixed(2)} kg (Total: {(result.flangeWeight * result.quantity).toFixed(2)} kg)</p>
-                                <p>Web Wt:</p><p className="text-right font-medium text-foreground">{(result.webWeight!).toFixed(2)} kg (Total: {(result.webWeight! * result.quantity).toFixed(2)} kg)</p>
-                                <p>Flange Running Ft:</p><p className="text-right font-medium text-foreground">{(result.flangeRunningFeet!).toFixed(2)} (Total: {(result.flangeRunningFeet! * result.quantity).toFixed(2)})</p>
-                                <p>Web Running Ft:</p><p className="text-right font-medium text-foreground">{(result.webRunningFeet!).toFixed(2)} (Total: {(result.webRunningFeet! * result.quantity).toFixed(2)})</p>
+                            <div className="border-t pt-4 text-sm text-muted-foreground space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <p className='font-medium'>Flange Weight</p>
+                                    <p className='font-semibold text-foreground text-right'>{(result.flangeWeight).toFixed(2)} kg/piece</p>
+                                    <p className='font-semibold text-foreground text-right'>Total: {(result.flangeWeight * result.quantity).toFixed(2)} kg</p>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <p className='font-medium'>Web Weight</p>
+                                    <p className='font-semibold text-foreground text-right'>{(result.webWeight!).toFixed(2)} kg/piece</p>
+                                    <p className='font-semibold text-foreground text-right'>Total: {(result.webWeight! * result.quantity).toFixed(2)} kg</p>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <p className='font-medium'>Flange Length (ft)</p>
+                                    <p className='font-semibold text-foreground text-right'>{(result.flangeRunningFeet!).toFixed(2)} ft/piece</p>
+                                    <p className='font-semibold text-foreground text-right'>Total: {(result.flangeRunningFeet! * result.quantity).toFixed(2)} ft</p>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <p className='font-medium'>Web Length (ft)</p>
+                                    <p className='font-semibold text-foreground text-right'>{(result.webRunningFeet!).toFixed(2)} ft/piece</p>
+                                    <p className='font-semibold text-foreground text-right'>Total: {(result.webRunningFeet! * result.quantity).toFixed(2)} ft</p>
+                                </div>
                             </div>
                          )}
                     </CardContent>
@@ -544,5 +560,7 @@ export default function CalculatorCard() {
     </Card>
   );
 }
+
+    
 
     

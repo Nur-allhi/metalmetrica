@@ -86,11 +86,35 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
                 <p className="text-sm text-muted-foreground">{renderItemDimensions(item)}</p>
 
                 {item.type === 'girder' && (
-                  <div className="text-xs text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-1">
-                    <p>Flange Wt:</p><p className="text-right font-medium">{(girder.flangeWeight)?.toFixed(2)} kg (Total: {(girder.flangeWeight! * item.quantity).toFixed(2)} kg)</p>
-                    <p>Web Wt:</p><p className="text-right font-medium">{(girder.webWeight)?.toFixed(2)} kg (Total: {(girder.webWeight! * item.quantity).toFixed(2)} kg)</p>
-                    <p>Flange Running Ft:</p><p className="text-right font-medium">{(girder.flangeRunningFeet)?.toFixed(2)} (Total: {(girder.flangeRunningFeet! * item.quantity).toFixed(2)})</p>
-                    <p>Web Running Ft:</p><p className="text-right font-medium">{(girder.webRunningFeet)?.toFixed(2)} (Total: {(girder.webRunningFeet! * item.quantity).toFixed(2)})</p>
+                  <div className="text-xs text-muted-foreground border-t pt-2 space-y-1">
+                      <div className="flex justify-between items-center">
+                          <p className='font-medium'>Flange Weight</p>
+                          <div className='text-right'>
+                            <p className='font-semibold text-foreground'>{(girder.flangeWeight)?.toFixed(2)} kg/piece</p>
+                            <p className='font-semibold text-foreground'>Total: {(girder.flangeWeight! * item.quantity).toFixed(2)} kg</p>
+                          </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                          <p className='font-medium'>Web Weight</p>
+                           <div className='text-right'>
+                            <p className='font-semibold text-foreground'>{(girder.webWeight)?.toFixed(2)} kg/piece</p>
+                            <p className='font-semibold text-foreground'>Total: {(girder.webWeight! * item.quantity).toFixed(2)} kg</p>
+                          </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                          <p className='font-medium'>Flange Length (ft)</p>
+                          <div className='text-right'>
+                            <p className='font-semibold text-foreground'>{(girder.flangeRunningFeet)?.toFixed(2)} ft/piece</p>
+                            <p className='font-semibold text-foreground'>Total: {(girder.flangeRunningFeet! * item.quantity).toFixed(2)} ft</p>
+                          </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                          <p className='font-medium'>Web Length (ft)</p>
+                          <div className='text-right'>
+                            <p className='font-semibold text-foreground'>{(girder.webRunningFeet)?.toFixed(2)} ft/piece</p>
+                            <p className='font-semibold text-foreground'>Total: {(girder.webRunningFeet! * item.quantity).toFixed(2)} ft</p>
+                          </div>
+                      </div>
                   </div>
                 )}
                 
@@ -359,3 +383,5 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
+
+    

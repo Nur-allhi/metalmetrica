@@ -63,7 +63,7 @@ export default function Home() {
       });
       return () => unsubscribe();
     }
-  }, [user, activeProject?.id]);
+  }, [user]);
 
   // Set initial active project
   useEffect(() => {
@@ -155,7 +155,7 @@ export default function Home() {
               <SidebarInset>
                   <Header organization={organization} onSettingsClick={() => setOrgSetupOpen(true)} />
                   <main className="flex flex-1 flex-col gap-4 p-4 lg:p-6 overflow-hidden">
-                      <Tabs defaultValue="projects" className="flex-1 flex flex-col">
+                      <Tabs defaultValue="projects" className="flex-1 flex flex-col overflow-hidden">
                         <div className="flex items-center">
                             <TabsList>
                             <TabsTrigger value="single">Single Calc</TabsTrigger>
@@ -168,7 +168,7 @@ export default function Home() {
                         <TabsContent value="single" className="mt-4">
                             <CalculatorCard />
                         </TabsContent>
-                        <TabsContent value="projects" className="flex-1 flex flex-col mt-4 overflow-hidden">
+                        <TabsContent value="projects" className="flex-1 flex flex-col mt-4 overflow-hidden h-full">
                             {renderProjectContent()}
                         </TabsContent>
                       </Tabs>

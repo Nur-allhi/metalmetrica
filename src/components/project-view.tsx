@@ -278,7 +278,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         )}
       </div>
       <div className="grid auto-rows-max items-start gap-4 lg:grid-cols-3 lg:gap-8 w-full h-full overflow-hidden">
-        <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 h-full overflow-hidden">
+        <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 h-full overflow-hidden flex-col flex">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
@@ -315,7 +315,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                           ))}
                       </div>
                   </ScrollArea>
-                  <div className="mt-auto pt-4">
+                  <div className="flex-shrink-0 pt-4">
                       <Button className="w-full" onClick={() => setAddItemDialogOpen(true)}>
                       <Plus />
                       Add Item

@@ -64,9 +64,14 @@
   }
 }
 
+.print-container {
+  display: none;
+}
+
 @media print {
   body {
     -webkit-print-color-adjust: exact;
+    background-color: #fff;
   }
   .no-print {
     display: none !important;

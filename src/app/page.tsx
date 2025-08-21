@@ -140,7 +140,6 @@ export default function Home() {
       <div className="print-container">
         {activeProject && organization && <ProjectReport project={activeProject} organization={organization} />}
       </div>
-
       <div className="no-print">
         <SidebarProvider>
             <div className="flex min-h-screen w-full flex-col bg-muted/40">

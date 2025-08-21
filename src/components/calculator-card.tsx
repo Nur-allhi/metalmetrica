@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import html2canvas from "html2canvas";
-import { Download } from "lucide-react";
+import { Download, Workflow } from "lucide-react";
 
 import {
   Card,
@@ -244,9 +244,9 @@ export default function CalculatorCard() {
         const volumeM3 = (length / 1000) * (width / 1000) * (thickness / 1000);
         weightKg = volumeM3 * density;
     } else if (data.type === "plate-imperial" && data.length && data.width && data.thickness) {
-        const { length, width, thickness } = data; // length/width in IN, thickness in MM
+        const { length, width, thickness } = data;
         const thicknessIn = thickness / 25.4;
-        const weightLbs = length * width * thicknessIn * 0.284; // Using standard steel density
+        const weightLbs = length * width * thicknessIn * 0.284;
         weightKg = weightLbs / KG_TO_LBS;
     } else if (data.type === "pipe" && data.length && data.outerDiameter && data.wallThickness) {
         const { length, outerDiameter, wallThickness } = data;
@@ -557,69 +557,75 @@ export default function CalculatorCard() {
                 </div>
             
                {result && (
-                <Card ref={resultCardRef} className="bg-muted/50">
-                    <CardHeader className='pb-4'>
-                        <CardTitle className='text-xl'>Calculation Result</CardTitle>
-                        <CardDescription>
-                            {getItemTypeLabel(result.inputs.type)} (Qty: {result.quantity}) - {renderItemDimensions(result.inputs)}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4 text-center">
-                            <div>
-                                <p className="text-sm text-muted-foreground">Total Weight</p>
-                                <p className="text-2xl font-bold">
-                                    {(result.unit === 'lbs' ? result.totalWeight * KG_TO_LBS : result.totalWeight).toFixed(2)} {result.unit}
-                                </p>
+                <Card className="bg-muted/50 overflow-hidden">
+                    <div ref={resultCardRef} className="bg-muted/50 p-6">
+                        <CardHeader className='p-0 pb-4'>
+                            <CardTitle className='text-xl'>Calculation Result</CardTitle>
+                            <CardDescription>
+                                {getItemTypeLabel(result.inputs.type)} (Qty: {result.quantity}) - {renderItemDimensions(result.inputs)}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-0 space-y-4">
+                            <div className="grid grid-cols-2 gap-4 text-center">
+                                <div>
+                                    <p className="text-sm text-muted-foreground">Total Weight</p>
+                                    <p className="text-2xl font-bold">
+                                        {(result.unit === 'lbs' ? result.totalWeight * KG_TO_LBS : result.totalWeight).toFixed(2)} {result.unit}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-muted-foreground">Total Cost</p>
+                                    <p className="text-2xl font-bold text-green-600">
+                                        {result.totalCost !== null ? `$${result.totalCost.toFixed(2)}` : 'N/A'}
+                                    </p>
+                                </div>
                             </div>
-                             <div>
-                                <p className="text-sm text-muted-foreground">Total Cost</p>
-                                <p className="text-2xl font-bold text-green-600">
-                                    {result.totalCost !== null ? `$${result.totalCost.toFixed(2)}` : 'N/A'}
-                                </p>
-                            </div>
-                        </div>
 
-                         <div className="border-t pt-4 grid grid-cols-2 gap-4 text-center">
-                            <div>
-                                <p className="text-sm text-muted-foreground">Weight / piece</p>
-                                <p className="text-lg font-semibold">
-                                     {(result.unit === 'lbs' ? result.weightPerPiece * KG_TO_LBS : result.weightPerPiece).toFixed(2)} {result.unit}
-                                </p>
-                            </div>
-                             <div>
-                                <p className="text-sm text-muted-foreground">Cost / piece</p>
-                                <p className="text-lg font-semibold text-green-600">
-                                    {result.costPerPiece !== null ? `$${result.costPerPiece.toFixed(2)}` : 'N/A'}
-                                </p>
-                            </div>
-                         </div>
-                         
-                         {itemType === 'girder' && result.flangeWeight !== undefined && (
-                            <div className="border rounded-lg p-3 text-sm text-muted-foreground space-y-2">
-                                <div className="grid grid-cols-3 items-center">
-                                    <p className='font-medium col-span-1'>Flange Weight</p>
-                                    <p className='font-semibold text-foreground text-center col-span-1'>{(result.flangeWeight).toFixed(2)} kg/piece</p>
-                                    <p className='font-semibold text-foreground text-right col-span-1'>Total: {(result.flangeWeight * result.quantity).toFixed(2)} kg</p>
+                            <div className="border-t pt-4 grid grid-cols-2 gap-4 text-center">
+                                <div>
+                                    <p className="text-sm text-muted-foreground">Weight / piece</p>
+                                    <p className="text-lg font-semibold">
+                                        {(result.unit === 'lbs' ? result.weightPerPiece * KG_TO_LBS : result.weightPerPiece).toFixed(2)} {result.unit}
+                                    </p>
                                 </div>
-                                <div className="grid grid-cols-3 items-center">
-                                    <p className='font-medium col-span-1'>Web Weight</p>
-                                    <p className='font-semibold text-foreground text-center col-span-1'>{(result.webWeight!).toFixed(2)} kg/piece</p>
-                                    <p className='font-semibold text-foreground text-right col-span-1'>Total: {(result.webWeight! * result.quantity).toFixed(2)} kg</p>
-                                </div>
-                                <div className="grid grid-cols-3 items-center">
-                                    <p className='font-medium col-span-1'>Flange Length (ft)</p>
-                                    <p className='font-semibold text-foreground text-center col-span-1'>{(result.flangeRunningFeet!).toFixed(2)} ft/piece</p>
-                                    <p className='font-semibold text-foreground text-right col-span-1'>Total: {(result.flangeRunningFeet! * result.quantity).toFixed(2)} ft</p>
-                                </div>
-                                <div className="grid grid-cols-3 items-center">
-                                    <p className='font-medium col-span-1'>Web Length (ft)</p>
-                                    <p className='font-semibold text-foreground text-center col-span-1'>{(result.webRunningFeet!).toFixed(2)} ft/piece</p>
-                                    <p className='font-semibold text-foreground text-right col-span-1'>Total: {(result.webRunningFeet! * result.quantity).toFixed(2)} ft</p>
+                                <div>
+                                    <p className="text-sm text-muted-foreground">Cost / piece</p>
+                                    <p className="text-lg font-semibold text-green-600">
+                                        {result.costPerPiece !== null ? `$${result.costPerPiece.toFixed(2)}` : 'N/A'}
+                                    </p>
                                 </div>
                             </div>
-                         )}
-                    </CardContent>
+                            
+                            {itemType === 'girder' && result.flangeWeight !== undefined && (
+                                <div className="border rounded-lg p-3 text-sm text-muted-foreground space-y-2 bg-background/50">
+                                    <div className="grid grid-cols-3 items-center">
+                                        <p className='font-medium col-span-1'>Flange Weight</p>
+                                        <p className='font-semibold text-foreground text-center col-span-1'>{(result.flangeWeight).toFixed(2)} kg/piece</p>
+                                        <p className='font-semibold text-foreground text-right col-span-1'>Total: {(result.flangeWeight * result.quantity).toFixed(2)} kg</p>
+                                    </div>
+                                    <div className="grid grid-cols-3 items-center">
+                                        <p className='font-medium col-span-1'>Web Weight</p>
+                                        <p className='font-semibold text-foreground text-center col-span-1'>{(result.webWeight!).toFixed(2)} kg/piece</p>
+                                        <p className='font-semibold text-foreground text-right col-span-1'>Total: {(result.webWeight! * result.quantity).toFixed(2)} kg</p>
+                                    </div>
+                                    <div className="grid grid-cols-3 items-center">
+                                        <p className='font-medium col-span-1'>Flange Length (ft)</p>
+                                        <p className='font-semibold text-foreground text-center col-span-1'>{(result.flangeRunningFeet!).toFixed(2)} ft/piece</p>
+                                        <p className='font-semibold text-foreground text-right col-span-1'>Total: {(result.flangeRunningFeet! * result.quantity).toFixed(2)} ft</p>
+                                    </div>
+                                    <div className="grid grid-cols-3 items-center">
+                                        <p className='font-medium col-span-1'>Web Length (ft)</p>
+                                        <p className='font-semibold text-foreground text-center col-span-1'>{(result.webRunningFeet!).toFixed(2)} ft/piece</p>
+                                        <p className='font-semibold text-foreground text-right col-span-1'>Total: {(result.webRunningFeet! * result.quantity).toFixed(2)} ft</p>
+                                    </div>
+                                </div>
+                            )}
+                             <div className="flex items-center justify-center pt-4 text-xs text-muted-foreground">
+                                <Workflow className="h-4 w-4 mr-2" />
+                                Generated by MetalMetrica
+                            </div>
+                        </CardContent>
+                    </div>
                      <CardFooter>
                         <Button type="button" variant="outline" className="w-full" onClick={handleSaveAsImage}>
                             <Download className="mr-2 h-4 w-4" />
@@ -639,9 +645,5 @@ export default function CalculatorCard() {
     </Card>
   );
 }
-
-    
-
-    
 
     

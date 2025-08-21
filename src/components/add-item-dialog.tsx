@@ -46,8 +46,10 @@ const formSchema = z.object({
   quantity: z.coerce.number().int().min(1, "Quantity must be at least 1."),
   price: z.coerce.number().min(0).optional(), // Price per kg
 
-  // Plate dimensions
+  // Shared dimension
   length: z.coerce.number().min(0.1, "Required"),
+
+  // Plate dimensions
   width: z.coerce.number().optional(),
   thickness: z.coerce.number().optional(),
 
@@ -56,18 +58,18 @@ const formSchema = z.object({
   wallThickness: z.coerce.number().optional(),
 }).superRefine((data, ctx) => {
     if (data.type === 'plate') {
-        if (!data.width) {
+        if (data.width === undefined || data.width === null || data.width <= 0) {
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Width is required", path: ['width'] });
         }
-        if (!data.thickness) {
+        if (data.thickness === undefined || data.thickness === null || data.thickness <= 0) {
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Thickness is required", path: ['thickness'] });
         }
     }
     if (data.type === 'pipe') {
-        if (!data.outerDiameter) {
+        if (data.outerDiameter === undefined || data.outerDiameter === null || data.outerDiameter <= 0) {
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Outer Diameter is required", path: ['outerDiameter'] });
         }
-        if (!data.wallThickness) {
+        if (data.wallThickness === undefined || data.wallThickness === null || data.wallThickness <= 0) {
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Wall Thickness is required", path: ['wallThickness'] });
         }
         if (data.outerDiameter && data.wallThickness && data.wallThickness >= data.outerDiameter / 2) {
@@ -151,6 +153,9 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
         onOpenChange(false);
     }
   }
+  
+  const renderInput = (field: any) => <Input type="number" step="any" {...field} value={field.value ?? ''} />;
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -206,7 +211,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Length (mm)</FormLabel>
-                      <FormControl><Input type="number" {...field} /></FormControl>
+                      <FormControl>{renderInput(field)}</FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -220,7 +225,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Width (mm)</FormLabel>
-                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormControl>{renderInput(field)}</FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -231,7 +236,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Thickness (mm)</FormLabel>
-                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormControl>{renderInput(field)}</FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -247,7 +252,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Outer Dia. (mm)</FormLabel>
-                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormControl>{renderInput(field)}</FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -258,7 +263,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Wall Thick. (mm)</FormLabel>
-                          <FormControl><Input type="number" {...field} /></FormControl>
+                          <FormControl>{renderInput(field)}</FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -273,7 +278,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>Quantity</FormLabel>
-                            <FormControl><Input type="number" {...field} /></FormControl>
+                            <FormControl>{renderInput(field)}</FormControl>
                             <FormMessage />
                         </FormItem>
                         )}
@@ -284,7 +289,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel>Price ($/kg)</FormLabel>
-                            <FormControl><Input type="number" step="any" {...field} /></FormControl>
+                            <FormControl>{renderInput(field)}</FormControl>
                             <FormMessage />
                         </FormItem>
                         )}

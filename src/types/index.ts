@@ -1,4 +1,5 @@
 
+
 export interface Organization {
   name: string;
   logoUrl?: string;
@@ -64,4 +65,10 @@ export interface Project {
   projectId: string;
   items: SteelItem[];
   createdAt: string;
+}
+
+export interface AdditionalCost {
+  id: string;
+  description: string;
+  amount: number;
 }

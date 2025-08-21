@@ -16,10 +16,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { Project, Organization, SteelItem, SteelPlate, SteelPipe, SteelGirder, SteelCircular } from '@/types';
+import type { Project, Organization, SteelItem, SteelPlate, SteelPipe, SteelGirder, SteelCircular, AdditionalCost } from '@/types';
 import AddItemDialog from './add-item-dialog';
 import EditProjectDialog from './edit-project-dialog';
 import DeleteItemDialog from './delete-item-dialog';
+import AdditionalCostsDialog from './additional-costs-dialog';
 import { addItemToProject as addItemToProjectDb, deleteItemFromProject as deleteItemFromProjectDb, updateProject as updateProjectDb } from '@/services/firestore';
 import { useToast } from "@/hooks/use-toast";
 import ProjectSummaryChart from './project-summary-chart';
@@ -45,11 +46,11 @@ const renderItemDimensions = (item: SteelItem) => {
             return `L:${pipe.length} Ø:${pipe.outerDiameter} Wall:${pipe.wallThickness} mm`;
         case 'girder':
             const girder = item as SteelGirder;
-            return `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness}\nWeb:${girder.webHeight}x${girder.webThickness} mm`;
+            return `L:${girder.length}\nFlange:${girder.flangeWidth}x${girder.flangeThickness}\nWeb:${girder.webHeight}x${girder.webThickness} mm`;
         case 'circular':
             const circular = item as SteelCircular;
             if (circular.innerDiameter && circular.innerDiameter > 0) {
-                 return `T:${circular.thickness} Ø:${circular.diameter} Inner Ø:${circular.innerDiameter} mm`;
+                 return `T:${circular.thickness} Ø:${circular.diameter}\nInner Ø:${circular.innerDiameter} mm`;
             }
             return `T:${circular.thickness} Ø:${circular.diameter} mm`;
         default:
@@ -163,10 +164,11 @@ const ItemCard = ({ item, onDelete, organization }: { item: SteelItem, onDelete:
 export default function ProjectView({ project, organization }: ProjectViewProps) {
   const [isAddItemDialogOpen, setAddItemDialogOpen] = useState(false);
   const [isEditProjectDialogOpen, setEditProjectDialogOpen] = useState(false);
+  const [isCostsDialogOpen, setCostsDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<SteelItem | null>(null);
   const { toast } = useToast();
   
-  const handleGeneratePdf = () => {
+  const handleGeneratePdf = (additionalCosts: AdditionalCost[] = []) => {
     const doc = new jsPDF();
     const currencyCode = organization?.currency || 'USD';
     
@@ -273,7 +275,6 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 const flangeFtText = `Flange Ft: ${numberFormat(girder.flangeRunningFeet!)} ft`;
                 const webFtText = `Web Ft: ${numberFormat(girder.webRunningFeet!)} ft`;
                 dimensions = `${item.name}\nL:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm\n${flangeWeightText} | ${webWeightText}\n${flangeFtText} | ${webFtText}`;
-
             } else {
                  dimensions = `${item.name}\n${renderItemDimensions(item)}`;
             }
@@ -291,20 +292,15 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         });
         
         const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0);
-        const totalCost = hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null;
+        const subTotalCost = hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null;
         
         const foot = [[] as any[]];
         const footRow = foot[0];
 
         footRow.push({
-          content: 'Project Totals',
-          colSpan: hasCost ? 4 : 3,
+          content: 'Sub-Total',
+          colSpan: hasCost ? 4 : 5,
           styles: { halign: 'right', fontStyle: 'bold' },
-        });
-
-        footRow.push({
-          content: '',
-          styles: { halign: 'center', fontStyle: 'bold' },
         });
 
         footRow.push({
@@ -312,14 +308,13 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
           styles: { halign: 'right', fontStyle: 'bold' },
         });
 
-        if (hasCost && totalCost != null) {
+        if (hasCost && subTotalCost != null) {
           footRow.push({
-            content: `${currencyCode} ${numberFormat(totalCost)}`,
+            content: `${currencyCode} ${numberFormat(subTotalCost)}`,
             styles: { halign: 'right', fontStyle: 'bold' },
           });
         }
-
-
+        
         (doc as any).autoTable({
             startY: currentY,
             head: head,
@@ -340,28 +335,66 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 halign: 'center',
                 fontSize: 10,
             },
-             footStyles: {
+            footStyles: {
                 fillColor: [245, 245, 245], // White smoke
                 fontStyle: 'bold',
                 textColor: 0,
                 fontSize: 10,
             },
             columnStyles: {
-              0: { cellWidth: '15%' }, // Item Type
-              1: { cellWidth: 'auto' }, // Name & Dimensions
-              2: { cellWidth: '12.5%' }, // Unit Wt
-              3: { cellWidth: '12.5%' }, // Unit Cost or Qty
-              4: { cellWidth: '5%' }, // Qty or Total Wt
-              5: { cellWidth: '12.5%' }, // Total Wt or Total Cost
-              6: { cellWidth: '12.5%' }, // Total Cost
+              0: { cellWidth: '15%' },
+              1: { cellWidth: 'auto' },
+              2: { cellWidth: '12.5%' },
+              3: { cellWidth: '12.5%' },
+              4: { cellWidth: '8%' },
+              5: { cellWidth: '12.5%' },
+              6: { cellWidth: '15%' },
             },
             didDrawPage: (data: any) => {
                 currentY = data.cursor.y;
             }
         });
         
-        const finalY = (doc as any).lastAutoTable.finalY;
+        let finalY = (doc as any).lastAutoTable.finalY;
         currentY = finalY;
+
+        if (hasCost && additionalCosts.length > 0 && subTotalCost !== null) {
+          currentY += 5;
+          const additionalCostTotal = additionalCosts.reduce((acc, cost) => acc + cost.amount, 0);
+          const grandTotal = subTotalCost + additionalCostTotal;
+          
+          const costsBody = additionalCosts.map(cost => [
+              { content: cost.description },
+              { content: `${currencyCode} ${numberFormat(cost.amount)}`, styles: { halign: 'right' }}
+          ]);
+
+          (doc as any).autoTable({
+              startY: currentY,
+              head: [['Additional Costs', 'Amount']],
+              body: costsBody,
+              foot: [[
+                  { content: 'Grand Total', styles: { halign: 'right', fontStyle: 'bold' } },
+                  { content: `${currencyCode} ${numberFormat(grandTotal)}`, styles: { halign: 'right', fontStyle: 'bold' } }
+              ]],
+              theme: 'grid',
+              tableWidth: 'auto',
+              margin: { left: pageWidth / 2, right: pageMargin },
+              headStyles: {
+                  fillColor: [47, 79, 79],
+                  textColor: 255,
+                  fontStyle: 'bold',
+                  halign: 'center',
+              },
+               footStyles: {
+                  fillColor: [245, 245, 245],
+                  fontStyle: 'bold',
+                  textColor: 0,
+              },
+          });
+          finalY = (doc as any).lastAutoTable.finalY;
+          currentY = finalY;
+        }
+
 
         if (organization?.termsAndConditions) {
             const termsHeight = doc.getTextDimensions(organization.termsAndConditions, { maxWidth: pageWidth - pageMargin * 2 }).h;
@@ -550,8 +583,8 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
               <Button
                   className="w-full"
                   disabled={!project || !organization}
-                  onClick={handleGeneratePdf}
-                  title={!organization ? "Please set up an organization first" : ""}
+                  onClick={() => hasCost ? setCostsDialogOpen(true) : handleGeneratePdf()}
+                  title={!organization ? "Please set up an organization first" : (!hasCost ? "Add item costs to enable this feature" : "Generate PDF Report")}
               >
                   <Download />
                   Generate Report
@@ -578,6 +611,12 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
           onConfirm={handleDeleteItem}
           itemName={itemToDelete?.name || ''}
       />
+      <AdditionalCostsDialog
+        open={isCostsDialogOpen}
+        onOpenChange={setCostsDialogOpen}
+        onConfirm={handleGeneratePdf}
+        currencyCode={organization?.currency || 'USD'}
+       />
     </>
   )
 }

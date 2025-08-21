@@ -32,24 +32,25 @@ interface ProjectViewProps {
 }
 
 const renderItemDimensions = (item: SteelItem) => {
-    const dimUnit = item.type === 'plate-imperial' ? 'in' : 'mm';
     switch (item.type) {
         case 'plate':
-        case 'plate-imperial':
             const plate = item as SteelPlate;
-            return `L:${plate.length} x W:${plate.width} x T:${plate.thickness} ${dimUnit}`;
+            return `L:${plate.length} x W:${plate.width} x T:${plate.thickness} mm`;
+        case 'plate-imperial':
+            const plateImperial = item as SteelPlate;
+            return `L:${plateImperial.length}in x W:${plateImperial.width}in x T:${plateImperial.thickness}mm`;
         case 'pipe':
             const pipe = item as SteelPipe;
-            return `L:${pipe.length} Ø:${pipe.outerDiameter} Wall:${pipe.wallThickness} ${dimUnit}`;
+            return `L:${pipe.length} Ø:${pipe.outerDiameter} Wall:${pipe.wallThickness} mm`;
         case 'girder':
             const girder = item as SteelGirder;
-            return `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} ${dimUnit}`;
+            return `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm`;
         case 'circular':
             const circular = item as SteelCircular;
             if (circular.innerDiameter && circular.innerDiameter > 0) {
-                 return `T:${circular.thickness} Ø:${circular.diameter} Inner Ø:${circular.innerDiameter} ${dimUnit}`;
+                 return `T:${circular.thickness} Ø:${circular.diameter} Inner Ø:${circular.innerDiameter} mm`;
             }
-            return `T:${circular.thickness} Ø:${circular.diameter} ${dimUnit}`;
+            return `T:${circular.thickness} Ø:${circular.diameter} mm`;
         default:
             return '';
     }
@@ -65,7 +66,7 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
                 <div className="flex justify-between items-start">
                     <div>
                         <h3 className="font-semibold">{item.name}</h3>
-                        <Badge variant="secondary" className="capitalize mt-1">{item.type.replace('-imperial', ' (Imperial)')}</Badge>
+                        <Badge variant="secondary" className="capitalize mt-1">{item.type.replace('-imperial', ' (Imperial Formula)')}</Badge>
                     </div>
                     <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 -mt-2" onClick={onDelete}>
                         <Trash2 className="h-4 w-4 text-destructive" />
@@ -343,3 +344,5 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
+
+    

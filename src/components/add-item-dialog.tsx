@@ -187,8 +187,9 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
             weight: weightKg, cost: pricePerKg !== null ? weightKg * pricePerKg : null,
         };
     } else if (data.type === "plate-imperial" && data.length && data.width && data.thickness) {
-        const { length, width, thickness } = data;
-        const weightLbs = (length * width * thickness * 0.743) / 144;
+        const { length, width, thickness } = data; // length/width in IN, thickness in MM
+        const thicknessIn = thickness / 25.4; // convert thickness to inches
+        const weightLbs = (length * width * thicknessIn) * 0.284; // Using standard steel density
         const weightKg = weightLbs / KG_TO_LBS;
         newItem = {
             name: data.name, type: 'plate-imperial', quantity, length, width, thickness,
@@ -257,8 +258,18 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
   
   const renderInput = (field: any) => <Input type="number" step="any" {...field} value={field.value ?? ''} />;
 
-  const getDimUnit = () => {
+  const getLengthUnit = () => {
     return itemType === 'plate-imperial' ? 'in' : 'mm';
+  }
+  
+  const getWidthUnit = () => {
+    return itemType === 'plate-imperial' ? 'in' : 'mm';
+  }
+
+  const getThicknessUnit = () => {
+      return itemType === 'plate' ? 'mm' :
+             itemType === 'plate-imperial' ? 'mm' :
+             'mm';
   }
 
 
@@ -318,7 +329,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                     name="length"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Length ({getDimUnit()})</FormLabel>
+                        <FormLabel>Length ({getLengthUnit()})</FormLabel>
                         <FormControl>{renderInput(field)}</FormControl>
                         <FormMessage />
                       </FormItem>
@@ -333,7 +344,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                       name="width"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Width ({getDimUnit()})</FormLabel>
+                          <FormLabel>Width ({getWidthUnit()})</FormLabel>
                           <FormControl>{renderInput(field)}</FormControl>
                           <FormMessage />
                         </FormItem>
@@ -344,7 +355,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                       name="thickness"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Thickness ({getDimUnit()})</FormLabel>
+                          <FormLabel>Thickness ({getThicknessUnit()})</FormLabel>
                           <FormControl>{renderInput(field)}</FormControl>
                           <FormMessage />
                         </FormItem>
@@ -509,3 +520,5 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
     </Dialog>
   );
 }
+
+    

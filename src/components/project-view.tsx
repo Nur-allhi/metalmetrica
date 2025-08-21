@@ -60,13 +60,24 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
     const girder = item as SteelGirder;
     const hasCost = item.cost !== null;
 
+    const getItemTypeLabel = (type: SteelItem['type']) => {
+        switch (type) {
+            case 'plate':
+                return 'Steel Plate (Quality)';
+            case 'plate-imperial':
+                return 'Steel Plate (Non-Quality)';
+            default:
+                return type.charAt(0).toUpperCase() + type.slice(1);
+        }
+    }
+
     return (
         <Card>
             <CardContent className="p-4 flex flex-col gap-4">
                 <div className="flex justify-between items-start">
                     <div>
                         <h3 className="font-semibold">{item.name}</h3>
-                        <Badge variant="secondary" className="capitalize mt-1">{item.type.replace('-imperial', ' (Imperial Formula)')}</Badge>
+                        <Badge variant="secondary" className="mt-1">{getItemTypeLabel(item.type)}</Badge>
                     </div>
                     <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 -mt-2" onClick={onDelete}>
                         <Trash2 className="h-4 w-4 text-destructive" />
@@ -167,10 +178,14 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
 
   const weightByType = project.items.reduce((acc, item) => {
-    if (!acc[item.type]) {
-      acc[item.type] = 0;
+    let typeName = item.type;
+    if(item.type === 'plate') typeName = 'Plate (Quality)';
+    if(item.type === 'plate-imperial') typeName = 'Plate (Non-Quality)';
+
+    if (!acc[typeName]) {
+      acc[typeName] = 0;
     }
-    acc[item.type] += item.weight * item.quantity;
+    acc[typeName] += item.weight * item.quantity;
     return acc;
   }, {} as Record<string, number>) || {};
 
@@ -344,5 +359,3 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
-
-    

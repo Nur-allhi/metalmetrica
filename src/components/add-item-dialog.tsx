@@ -69,7 +69,18 @@ const formSchema = z.object({
 
 
 }).superRefine((data, ctx) => {
-    if (data.type === 'plate' || data.type === 'plate-imperial') {
+    if (data.type === 'plate') {
+        if (!data.length || data.length <= 0) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Length is required", path: ['length'] });
+        }
+        if (!data.width || data.width <= 0) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Width is required", path: ['width'] });
+        }
+        if (!data.thickness || data.thickness <= 0) {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Thickness is required", path: ['thickness'] });
+        }
+    }
+    if (data.type === 'plate-imperial') {
         if (!data.length || data.length <= 0) {
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Length is required", path: ['length'] });
         }
@@ -188,8 +199,8 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
         };
     } else if (data.type === "plate-imperial" && data.length && data.width && data.thickness) {
         const { length, width, thickness } = data; // length/width in IN, thickness in MM
-        const thicknessIn = thickness / 25.4; // convert thickness to inches
-        const weightLbs = (length * width * thicknessIn) * 0.284; // Using standard steel density
+        const thicknessIn = thickness / 25.4;
+        const weightLbs = length * width * thicknessIn * 0.284; // Using standard steel density
         const weightKg = weightLbs / KG_TO_LBS;
         newItem = {
             name: data.name, type: 'plate-imperial', quantity, length, width, thickness,
@@ -266,11 +277,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
     return itemType === 'plate-imperial' ? 'in' : 'mm';
   }
 
-  const getThicknessUnit = () => {
-      return itemType === 'plate' ? 'mm' :
-             itemType === 'plate-imperial' ? 'mm' :
-             'mm';
-  }
+  const getThicknessUnit = () => 'mm';
 
 
   return (
@@ -311,8 +318,8 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                            <SelectItem value="plate">Steel Plate (Metric)</SelectItem>
-                            <SelectItem value="plate-imperial">Steel Plate (Imperial Formula)</SelectItem>
+                            <SelectItem value="plate">Steel Plate (Quality)</SelectItem>
+                            <SelectItem value="plate-imperial">Steel Plate (Non-Quality)</SelectItem>
                             <SelectItem value="pipe">Steel Pipe</SelectItem>
                             <SelectItem value="girder">Steel Girder</SelectItem>
                             <SelectItem value="circular">Circular Section</SelectItem>
@@ -399,7 +406,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                             name="flangeWidth"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Flange Width</FormLabel>
+                                <FormLabel>Flange Width (mm)</FormLabel>
                                 <FormControl>{renderInput(field)}</FormControl>
                                 <FormMessage />
                                 </FormItem>
@@ -410,7 +417,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                             name="flangeThickness"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Flange Thickness</FormLabel>
+                                <FormLabel>Flange Thick. (mm)</FormLabel>
                                 <FormControl>{renderInput(field)}</FormControl>
                                 <FormMessage />
                                 </FormItem>
@@ -423,7 +430,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                             name="webHeight"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Web Height</FormLabel>
+                                <FormLabel>Web Height (mm)</FormLabel>
                                 <FormControl>{renderInput(field)}</FormControl>
                                 <FormMessage />
                                 </FormItem>
@@ -434,7 +441,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                             name="webThickness"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Web Thickness</FormLabel>
+                                <FormLabel>Web Thick. (mm)</FormLabel>
                                 <FormControl>{renderInput(field)}</FormControl>
                                 <FormMessage />
                                 </FormItem>
@@ -463,7 +470,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                          name="diameter"
                          render={({ field }) => (
                            <FormItem>
-                             <FormLabel>Outer Diameter</FormLabel>
+                             <FormLabel>Outer Dia. (mm)</FormLabel>
                              <FormControl>{renderInput(field)}</FormControl>
                              <FormMessage />
                            </FormItem>
@@ -474,7 +481,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                          name="innerDiameter"
                          render={({ field }) => (
                            <FormItem>
-                             <FormLabel>Inner Dia. (Opt.)</FormLabel>
+                             <FormLabel>Inner Dia. (mm) (Opt.)</FormLabel>
                              <FormControl>{renderInput(field)}</FormControl>
                              <FormMessage />
                            </FormItem>
@@ -520,5 +527,3 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
     </Dialog>
   );
 }
-
-    

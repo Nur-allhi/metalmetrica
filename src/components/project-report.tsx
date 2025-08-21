@@ -27,10 +27,10 @@ const renderItemDimensions = (item: SteelItem) => {
             return (
               <>
                 <p>L:{girder.length} Flange:{girder.flangeWidth}x{girder.flangeThickness} Web:{girder.webHeight}x{girder.webThickness} mm</p>
-                <p className="text-xs text-gray-600">Flange Wt: {girder.flangeWeight?.toFixed(2)} kg (Total: {(girder.flangeWeight! * girder.quantity).toFixed(2)} kg)</p>
-                <p className="text-xs text-gray-600">Web Wt: {girder.webWeight?.toFixed(2)} kg (Total: {(girder.webWeight! * girder.quantity).toFixed(2)} kg)</p>
-                <p className="text-xs text-gray-600">Flange Ft: {girder.flangeRunningFeet?.toFixed(2)} (Total: {(girder.flangeRunningFeet! * girder.quantity).toFixed(2)})</p>
-                <p className="text-xs text-gray-600">Web Ft: {girder.webRunningFeet?.toFixed(2)} (Total: {(girder.webRunningFeet! * girder.quantity).toFixed(2)})</p>
+                <p className="text-xs text-gray-700">Flange Wt: {girder.flangeWeight?.toFixed(2)} kg (Total: {(girder.flangeWeight! * girder.quantity).toFixed(2)} kg)</p>
+                <p className="text-xs text-gray-700">Web Wt: {girder.webWeight?.toFixed(2)} kg (Total: {(girder.webWeight! * girder.quantity).toFixed(2)} kg)</p>
+                <p className="text-xs text-gray-700">Flange Ft: {girder.flangeRunningFeet?.toFixed(2)} (Total: {(girder.flangeRunningFeet! * girder.quantity).toFixed(2)})</p>
+                <p className="text-xs text-gray-700">Web Ft: {girder.webRunningFeet?.toFixed(2)} (Total: {(girder.webRunningFeet! * girder.quantity).toFixed(2)})</p>
               </>
             )
         case 'circular':
@@ -68,19 +68,19 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
             <main>
                 <div className="grid grid-cols-2 gap-8 mb-8">
                     <div>
-                        <h2 className="text-lg font-bold mb-2">Project Details</h2>
-                        <p><span className="font-semibold">Project Name:</span> {project.name}</p>
-                        <p><span className="font-semibold">Project ID:</span> {project.projectId}</p>
-                        <p><span className="font-semibold">Client:</span> {project.customer}</p>
+                        <h2 className="text-lg font-bold mb-2 text-black">Project Details</h2>
+                        <p className="text-black"><span className="font-semibold">Project Name:</span> {project.name}</p>
+                        <p className="text-black"><span className="font-semibold">Project ID:</span> {project.projectId}</p>
+                        <p className="text-black"><span className="font-semibold">Client:</span> {project.customer}</p>
                     </div>
                     <div>
-                        <h2 className="text-lg font-bold mb-2">Report Details</h2>
-                        <p><span className="font-semibold">Report Date:</span> {new Date().toLocaleDateString()}</p>
-                        <p><span className="font-semibold">Items:</span> {project.items.length}</p>
+                        <h2 className="text-lg font-bold mb-2 text-black">Report Details</h2>
+                        <p className="text-black"><span className="font-semibold">Report Date:</span> {new Date().toLocaleDateString()}</p>
+                        <p className="text-black"><span className="font-semibold">Items:</span> {project.items.length}</p>
                     </div>
                 </div>
 
-                <h2 className="text-xl font-bold mb-4">Itemized List</h2>
+                <h2 className="text-xl font-bold mb-4 text-black">Itemized List</h2>
                 <div className="border border-gray-300">
                     <Table className="border-collapse">
                         <TableHeader>
@@ -96,10 +96,10 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                         </TableHeader>
                         <TableBody>
                             {project.items.map(item => (
-                                <TableRow key={item.id} className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2">
+                                <TableRow key={item.id} className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2 text-black">
                                     <TableCell className="font-medium text-center">{item.name}</TableCell>
                                     <TableCell>
-                                       <span className='capitalize font-semibold'>{item.type.replace('-imperial', ' (Imperial Formula)')}</span> - {renderItemDimensions(item)}
+                                       <span className='capitalize font-semibold'>{item.type === 'plate' ? 'Steel Plate (Quality)' : item.type === 'plate-imperial' ? 'Steel Plate (Non-Quality)' : item.type}</span> - {renderItemDimensions(item)}
                                     </TableCell>
                                     <TableCell className="text-center">{item.weight.toFixed(2)}</TableCell>
                                     {hasCost && <TableCell className="text-center">{item.cost !== null ? `$${item.cost.toFixed(2)}` : 'N/A'}</TableCell>}
@@ -111,16 +111,16 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                         </TableBody>
                          <TableFooter>
                             <TableRow className="[&>td]:border [&>td]:border-gray-300 [&>td]:p-2 bg-gray-100">
-                                <TableCell colSpan={hasCost ? 5 : 4} className="text-right font-bold text-lg pr-4">Project Totals</TableCell>
-                                <TableCell className="text-center font-bold text-lg">{totalWeight.toFixed(2)} kg</TableCell>
-                                {hasCost && <TableCell className="text-center font-bold text-lg">${totalCost?.toFixed(2)}</TableCell>}
+                                <TableCell colSpan={colSpanTotal} className="text-right font-bold text-lg pr-4 text-black">Project Totals</TableCell>
+                                <TableCell className="text-center font-bold text-lg text-black">{totalWeight.toFixed(2)} kg</TableCell>
+                                {hasCost && <TableCell className="text-center font-bold text-lg text-black">${totalCost?.toFixed(2)}</TableCell>}
                             </TableRow>
                         </TableFooter>
                     </Table>
                 </div>
             </main>
 
-            <footer className="mt-16 text-center text-xs text-gray-500">
+            <footer className="mt-16 text-center text-xs text-gray-700">
                 <p>Report generated by MetalMetrica on {new Date().toLocaleString()}</p>
                  {organization?.name && <p>{organization.name}</p>}
             </footer>
@@ -129,5 +129,3 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
 });
 ProjectReport.displayName = 'ProjectReport';
 export default ProjectReport;
-
-    

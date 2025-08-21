@@ -1,10 +1,11 @@
 
+
 export interface Organization {
   name: string;
   logoUrl?: string;
 }
 
-export type UnitSystem = "metric" | "imperial";
+export type UnitSystem = "quality" | "non-quality";
 
 interface BaseSteelItem {
   id: string;

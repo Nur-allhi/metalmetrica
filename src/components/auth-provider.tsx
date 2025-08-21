@@ -21,35 +21,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(user);
         setLoading(false);
       } else {
-        // Only try to sign in anonymously once per session
-        if (sessionStorage.getItem('anonymousSignInAttempted') !== 'true') {
-            sessionStorage.setItem('anonymousSignInAttempted', 'true');
-            signInAnonymously(auth)
-                .then(userCredential => {
-                    setUser(userCredential.user);
-                    setLoading(false);
-                })
-                .catch((error) => {
-                  console.error(
-                    "Anonymous sign-in failed. Please go to your Firebase project console and enable Anonymous sign-in in the Authentication > Sign-in method tab.", 
-                    error
-                  );
-                  // If it fails, we set user to null and stop loading.
-                  setUser(null);
-                  setLoading(false);
-                });
-        } else {
-             // If we've already tried, don't try again.
-             setUser(null);
-             setLoading(false);
-        }
+        signInAnonymously(auth)
+            .then(userCredential => {
+                setUser(userCredential.user);
+                setLoading(false);
+            })
+            .catch((error) => {
+              console.error(
+                "Anonymous sign-in failed. Please check your Firebase project console to ensure Anonymous sign-in is enabled in the Authentication > Sign-in method tab.", 
+                error
+              );
+              setUser(null);
+              setLoading(false);
+            });
       }
     });
 
-    return () => {
-        // This cleanup is for component unmount, but sessionStorage will persist for the session.
-        unsubscribe();
-    }
+    return () => unsubscribe();
   }, []);
 
   return (

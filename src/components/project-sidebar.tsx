@@ -77,11 +77,11 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                     </SidebarMenuItem>
                     <Accordion type="single" collapsible defaultValue="projects" className="w-full">
                         <AccordionItem value="projects" className="border-none">
-                            <AccordionTrigger className="py-2 px-2 hover:no-underline hover:bg-accent rounded-md text-sm font-medium">
-                                <div className='flex items-center gap-2'>
+                            <AccordionTrigger asChild>
+                                <SidebarMenuButton>
                                     <Folder />
                                     <span>Projects</span>
-                                </div>
+                                </SidebarMenuButton>
                             </AccordionTrigger>
                             <AccordionContent className="pl-4 pt-1">
                                 <SidebarMenu>
@@ -115,11 +115,11 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                             </AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="settings" className="border-none">
-                            <AccordionTrigger className="py-2 px-2 hover:no-underline hover:bg-accent rounded-md text-sm font-medium">
-                                <div className='flex items-center gap-2'>
+                            <AccordionTrigger asChild>
+                               <SidebarMenuButton>
                                     <Settings />
                                     <span>Settings</span>
-                                </div>
+                                </SidebarMenuButton>
                             </AccordionTrigger>
                             <AccordionContent className="pl-4 pt-1">
                                 <SidebarMenu>
@@ -169,3 +169,4 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
         </>
     );
 }
+

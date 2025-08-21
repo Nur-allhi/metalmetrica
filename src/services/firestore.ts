@@ -12,6 +12,7 @@ import {
   serverTimestamp,
   getDoc,
   arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { Project, SteelItem } from "@/types";
@@ -54,5 +55,12 @@ export const addItemToProject = async (projectId: string, item: Omit<SteelItem, 
     
     await updateDoc(projectRef, {
         items: arrayUnion(newItem)
+    });
+};
+
+export const deleteItemFromProject = async (projectId: string, itemToDelete: SteelItem) => {
+    const projectRef = doc(db, "projects", projectId);
+    await updateDoc(projectRef, {
+        items: arrayRemove(itemToDelete)
     });
 };

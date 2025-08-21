@@ -22,7 +22,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { Project, Organization, SteelItem } from '@/types';
 import AddItemDialog from './add-item-dialog';
-import { addItemToProject as addItemToProjectDb } from '@/services/firestore';
+import DeleteItemDialog from './delete-item-dialog';
+import { addItemToProject as addItemToProjectDb, deleteItemFromProject as deleteItemFromProjectDb } from '@/services/firestore';
 import { useToast } from "@/hooks/use-toast";
 
 interface ProjectViewProps {
@@ -33,6 +34,7 @@ interface ProjectViewProps {
 
 export default function ProjectView({ project, organization, onPrint }: ProjectViewProps) {
   const [isAddItemDialogOpen, setAddItemDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<SteelItem | null>(null);
   const { toast } = useToast();
 
   const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0) || 0;
@@ -59,6 +61,29 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
       toast({
         title: "Error",
         description: "Failed to add item to the project.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteItem = async () => {
+    if (!itemToDelete) return;
+    try {
+      // We need to find the full item object from the project state to pass to firestore
+      const fullItem = project.items.find(i => i.id === itemToDelete.id);
+      if(!fullItem) throw new Error("Item not found in project");
+
+      await deleteItemFromProjectDb(project.id, fullItem);
+      toast({
+        title: "Item Deleted",
+        description: `${itemToDelete.name} has been removed from the project.`,
+      });
+      setItemToDelete(null); // Close the dialog
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete item from the project.",
         variant: "destructive",
       });
     }
@@ -117,7 +142,7 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
                             <TableCell className="text-right text-green-600">{item.cost.toFixed(2)}</TableCell>
                             <TableCell className="text-right">{item.quantity}</TableCell>
                             <TableCell className="text-right no-print">
-                                <Button variant="ghost" size="icon">
+                                <Button variant="ghost" size="icon" onClick={() => setItemToDelete(item)}>
                                 <Trash2 className="h-4 w-4 text-destructive" />
                                 </Button>
                             </TableCell>
@@ -168,6 +193,12 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
         onOpenChange={setAddItemDialogOpen}
         onAddItem={handleAddItem}
     />
+     <DeleteItemDialog
+        open={!!itemToDelete}
+        onOpenChange={(open) => !open && setItemToDelete(null)}
+        onConfirm={handleDeleteItem}
+        itemName={itemToDelete?.name || ''}
+      />
     </>
   )
 }

@@ -21,12 +21,13 @@ import EditProjectDialog from './edit-project-dialog';
 import DeleteItemDialog from './delete-item-dialog';
 import EditItemDialog from './edit-item-dialog';
 import AdditionalCostsDialog from './additional-costs-dialog';
-import { addItemToProject as addItemToProjectDb, deleteItemFromProject as deleteItemFromProjectDb, updateItemInProject as updateItemInProjectDb, updateProject as updateProjectDb } from '@/services/firestore';
+import { addItemToProject, deleteItemFromProject, updateItemInProject, updateProject } from '@/services/firestore';
 import { useToast } from "@/hooks/use-toast";
 import ProjectSummaryChart from './project-summary-chart';
 import { CHART_COLORS } from '@/lib/constants';
 import { getCurrencySymbol } from '@/lib/utils';
 import { ScrollArea } from './ui/scroll-area';
+import { useAuth } from './auth-provider';
 
 interface ProjectViewProps {
     project: Project;
@@ -170,6 +171,7 @@ const ItemCard = ({ item, onDelete, onEdit, organization }: { item: SteelItem, o
 };
 
 export default function ProjectView({ project, organization }: ProjectViewProps) {
+  const { user } = useAuth();
   const [isAddItemDialogOpen, setAddItemDialogOpen] = useState(false);
   const [isEditProjectDialogOpen, setEditProjectDialogOpen] = useState(false);
   const [isCostsDialogOpen, setCostsDialogOpen] = useState(false);
@@ -178,6 +180,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   const { toast } = useToast();
   
   const handleGeneratePdf = () => {
+    if (!user) return;
     const additionalCosts = project.additionalCosts || [];
     const doc = new jsPDF();
     doc.setFont("helvetica", "normal");
@@ -491,8 +494,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   }, [project.items, hasCost]);
 
   const handleAddItem = async (item: Omit<SteelItem, 'id'>) => {
+    if (!user) return;
     try {
-      await addItemToProjectDb(project.id, item);
+      await addItemToProject(user.uid, project.id, item);
       toast({
         title: "Item Added",
         description: `${item.name} has been added to the project.`,
@@ -509,9 +513,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   };
 
   const handleEditItem = async (updatedItem: SteelItem) => {
-    if (!itemToEdit) return;
+    if (!itemToEdit || !user) return;
     try {
-      await updateItemInProjectDb(project.id, itemToEdit, updatedItem);
+      await updateItemInProject(user.uid, project.id, itemToEdit, updatedItem);
       toast({
         title: "Item Updated",
         description: `${updatedItem.name} has been updated.`,
@@ -528,8 +532,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   }
 
   const handleEditProject = async (data: { name: string; customer: string; }) => {
+    if (!user) return;
     try {
-        await updateProjectDb(project.id, data);
+        await updateProject(user.uid, project.id, data);
         toast({
             title: "Project Updated",
             description: "The project details have been successfully updated.",
@@ -546,12 +551,12 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   };
 
   const handleDeleteItem = async () => {
-    if (!itemToDelete) return;
+    if (!itemToDelete || !user) return;
     try {
       const fullItem = project.items.find(i => i.id === itemToDelete.id);
       if(!fullItem) throw new Error("Item not found in project");
 
-      await deleteItemFromProjectDb(project.id, fullItem);
+      await deleteItemFromProject(user.uid, project.id, fullItem);
       toast({
         title: "Item Deleted",
         description: `${itemToDelete.name} has been removed from the project.`,
@@ -568,8 +573,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   };
 
   const handleSaveCosts = async (costs: AdditionalCost[]) => {
+    if (!user) return;
     try {
-        await updateProjectDb(project.id, { additionalCosts: costs });
+        await updateProject(user.uid, project.id, { additionalCosts: costs });
         toast({
             title: "Costs Saved",
             description: "The additional costs have been saved to the project.",

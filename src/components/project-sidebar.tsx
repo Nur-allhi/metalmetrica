@@ -3,6 +3,7 @@
 
 import React from 'react';
 import { Plus, Settings } from 'lucide-react';
+import { useAuth } from '@/components/auth-provider';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -27,6 +28,8 @@ interface ProjectSidebarProps {
 }
 
 export default function ProjectSidebar({ projects, activeProject, onProjectSelect, onAddProject, onSettingsClick, loading }: ProjectSidebarProps) {
+    const { user } = useAuth();
+    
     return (
         <>
             <SidebarHeader>
@@ -40,30 +43,34 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                 <SidebarMenu>
                     {loading ? (
                        [...Array(3)].map((_, i) => <SidebarMenuSkeleton key={i} />)
+                    ) : user ? (
+                        <>
+                            {projects.map(project => (
+                                <SidebarMenuItem key={project.id}>
+                                    <SidebarMenuButton
+                                        isActive={activeProject?.id === project.id}
+                                        onClick={() => onProjectSelect(project)}
+                                        className="justify-start"
+                                    >
+                                        <span>{project.name}</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
+                            {projects.length === 0 && (
+                                <p className="text-sm text-muted-foreground p-4 text-center">No projects yet.</p>
+                            )}
+                        </>
                     ) : (
-                        projects.map(project => (
-                            <SidebarMenuItem key={project.id}>
-                                <SidebarMenuButton
-                                    isActive={activeProject?.id === project.id}
-                                    onClick={() => onProjectSelect(project)}
-                                    className="justify-start"
-                                >
-                                    <span>{project.name}</span>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        ))
-                    )}
-                     { !loading && projects.length === 0 && (
-                        <p className="text-sm text-muted-foreground p-4 text-center">No projects yet.</p>
+                         <p className="text-sm text-muted-foreground p-4 text-center">Sign in to see projects.</p>
                     )}
                 </SidebarMenu>
             </SidebarContent>
             <SidebarFooter className='flex flex-row gap-2'>
-                 <Button onClick={onAddProject} className="flex-1">
+                 <Button onClick={onAddProject} className="flex-1" disabled={!user}>
                     <Plus />
                     <span>Create Project</span>
                 </Button>
-                <Button variant="outline" size="icon" onClick={onSettingsClick}>
+                <Button variant="outline" size="icon" onClick={onSettingsClick} disabled={!user}>
                     <Settings className="h-4 w-4" />
                     <span className="sr-only">Settings</span>
                 </Button>

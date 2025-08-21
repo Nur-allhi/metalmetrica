@@ -4,14 +4,12 @@
 import {
   collection,
   query,
-  where,
   onSnapshot,
   addDoc,
   updateDoc,
   deleteDoc,
   doc,
   serverTimestamp,
-  getDoc,
   arrayUnion,
   arrayRemove,
   writeBatch,
@@ -19,9 +17,13 @@ import {
 import { db } from "@/lib/firebase";
 import type { Project, SteelItem } from "@/types";
 
+// Path helper
+const projectsCollection = (userId: string) => collection(db, 'users', userId, 'projects');
+const projectDoc = (userId: string, projectId: string) => doc(db, 'users', userId, 'projects', projectId);
+
 // Projects
 export const getProjects = (userId: string, callback: (projects: Project[]) => void) => {
-  const q = query(collection(db, "projects"), where("userId", "==", userId));
+  const q = query(projectsCollection(userId));
   return onSnapshot(q, (querySnapshot) => {
     const projects: Project[] = [];
     querySnapshot.forEach((doc) => {
@@ -29,7 +31,8 @@ export const getProjects = (userId: string, callback: (projects: Project[]) => v
       projects.push({ 
         ...data, 
         id: doc.id,
-        createdAt: data.createdAt?.toDate().toISOString() 
+        createdAt: data.createdAt?.toDate().toISOString(),
+        userId: userId,
       } as Project);
     });
     callback(projects);
@@ -37,22 +40,22 @@ export const getProjects = (userId: string, callback: (projects: Project[]) => v
 };
 
 export const addProject = async (userId: string, project: Omit<Project, 'id' | 'createdAt' | 'userId'>) => {
-  await addDoc(collection(db, "projects"), { ...project, userId, createdAt: serverTimestamp() });
+  await addDoc(projectsCollection(userId), { ...project, createdAt: serverTimestamp() });
 };
 
-export const updateProject = async (projectId: string, project: Partial<Project>) => {
-  const projectRef = doc(db, "projects", projectId);
+export const updateProject = async (userId: string, projectId: string, project: Partial<Project>) => {
+  const projectRef = projectDoc(userId, projectId);
   await updateDoc(projectRef, project);
 };
 
-export const deleteProject = async (projectId: string) => {
-  const projectRef = doc(db, "projects", projectId);
+export const deleteProject = async (userId: string, projectId: string) => {
+  const projectRef = projectDoc(userId, projectId);
   await deleteDoc(projectRef);
 };
 
 // Project Items
-export const addItemToProject = async (projectId: string, item: Omit<SteelItem, 'id'>) => {
-    const projectRef = doc(db, "projects", projectId);
+export const addItemToProject = async (userId: string, projectId: string, item: Omit<SteelItem, 'id'>) => {
+    const projectRef = projectDoc(userId, projectId);
     const newItem = { ...item, id: `item_${Date.now()}`};
     
     await updateDoc(projectRef, {
@@ -60,12 +63,9 @@ export const addItemToProject = async (projectId: string, item: Omit<SteelItem, 
     });
 };
 
-export const updateItemInProject = async (projectId: string, originalItem: SteelItem, updatedItem: SteelItem) => {
-    const projectRef = doc(db, "projects", projectId);
+export const updateItemInProject = async (userId: string, projectId: string, originalItem: SteelItem, updatedItem: SteelItem) => {
+    const projectRef = projectDoc(userId, projectId);
     
-    // Firestore doesn't support updating a specific array element directly by value if it's an object.
-    // The standard approach is to remove the old item and add the new one.
-    // This is best done in a transaction or a batch write to ensure atomicity.
     const batch = writeBatch(db);
 
     batch.update(projectRef, {
@@ -79,8 +79,8 @@ export const updateItemInProject = async (projectId: string, originalItem: Steel
     await batch.commit();
 }
 
-export const deleteItemFromProject = async (projectId: string, itemToDelete: SteelItem) => {
-    const projectRef = doc(db, "projects", projectId);
+export const deleteItemFromProject = async (userId: string, projectId: string, itemToDelete: SteelItem) => {
+    const projectRef = projectDoc(userId, projectId);
     await updateDoc(projectRef, {
         items: arrayRemove(itemToDelete)
     });

@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { Project } from "@/types";
+import { useAuth } from "./auth-provider";
 
 interface EditProjectDialogProps {
   open: boolean;
@@ -41,6 +42,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function EditProjectDialog({ open, onOpenChange, onEditProject, project }: EditProjectDialogProps) {
+  const { user } = useAuth();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -60,6 +62,7 @@ export default function EditProjectDialog({ open, onOpenChange, onEditProject, p
 
 
   function onSubmit(data: FormData) {
+    if (!user) return;
     onEditProject(data);
   }
 

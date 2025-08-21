@@ -41,10 +41,11 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!authLoading && !organization) {
+    // Only prompt for org setup if a user is logged in
+    if (!authLoading && user && !organization) {
       setOrgSetupOpen(true);
     }
-  }, [organization, authLoading]);
+  }, [organization, authLoading, user]);
 
   // Fetch projects and manage active project
   useEffect(() => {
@@ -54,17 +55,11 @@ export default function Home() {
         setProjects(fetchedProjects);
         
         setActiveProject(prevActiveProject => {
-            // If there was an active project, find its updated version
             if (prevActiveProject) {
                 const refreshedProject = fetchedProjects.find(p => p.id === prevActiveProject.id);
-                return refreshedProject || null;
+                return refreshedProject || fetchedProjects[0] || null;
             }
-            // If there was no active project, but now there are projects, set the first one as active
-            if (fetchedProjects.length > 0) {
-                return fetchedProjects[0];
-            }
-            // Otherwise, there's no active project
-            return null;
+            return fetchedProjects[0] || null;
         });
         
         setLoading(false);
@@ -105,7 +100,6 @@ export default function Home() {
     }
   };
 
-
   const renderProjectContent = () => {
     if (loading || authLoading) {
         return (
@@ -113,6 +107,18 @@ export default function Home() {
                 <Card>
                     <CardHeader><Skeleton className="h-8 w-3/4" /></CardHeader>
                     <CardContent><Skeleton className="h-40 w-full" /></CardContent>
+                </Card>
+            </div>
+        )
+    }
+
+    if (!user) {
+        return (
+             <div className="flex-1 flex items-center justify-center h-full">
+                <Card className="flex flex-col items-center justify-center p-10 text-center bg-transparent border-dashed">
+                    <Logo className="h-12 w-12 text-muted-foreground mb-4" />
+                    <CardTitle>Welcome to MetalMetrica</CardTitle>
+                    <CardDescription className="mt-2">Please sign in to manage your projects.</CardDescription>
                 </Card>
             </div>
         )
@@ -153,11 +159,11 @@ export default function Home() {
                       onProjectSelect={setActiveProject}
                       onAddProject={() => setAddProjectDialogOpen(true)}
                       onSettingsClick={() => setOrgSetupOpen(true)}
-                      loading={loading}
+                      loading={loading || authLoading}
                   />
               </Sidebar>
               <SidebarInset>
-                  <Header organization={organization} />
+                  <Header onSettingsClick={() => setOrgSetupOpen(true)} />
                   <main className="flex flex-1 flex-col gap-4 p-4 lg:p-6 overflow-hidden">
                       <Tabs defaultValue="projects" className="flex-1 flex flex-col overflow-hidden h-full">
                         <div className="flex items-center">

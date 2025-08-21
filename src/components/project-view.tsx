@@ -134,7 +134,7 @@ const ItemCard = ({ item, onDelete, organization }: { item: SteelItem, onDelete:
                     </div>
                      {hasCost && (
                          <div>
-                            <p className="text-muted-foreground">Price ({currencyCode}/kg)</p>
+                            <p className="text-muted-foreground">Price ({getCurrencySymbol(organization?.currency)}/kg)</p>
                             <p>{pricePerKg !== null ? `${getCurrencySymbol(organization?.currency)}${numberFormat(pricePerKg)}` : 'N/A'}</p>
                         </div>
                     )}
@@ -171,7 +171,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   
   const handleGeneratePdf = (additionalCosts: AdditionalCost[] = []) => {
     const doc = new jsPDF();
-    doc.setFont("helvetica");
+    doc.setFont("helvetica", "normal");
 
     const currencyCode = organization?.currency || 'USD';
     
@@ -260,8 +260,8 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 `Unit Wt\n(kg)`, 
                 'Qty', 
                 `Total Wt\n(kg)`, 
-                ...(hasCost ? [`Unit Cost\n(${currencyCode})`] : []),
-                ...(hasCost ? [`Total Cost\n(${currencyCode})`] : [])
+                ...(hasCost ? [`Unit Cost`] : []),
+                ...(hasCost ? [`Total Cost`] : [])
             ]
         ];
 
@@ -291,8 +291,8 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             ];
 
             if (hasCost) {
-                row.push({ content: item.cost !== null ? numberFormat(item.cost) : 'N/A', styles: { halign: 'right' } });
-                row.push({ content: totalCost !== null ? numberFormat(totalCost) : 'N/A', styles: { halign: 'right' } });
+                row.push({ content: item.cost !== null ? `${numberFormat(item.cost)}\n${currencyCode}` : 'N/A', styles: { halign: 'right' } });
+                row.push({ content: totalCost !== null ? `${numberFormat(totalCost)}\n${currencyCode}` : 'N/A', styles: { halign: 'right' } });
             }
             return row;
         });
@@ -301,21 +301,19 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         const subTotalCost = hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null;
         
         const footerRows = [];
-        const costColSpan = hasCost ? 5 : 4;
-
-
+        
         if (hasCost && subTotalCost !== null) {
             const subTotalRow = [
-                { content: 'Sub-Total', colSpan: costColSpan, styles: { halign: 'right', fontStyle: 'bold' } },
-                { content: `${numberFormat(totalWeight)} kg`, styles: { halign: 'right', fontStyle: 'bold' } },
-                { content: `${currencyCode} ${numberFormat(subTotalCost)}`, colSpan: 2, styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: 'Sub-Total', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: `${numberFormat(totalWeight)}\nkg`, styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: `${numberFormat(subTotalCost)}\n${currencyCode}`, colSpan: 2, styles: { halign: 'right', fontStyle: 'bold' } },
             ];
             footerRows.push(subTotalRow);
 
         } else {
              const subTotalRow = [
                  { content: 'Total Weight', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
-                 { content: `${numberFormat(totalWeight)} kg`, styles: { halign: 'right', fontStyle: 'bold' } },
+                 { content: `${numberFormat(totalWeight)}\nkg`, styles: { halign: 'right', fontStyle: 'bold' } },
              ]
              footerRows.push(subTotalRow);
         }
@@ -324,8 +322,8 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         if (hasCost && grandTotal !== null) {
             additionalCosts.forEach(cost => {
                 const additionalCostRow = [
-                    { content: cost.description, colSpan: costColSpan + 1, styles: { halign: 'right' } },
-                    { content: `${currencyCode} ${numberFormat(cost.amount)}`, styles: { halign: 'right' } },
+                    { content: cost.description, colSpan: 5, styles: { halign: 'right' } },
+                    { content: `${numberFormat(cost.amount)}\n${currencyCode}`, colSpan: 2, styles: { halign: 'right' } },
                 ]
                 footerRows.push(additionalCostRow);
             });
@@ -335,8 +333,8 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
             if(additionalCosts.length > 0) {
                  const grandTotalRow = [
-                    { content: 'Grand Total', colSpan: costColSpan + 1, styles: { halign: 'right', fontStyle: 'bold' } },
-                    { content: `${currencyCode} ${numberFormat(grandTotal)}`, styles: { halign: 'right', fontStyle: 'bold' } },
+                    { content: 'Grand Total', colSpan: 5, styles: { halign: 'right', fontStyle: 'bold' } },
+                    { content: `${numberFormat(grandTotal)}\n${currencyCode}`, colSpan: 2, styles: { halign: 'right', fontStyle: 'bold' } },
                  ]
                  footerRows.push(grandTotalRow);
             }
@@ -347,11 +345,11 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
           1: { cellWidth: 'auto' },  
           2: { cellWidth: '12%' },  
           3: { cellWidth: '8%' },   
-          4: { cellWidth: '12%' },  
+          4: { cellWidth: '15%' },  
         };
 
         if(hasCost) {
-          columnStyles[5] = { cellWidth: '12%' }; 
+          columnStyles[5] = { cellWidth: '15%' }; 
           columnStyles[6] = { cellWidth: '15%' }; 
         }
 

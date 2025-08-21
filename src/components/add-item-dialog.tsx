@@ -31,7 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { STEEL_DENSITIES } from "@/lib/constants";
+import { STEEL_DENSITIES, KG_TO_LBS } from "@/lib/constants";
 import type { SteelItem } from "@/types";
 
 interface AddItemDialogProps {
@@ -42,9 +42,9 @@ interface AddItemDialogProps {
 
 const formSchema = z.object({
   name: z.string().min(2, "Item name is required."),
-  type: z.enum(["plate", "pipe", "girder", "circular"]),
+  type: z.enum(["plate", "pipe", "girder", "circular", "plate-imperial"]),
   quantity: z.coerce.number().int().min(1, "Quantity must be at least 1."),
-  price: z.union([z.coerce.number().min(0), z.literal('')]).optional(), // Price per kg
+  price: z.union([z.coerce.number().min(0), z.literal('')]).optional().transform(v => v === '' ? null : v),
 
   // Shared dimensions
   length: z.coerce.number().optional(),
@@ -69,7 +69,7 @@ const formSchema = z.object({
 
 
 }).superRefine((data, ctx) => {
-    if (data.type === 'plate') {
+    if (data.type === 'plate' || data.type === 'plate-imperial') {
         if (!data.length || data.length <= 0) {
             ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Length is required", path: ['length'] });
         }
@@ -136,7 +136,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
       name: "",
       type: "plate",
       quantity: 1,
-      price: "",
+      price: null,
       length: undefined,
       width: undefined,
       thickness: undefined,
@@ -186,6 +186,14 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
             name: data.name, type: 'plate', quantity, length, width, thickness,
             weight: weightKg, cost: pricePerKg !== null ? weightKg * pricePerKg : null,
         };
+    } else if (data.type === "plate-imperial" && data.length && data.width && data.thickness) {
+        const { length, width, thickness } = data;
+        const weightLbs = (length * width * thickness * 0.743) / 144;
+        const weightKg = weightLbs / KG_TO_LBS;
+        newItem = {
+            name: data.name, type: 'plate-imperial', quantity, length, width, thickness,
+            weight: weightKg, cost: pricePerKg !== null ? weightKg * pricePerKg : null,
+        };
     } else if (data.type === "pipe" && data.length && data.outerDiameter && data.wallThickness) {
         const { length, outerDiameter, wallThickness } = data;
         const innerDiameter = outerDiameter - 2 * wallThickness;
@@ -210,8 +218,8 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
         const webWeight = webVolumeM3 * density;
         const weightKg = flangeWeight + webWeight;
 
-        const flangeRunningFeet = length * MM_TO_FT * 2;
-        const webRunningFeet = length * MM_TO_FT;
+        const flangeRunningFeet = (length * MM_TO_FT * flangeWidth * 2) / 12;
+        const webRunningFeet = (length * MM_TO_FT * webHeight) / 12;
 
         newItem = {
             name: data.name, type: 'girder', quantity, length, flangeWidth, flangeThickness, webHeight, webThickness,
@@ -249,6 +257,10 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
   
   const renderInput = (field: any) => <Input type="number" step="any" {...field} value={field.value ?? ''} />;
 
+  const getDimUnit = () => {
+    return itemType === 'plate-imperial' ? 'in' : 'mm';
+  }
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -258,7 +270,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
             <DialogHeader>
               <DialogTitle>Add New Item</DialogTitle>
               <DialogDescription>
-                Select the item type and enter its specifications. All dimensions in mm.
+                Select the item type and enter its specifications.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -288,7 +300,8 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                            <SelectItem value="plate">Steel Plate</SelectItem>
+                            <SelectItem value="plate">Steel Plate (Metric)</SelectItem>
+                            <SelectItem value="plate-imperial">Steel Plate (Imperial Formula)</SelectItem>
                             <SelectItem value="pipe">Steel Pipe</SelectItem>
                             <SelectItem value="girder">Steel Girder</SelectItem>
                             <SelectItem value="circular">Circular Section</SelectItem>
@@ -299,13 +312,13 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                 )}
               />
 
-              {(itemType === 'plate' || itemType === 'pipe' || itemType === 'girder') && (
+              {(itemType === 'plate' || itemType === 'pipe' || itemType === 'girder' || itemType === 'plate-imperial') && (
                 <FormField
                     control={form.control}
                     name="length"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Length (mm)</FormLabel>
+                        <FormLabel>Length ({getDimUnit()})</FormLabel>
                         <FormControl>{renderInput(field)}</FormControl>
                         <FormMessage />
                       </FormItem>
@@ -313,14 +326,14 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                   />
               )}
 
-               {itemType === 'plate' && (
+               {(itemType === 'plate' || itemType === 'plate-imperial') && (
                  <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="width"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Width (mm)</FormLabel>
+                          <FormLabel>Width ({getDimUnit()})</FormLabel>
                           <FormControl>{renderInput(field)}</FormControl>
                           <FormMessage />
                         </FormItem>
@@ -331,7 +344,7 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
                       name="thickness"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Thickness (mm)</FormLabel>
+                          <FormLabel>Thickness ({getDimUnit()})</FormLabel>
                           <FormControl>{renderInput(field)}</FormControl>
                           <FormMessage />
                         </FormItem>
@@ -496,7 +509,3 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
     </Dialog>
   );
 }
-
-    
-
-    

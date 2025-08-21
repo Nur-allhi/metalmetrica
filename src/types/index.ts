@@ -15,7 +15,7 @@ interface BaseSteelItem {
 }
 
 export interface SteelPlate extends BaseSteelItem {
-  type: "plate";
+  type: "plate" | "plate-imperial";
   length: number;
   width: number;
   thickness: number;
@@ -60,5 +60,3 @@ export interface Project {
   items: SteelItem[];
   createdAt: string;
 }
-
-    

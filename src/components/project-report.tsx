@@ -12,13 +12,15 @@ interface ProjectReportProps {
 }
 
 const renderItemDimensions = (item: SteelItem) => {
+    const dimUnit = item.type === 'plate-imperial' ? 'in' : 'mm';
     switch (item.type) {
         case 'plate':
+        case 'plate-imperial':
             const plate = item as SteelPlate;
-            return `L:${plate.length} x W:${plate.width} x T:${plate.thickness} mm`;
+            return `L:${plate.length} x W:${plate.width} x T:${plate.thickness} ${dimUnit}`;
         case 'pipe':
             const pipe = item as SteelPipe;
-            return `L:${pipe.length} Ø:${pipe.outerDiameter} Wall:${pipe.wallThickness} mm`;
+            return `L:${pipe.length} Ø:${pipe.outerDiameter} Wall:${pipe.wallThickness} ${dimUnit}`;
         case 'girder':
             const girder = item as SteelGirder;
             return (
@@ -80,7 +82,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                         <TableHeader>
                             <TableRow className="bg-gray-100">
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Item Name</TableHead>
-                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Dimensions / Profile</TableHead>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold">Dimensions / Profile</TableHead>
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Unit Weight (kg)</TableHead>
                                 {hasCost && <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Unit Cost ($)</TableHead>}
                                 <TableHead className="text-gray-600 border border-gray-300 p-2 font-bold text-center">Qty</TableHead>
@@ -93,7 +95,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                                 <TableRow key={item.id} className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2">
                                     <TableCell className="font-medium text-center">{item.name}</TableCell>
                                     <TableCell>
-                                       <span className='capitalize font-semibold'>{item.type}</span> - {renderItemDimensions(item)}
+                                       <span className='capitalize font-semibold'>{item.type.replace('-imperial', ' (Imperial)')}</span> - {renderItemDimensions(item)}
                                     </TableCell>
                                     <TableCell className="text-center">{item.weight.toFixed(2)}</TableCell>
                                     {hasCost && <TableCell className="text-center">{item.cost !== null ? `$${item.cost.toFixed(2)}` : 'N/A'}</TableCell>}
@@ -103,9 +105,9 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                                 </TableRow>
                             ))}
                         </TableBody>
-                        <TableFooter>
-                            <TableRow className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2 bg-gray-100">
-                                <TableCell colSpan={hasCost ? 5 : 4} className="text-right font-bold text-lg pr-4">Project Totals</TableCell>
+                         <TableFooter>
+                            <TableRow className="[&>td]:border [&>td]:border-gray-300 [&>td]:p-2 bg-gray-100">
+                                <TableCell colSpan={hasCost ? 4 : 3} className="text-right font-bold text-lg pr-4">Project Totals</TableCell>
                                 <TableCell className="text-center font-bold text-lg">{totalWeight.toFixed(2)} kg</TableCell>
                                 {hasCost && <TableCell className="text-center font-bold text-lg">${totalCost?.toFixed(2)}</TableCell>}
                             </TableRow>

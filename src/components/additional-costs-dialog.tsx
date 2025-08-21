@@ -86,7 +86,7 @@ export default function AdditionalCostsDialog({ open, onOpenChange, onConfirm, c
             </DialogHeader>
             <div className="grid gap-4 py-4 max-h-96 overflow-y-auto pr-2">
                 {fields.map((field, index) => (
-                    <div key={field.id} className="grid grid-cols-[1fr_auto_auto] items-end gap-2 p-2 border rounded-md">
+                    <div key={field.id} className="grid grid-cols-[2fr_1fr_auto] items-end gap-2 p-2 border rounded-md">
                         <FormField
                             control={form.control}
                             name={`costs.${index}.description`}
@@ -133,4 +133,3 @@ export default function AdditionalCostsDialog({ open, onOpenChange, onConfirm, c
     </Dialog>
   );
 }
-

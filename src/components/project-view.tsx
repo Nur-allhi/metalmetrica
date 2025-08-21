@@ -279,30 +279,30 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0);
         const totalCost = hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null;
         
-        const totalRow = [
-             { content: 'Project Totals', colSpan: hasCost ? 4 : 3, styles: { halign: 'right', fontStyle: 'bold', fontSize: 12 } },
-             {},
-             {},
-             ...(hasCost ? [{}] : []),
-             { content: numberFormat(totalWeight) + ' kg', styles: { halign: 'right', fontStyle: 'bold', fontSize: 12 } },
-             ...(hasCost ? [{ content: currencySymbol + numberFormat(totalCost!), styles: { halign: 'right', fontStyle: 'bold', fontSize: 12 } }] : []),
+        const foot = [
+            [
+                { content: 'Project Totals', colSpan: hasCost ? 4 : 3, styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: numberFormat(totalWeight) + ' kg', styles: { halign: 'right', fontStyle: 'bold' } },
+                ...(hasCost ? [{ content: currencySymbol + numberFormat(totalCost!), styles: { halign: 'right', fontStyle: 'bold' } }] : []),
+            ]
         ];
-        
-        body.push(totalRow as any);
+
         
         (doc as any).autoTable({
             startY: currentY,
             head: head,
             body: body,
+            foot: foot,
             theme: 'grid',
             headStyles: {
-                fillColor: [22, 163, 74], // green-600
+                fillColor: [47, 79, 79], // Dark Slate Gray
                 textColor: 255,
                 fontStyle: 'bold',
             },
              footStyles: {
+                fillColor: [245, 245, 245], // White smoke
                 fontStyle: 'bold',
-                fillColor: [240, 240, 240]
+                textColor: 0,
             },
             styles: {
                 cellPadding: 2,
@@ -313,6 +313,10 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 currentY = data.cursor.y;
             }
         });
+        
+        // This is needed to get the final Y position of the table
+        const finalY = (doc as any).lastAutoTable.finalY;
+        currentY = finalY;
 
         // Terms and Conditions
         if (organization?.termsAndConditions) {
@@ -533,3 +537,5 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
+
+    

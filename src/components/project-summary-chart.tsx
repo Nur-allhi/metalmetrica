@@ -56,7 +56,7 @@ export default function ProjectSummaryChart({ data }: ProjectSummaryChartProps) 
   return (
       <ChartContainer
         config={dynamicChartConfig}
-        className="mx-auto aspect-square h-[350px]"
+        className="mx-auto aspect-square h-[280px] sm:h-[350px]"
       >
         <ResponsiveContainer width="100%" height="100%">
             <PieChart>

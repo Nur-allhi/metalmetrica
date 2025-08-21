@@ -116,10 +116,19 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
                         <p className="text-muted-foreground">Qty</p>
                         <p>{item.quantity}</p>
                     </div>
+                     <div>
+                        {/* Spacer */}
+                    </div>
                     <div>
                         <p className="text-muted-foreground">Unit Wt (kg)</p>
                         <p>{item.weight.toFixed(2)}</p>
                     </div>
+                     {hasCost && (
+                         <div>
+                            <p className="text-muted-foreground">Unit Cost</p>
+                            <p>${(item.cost || 0).toFixed(2)}</p>
+                        </div>
+                    )}
                      <div>
                         <p className="text-muted-foreground">Total Wt (kg)</p>
                         <p className="font-semibold">{(item.weight * item.quantity).toFixed(2)}</p>

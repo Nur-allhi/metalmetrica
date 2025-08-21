@@ -293,17 +293,32 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0);
         const totalCost = hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null;
         
-        const footColSpan = hasCost ? 5 : 4;
-        let footContent: any[] = [
-             { content: 'Project Totals', colSpan: footColSpan, styles: { halign: 'right', fontStyle: 'bold' } },
-             { content: `${numberFormat(totalWeight)} kg`, styles: { halign: 'right', fontStyle: 'bold' } },
-        ];
-        
+        const foot = [[] as any[]];
+        const footRow = foot[0];
+
+        footRow.push({
+          content: 'Project Totals',
+          colSpan: hasCost ? 4 : 3,
+          styles: { halign: 'right', fontStyle: 'bold' },
+        });
+
+        footRow.push({
+          content: '',
+          styles: { halign: 'center', fontStyle: 'bold' },
+        });
+
+        footRow.push({
+          content: `${numberFormat(totalWeight)} kg`,
+          styles: { halign: 'right', fontStyle: 'bold' },
+        });
+
         if (hasCost && totalCost != null) {
-            footContent.push({ content: `${currencyCode} ${numberFormat(totalCost)}`, styles: { halign: 'right', fontStyle: 'bold' } });
+          footRow.push({
+            content: `${currencyCode} ${numberFormat(totalCost)}`,
+            styles: { halign: 'right', fontStyle: 'bold' },
+          });
         }
 
-        const foot = [ footContent ];
 
         (doc as any).autoTable({
             startY: currentY,
@@ -333,11 +348,11 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             },
             columnStyles: {
               0: { cellWidth: '15%' }, // Item Type
-              1: { cellWidth: '30%' }, // Name & Dimensions
+              1: { cellWidth: 'auto' }, // Name & Dimensions
               2: { cellWidth: '12.5%' }, // Unit Wt
-              3: { cellWidth: '12.5%' }, // Unit Cost
-              4: { cellWidth: '5%' }, // Qty
-              5: { cellWidth: '12.5%' }, // Total Wt
+              3: { cellWidth: '12.5%' }, // Unit Cost or Qty
+              4: { cellWidth: '5%' }, // Qty or Total Wt
+              5: { cellWidth: '12.5%' }, // Total Wt or Total Cost
               6: { cellWidth: '12.5%' }, // Total Cost
             },
             didDrawPage: (data: any) => {

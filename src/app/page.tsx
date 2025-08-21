@@ -1,6 +1,7 @@
+
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Plus, Download, Workflow } from "lucide-react";
 import useLocalStorage from "@/hooks/use-local-storage";
 import { useAuth } from "@/components/auth-provider";
@@ -24,6 +25,7 @@ import ProjectView from "@/components/project-view";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarTrigger } from "@/components/ui/sidebar";
 import AddProjectDialog from "@/components/add-project-dialog";
 import { useToast } from "@/hooks/use-toast";
+import ProjectReport from "@/components/project-report";
 
 
 export default function Home() {
@@ -38,6 +40,8 @@ export default function Home() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const reportRef = useRef(null);
 
   useEffect(() => {
     if (!authLoading && !organization) {
@@ -66,7 +70,17 @@ export default function Home() {
   }, [user, activeProject?.id]);
 
   const handlePrint = () => {
+    const reportElement = reportRef.current;
+    if (!reportElement) return;
+
+    const originalContents = document.body.innerHTML;
+    const printContents = (reportElement as HTMLElement).innerHTML;
+
+    document.body.innerHTML = printContents;
     window.print();
+    document.body.innerHTML = originalContents;
+    // We need to re-attach our event listeners, a full reload is the simplest way.
+    window.location.reload();
   };
   
   const handleAddProject = async (data: { name: string; customer: string; }) => {
@@ -135,56 +149,63 @@ export default function Home() {
 
   return (
     <>
-      <SidebarProvider>
-          <div className="flex min-h-screen w-full flex-col bg-muted/40">
-              <Sidebar>
-                  <ProjectSidebar 
-                      projects={projects}
-                      activeProject={activeProject}
-                      onProjectSelect={setActiveProject}
-                      onAddProject={() => setAddProjectDialogOpen(true)}
-                      loading={loading}
-                  />
-              </Sidebar>
-              <SidebarInset>
-                  <Header organization={organization} onSettingsClick={() => setOrgSetupOpen(true)} />
-                  <main className="flex flex-1 flex-col gap-4 p-4 sm:p-6 no-print">
-                      <Tabs defaultValue="projects" className="flex flex-col h-full">
-                      <div className="flex items-center no-print">
-                          <TabsList>
-                          <TabsTrigger value="single">Single Calc</TabsTrigger>
-                          <TabsTrigger value="projects">Projects</TabsTrigger>
-                          </TabsList>
-                           <div className="ml-auto flex items-center gap-2">
-                              <SidebarTrigger className="md:hidden" />
-                          </div>
-                      </div>
-                      <TabsContent value="single" className="mt-4">
-                          <CalculatorCard />
-                      </TabsContent>
-                      <TabsContent value="projects" className="flex-1 mt-4">
-                         {renderProjectContent()}
-                      </TabsContent>
-                      </Tabs>
-                  </main>
-              </SidebarInset>
-          </div>
-      </SidebarProvider>
+      {/* This div is used only to render the report for printing. It's hidden from view. */}
+      <div className="hidden">
+        {activeProject && organization && <div ref={reportRef}><ProjectReport project={activeProject} organization={organization} /></div>}
+      </div>
 
-      <OrganizationSetupDialog
-        open={isOrgSetupOpen}
-        onOpenChange={setOrgSetupOpen}
-        onSave={(org) => {
-            setOrganization(org);
-            setOrgSetupOpen(false);
-        }}
-        organization={organization}
-      />
-      <AddProjectDialog
-        open={isAddProjectDialogOpen}
-        onOpenChange={setAddProjectDialogOpen}
-        onAddProject={handleAddProject}
-       />
+      <div className="no-print">
+        <SidebarProvider>
+            <div className="flex min-h-screen w-full flex-col bg-muted/40">
+                <Sidebar>
+                    <ProjectSidebar 
+                        projects={projects}
+                        activeProject={activeProject}
+                        onProjectSelect={setActiveProject}
+                        onAddProject={() => setAddProjectDialogOpen(true)}
+                        loading={loading}
+                    />
+                </Sidebar>
+                <SidebarInset>
+                    <Header organization={organization} onSettingsClick={() => setOrgSetupOpen(true)} />
+                    <main className="flex flex-1 flex-col gap-4 p-4 sm:p-6">
+                        <Tabs defaultValue="projects" className="flex flex-col h-full">
+                        <div className="flex items-center">
+                            <TabsList>
+                            <TabsTrigger value="single">Single Calc</TabsTrigger>
+                            <TabsTrigger value="projects">Projects</TabsTrigger>
+                            </TabsList>
+                             <div className="ml-auto flex items-center gap-2">
+                                <SidebarTrigger className="md:hidden" />
+                            </div>
+                        </div>
+                        <TabsContent value="single" className="mt-4">
+                            <CalculatorCard />
+                        </TabsContent>
+                        <TabsContent value="projects" className="flex-1 mt-4">
+                           {renderProjectContent()}
+                        </TabsContent>
+                        </Tabs>
+                    </main>
+                </SidebarInset>
+            </div>
+        </SidebarProvider>
+
+        <OrganizationSetupDialog
+          open={isOrgSetupOpen}
+          onOpenChange={setOrgSetupOpen}
+          onSave={(org) => {
+              setOrganization(org);
+              setOrgSetupOpen(false);
+          }}
+          organization={organization}
+        />
+        <AddProjectDialog
+          open={isAddProjectDialogOpen}
+          onOpenChange={setAddProjectDialogOpen}
+          onAddProject={handleAddProject}
+         />
+      </div>
     </>
   );
 }

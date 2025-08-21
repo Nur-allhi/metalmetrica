@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -20,7 +21,6 @@ import { addItemToProject as addItemToProjectDb, deleteItemFromProject as delete
 import { useToast } from "@/hooks/use-toast";
 import ProjectSummaryChart from './project-summary-chart';
 import { CHART_COLORS } from '@/lib/constants';
-import ProjectReport from './project-report';
 
 interface ProjectViewProps {
     project: Project;
@@ -168,10 +168,7 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
 
   return (
     <>
-        <div className="hidden print-container">
-            {project && organization && <ProjectReport project={project} organization={organization} />}
-        </div>
-        <div className="grid gap-6 md:gap-8 flex-1 no-print">
+        <div className="grid gap-6 md:gap-8 flex-1">
             <div>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">

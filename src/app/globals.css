@@ -64,17 +64,22 @@
 }
 
 @media print {
-  body {
-    background: #fff !important;
-    color: #000 !important;
+  body * {
+    visibility: hidden;
+  }
+  .print-container, .print-container * {
+    visibility: visible;
+  }
+  .print-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
   }
   .no-print {
     display: none !important;
   }
-  .print-container {
-    display: block !important;
-  }
-  @page {
+   @page {
     size: auto;
     margin: 0.5in;
   }

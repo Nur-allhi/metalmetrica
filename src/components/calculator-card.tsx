@@ -630,7 +630,7 @@ export default function CalculatorCard() {
                      <CardFooter>
                         <Button type="button" variant="outline" className="w-full" onClick={handleSaveAsImage}>
                             <Download className="mr-2 h-4 w-4" />
-                            Save as Image
+                            Save The Result
                         </Button>
                     </CardFooter>
                 </Card>

@@ -135,7 +135,7 @@ const ItemCard = ({ item, onDelete, onEdit, organization }: { item: SteelItem, o
                   </div>
                 )}
                 
-                <div className="grid grid-cols-2 gap-4 text-sm pt-2 border-t">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm pt-2 border-t">
                     <div>
                         <p className="text-muted-foreground">Qty</p>
                         <p>{item.quantity}</p>

@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Plus, Download, Workflow } from "lucide-react";
+import { Plus, Workflow } from "lucide-react";
 import useLocalStorage from "@/hooks/use-local-storage";
 import { useAuth } from "@/components/auth-provider";
 import { getProjects, addProject as addProjectToDb } from "@/services/firestore";
@@ -41,8 +41,6 @@ export default function Home() {
   const [activeProject, setActiveProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const reportRef = useRef(null);
-
   useEffect(() => {
     if (!authLoading && !organization) {
       setOrgSetupOpen(true);
@@ -70,17 +68,7 @@ export default function Home() {
   }, [user, activeProject?.id]);
 
   const handlePrint = () => {
-    const reportElement = reportRef.current;
-    if (!reportElement) return;
-
-    const originalContents = document.body.innerHTML;
-    const printContents = (reportElement as HTMLElement).innerHTML;
-
-    document.body.innerHTML = printContents;
     window.print();
-    document.body.innerHTML = originalContents;
-    // We need to re-attach our event listeners, a full reload is the simplest way.
-    window.location.reload();
   };
   
   const handleAddProject = async (data: { name: string; customer: string; }) => {
@@ -149,9 +137,8 @@ export default function Home() {
 
   return (
     <>
-      {/* This div is used only to render the report for printing. It's hidden from view. */}
-      <div className="hidden">
-        {activeProject && organization && <div ref={reportRef}><ProjectReport project={activeProject} organization={organization} /></div>}
+      <div className="print-container">
+        {activeProject && organization && <ProjectReport project={activeProject} organization={organization} />}
       </div>
 
       <div className="no-print">

@@ -44,7 +44,7 @@ const renderItemDimensions = (item: SteelItem) => {
             return `L:${pipe.length} Ø:${pipe.outerDiameter} Wall:${pipe.wallThickness} mm`;
         case 'girder':
             const girder = item as SteelGirder;
-            return `L:${girder.length}\nFlange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm`;
+            return `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness}\nWeb:${girder.webHeight}x${girder.webThickness} mm`;
         case 'circular':
             const circular = item as SteelCircular;
             if (circular.innerDiameter && circular.innerDiameter > 0) {
@@ -96,7 +96,7 @@ const ItemCard = ({ item, onDelete, currencySymbol }: { item: SteelItem, onDelet
                         <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                 </div>
-                <p className="text-sm text-muted-foreground">{renderItemDimensions(item)}</p>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{renderItemDimensions(item)}</p>
 
                 {item.type === 'girder' && (
                   <div className="border rounded-lg p-2 text-xs text-muted-foreground space-y-1 bg-background/50">
@@ -167,6 +167,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   
   const handleGeneratePdf = () => {
     const doc = new jsPDF();
+    const currencyCode = organization?.currency || 'USD';
     
     const numberFormat = (value: number) => value.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
     
@@ -251,10 +252,10 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 'Item Type', 
                 'Name & Dimensions', 
                 'Unit Wt\n(kg)', 
-                ...(hasCost ? [`Unit Cost\n(${currencySymbol})`] : []),
+                ...(hasCost ? [`Unit Cost\n(${currencyCode})`] : []),
                 'Qty', 
                 'Total Wt\n(kg)', 
-                ...(hasCost ? [`Total Cost\n(${currencySymbol})`] : [])
+                ...(hasCost ? [`Total Cost\n(${currencyCode})`] : [])
             ]
         ];
 
@@ -262,14 +263,11 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             const totalWeight = item.weight * item.quantity;
             const totalCost = item.cost !== null ? item.cost * item.quantity : null;
             
-            let dimensions = `${item.name}\n`;
+            let dimensions = `${item.name}\n${renderItemDimensions(item)}`;
             if (item.type === 'girder') {
                 const girder = item as SteelGirder;
-                dimensions += `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm`;
                 dimensions += `\nFlange Wt: ${numberFormat(girder.flangeWeight!)} kg | Web Wt: ${numberFormat(girder.webWeight!)} kg`;
                 dimensions += `\nFlange Ft: ${numberFormat(girder.flangeRunningFeet!)} ft | Web Ft: ${numberFormat(girder.webRunningFeet!)} ft`;
-            } else {
-                 dimensions += renderItemDimensions(item);
             }
 
             const row = [
@@ -294,7 +292,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         ];
         
         if (hasCost && totalCost != null) {
-            footContent.push({ content: currencySymbol + numberFormat(totalCost), styles: { halign: 'right', fontStyle: 'bold' } });
+            footContent.push({ content: currencyCode + ' ' + numberFormat(totalCost), styles: { halign: 'right', fontStyle: 'bold' } });
         }
 
         const foot = [ footContent ];

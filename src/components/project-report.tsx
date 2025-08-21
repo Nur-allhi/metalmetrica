@@ -56,11 +56,13 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
 
 
     return (
-        <div ref={ref} className="bg-white p-12 font-sans text-base text-black">
-            <header className="flex justify-between items-center mb-8 border-b pb-4">
+        <div ref={ref} className="bg-white px-12 py-8 font-sans text-lg text-black">
+            <header className="flex justify-between items-start mb-8 border-b pb-4">
                 <div>
                      {organization?.name && <h1 className="text-4xl font-bold text-black">{organization.name}</h1>}
-                    <p className="text-lg text-gray-700">Project Weight {hasCost && '& Cost'} Report</p>
+                     {organization?.address && <p className="text-sm text-gray-600 mt-1">{organization.address}</p>}
+                     {organization?.email && <p className="text-sm text-gray-600">{organization.email}</p>}
+                    <p className="text-xl text-gray-700 mt-2">Project Weight {hasCost && '& Cost'} Report</p>
                 </div>
                 {organization?.logoUrl && (
                     <Image src={organization.logoUrl} alt="Organization Logo" width={150} height={50} className="object-contain" data-ai-hint="company logo" />
@@ -98,7 +100,7 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                         </TableHeader>
                         <TableBody>
                             {project.items.map(item => (
-                                <TableRow key={item.id} className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2 text-black">
+                                <TableRow key={item.id} className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2 text-black text-base">
                                     <TableCell className="font-medium text-center">{item.name}</TableCell>
                                     <TableCell>
                                        <span className='capitalize font-semibold'>{item.type === 'plate' ? 'Steel Plate (Quality)' : item.type === 'plate-imperial' ? 'Steel Plate (Non-Quality)' : item.type}</span> - {renderItemDimensions(item)}

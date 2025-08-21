@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -75,7 +76,7 @@ const getItemTypeLabel = (type: SteelItem['type']) => {
 }
 
 
-const ItemCard = ({ item, onDelete, currencySymbol }: { item: SteelItem, onDelete: () => void, currencySymbol: string }) => {
+const ItemCard = ({ item, onDelete, currencySymbol, organization }: { item: SteelItem, onDelete: () => void, currencySymbol: string, organization: Organization | null }) => {
     const girder = item as SteelGirder;
     const hasCost = item.cost !== null;
     const pricePerKg = hasCost && item.weight > 0 ? item.cost! / item.weight : null;
@@ -205,6 +206,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
 
     function generateHeaderAndContent() {
+        doc.setFont("helvetica");
         // Header
         doc.setFontSize(22);
         doc.setFont("helvetica", "bold");
@@ -251,10 +253,10 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             [
                 'Item Type', 
                 'Name & Dimensions', 
-                'Unit Wt\n(kg)', 
+                `Unit Wt\n(${'kg'})`, 
                 ...(hasCost ? [`Unit Cost\n(${currencyCode})`] : []),
                 'Qty', 
-                'Total Wt\n(kg)', 
+                `Total Wt\n(${'kg'})`, 
                 ...(hasCost ? [`Total Cost\n(${currencyCode})`] : [])
             ]
         ];
@@ -266,7 +268,12 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             let dimensions = `${item.name}\n${renderItemDimensions(item)}`;
             if (item.type === 'girder') {
                 const girder = item as SteelGirder;
-                dimensions = `${item.name}\nL:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm\nFlange Wt: ${numberFormat(girder.flangeWeight!)} kg | Web Wt: ${numberFormat(girder.webWeight!)} kg\nFlange Ft: ${numberFormat(girder.flangeRunningFeet!)} ft | Web Ft: ${numberFormat(girder.webRunningFeet!)} ft`;
+                const flangeWeightText = `Flange Wt: ${numberFormat(girder.flangeWeight!)} kg`;
+                const webWeightText = `Web Wt: ${numberFormat(girder.webWeight!)} kg`;
+                const flangeFtText = `Flange Ft: ${numberFormat(girder.flangeRunningFeet!)} ft`;
+                const webFtText = `Web Ft: ${numberFormat(girder.webRunningFeet!)} ft`;
+                dimensions = `${item.name}\nL:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm\n${flangeWeightText} | ${webWeightText}\n${flangeFtText} | ${webFtText}`;
+
             } else {
                  dimensions = `${item.name}\n${renderItemDimensions(item)}`;
             }
@@ -502,7 +509,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                   <ScrollArea className="flex-1 -mr-4 pr-4">
                       <div className="grid gap-4 md:grid-cols-2">
                           {project.items.map((item) => (
-                          <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} currencySymbol={currencySymbol} />
+                          <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} currencySymbol={currencySymbol} organization={organization} />
                           ))}
                       </div>
                   </ScrollArea>
@@ -571,3 +578,6 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
+
+
+    

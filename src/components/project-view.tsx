@@ -640,7 +640,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">Project Summary</CardTitle>
+              <CardTitle>Project Summary</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
                <div className="grid gap-2 text-sm">

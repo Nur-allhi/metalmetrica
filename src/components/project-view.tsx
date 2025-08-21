@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import type { Project, Organization, SteelItem } from '@/types';
+import type { Project, Organization, SteelItem, SteelPlate, SteelPipe, SteelGirder, SteelCircular } from '@/types';
 import AddItemDialog from './add-item-dialog';
 import EditProjectDialog from './edit-project-dialog';
 import DeleteItemDialog from './delete-item-dialog';
@@ -34,6 +34,28 @@ interface ProjectViewProps {
     organization: Organization | null;
     onPrint: (project: Project) => void;
 }
+
+const renderItemDimensions = (item: SteelItem) => {
+    switch (item.type) {
+        case 'plate':
+            const plate = item as SteelPlate;
+            return `L:${plate.length} x W:${plate.width} x T:${plate.thickness} mm`;
+        case 'pipe':
+            const pipe = item as SteelPipe;
+            return `L:${pipe.length} Ø:${pipe.outerDiameter} Wall:${pipe.wallThickness} mm`;
+        case 'girder':
+             const girder = item as SteelGirder;
+            return `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm`;
+        case 'circular':
+            const circular = item as SteelCircular;
+            if (circular.innerDiameter && circular.innerDiameter > 0) {
+                 return `T:${circular.thickness} Ø:${circular.diameter} Inner Ø:${circular.innerDiameter} mm`;
+            }
+            return `T:${circular.thickness} Ø:${circular.diameter} mm`;
+        default:
+            return '';
+    }
+};
 
 export default function ProjectView({ project, organization, onPrint }: ProjectViewProps) {
   const [isAddItemDialogOpen, setAddItemDialogOpen] = useState(false);
@@ -145,9 +167,8 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
                     <TableHeader>
                     <TableRow>
                         <TableHead>Item</TableHead>
-                        <TableHead>Type</TableHead>
+                        <TableHead>Dimensions</TableHead>
                         <TableHead className="text-right">Weight (kg)</TableHead>
-                        <TableHead className="text-right">Cost ($)</TableHead>
                         <TableHead className="text-right">Qty</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -162,12 +183,14 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
                     ) : (
                         project.items.map((item) => (
                             <TableRow key={item.id}>
-                            <TableCell className="font-medium">{item.name}</TableCell>
-                            <TableCell>
-                                <Badge variant="outline" className="capitalize">{item.type}</Badge>
+                            <TableCell className="font-medium">
+                                <div className="font-medium">{item.name}</div>
+                                <div className="text-xs text-muted-foreground capitalize">{item.type}</div>
                             </TableCell>
-                            <TableCell className="text-right">{item.weight.toFixed(2)}</TableCell>
-                            <TableCell className="text-right text-green-600">{item.cost.toFixed(2)}</TableCell>
+                            <TableCell className="text-muted-foreground text-xs">
+                                {renderItemDimensions(item)}
+                            </TableCell>
+                            <TableCell className="text-right">{(item.weight * item.quantity).toFixed(2)}</TableCell>
                             <TableCell className="text-right">{item.quantity}</TableCell>
                             <TableCell className="text-right no-print">
                                 <Button variant="ghost" size="icon" onClick={() => setItemToDelete(item)}>

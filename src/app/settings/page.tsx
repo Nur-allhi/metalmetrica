@@ -227,12 +227,12 @@ export default function SettingsPage() {
                     )}
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                   <Link href="/" passHref legacyBehavior>
-                    <Button variant="outline">
+                   <Button variant="outline" asChild>
+                     <Link href="/">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Projects
-                    </Button>
-                   </Link>
+                    </Link>
+                   </Button>
                   <Button type="submit">Save</Button>
                 </CardFooter>
               </Card>

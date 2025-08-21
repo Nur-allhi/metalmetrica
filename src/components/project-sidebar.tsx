@@ -79,8 +79,8 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                             <AccordionTrigger asChild>
                                 <SidebarMenuButton>
                                     <Folder />
-                                    <span>Projects</span>
-                                    <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 group-data-[disabled]:opacity-0 group-data-[state=open]:rotate-180" />
+                                    <span className="flex-1 text-left">Projects</span>
+                                    <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
                                 </SidebarMenuButton>
                             </AccordionTrigger>
                             <AccordionContent className="pl-4 pt-1">
@@ -119,17 +119,15 @@ export default function ProjectSidebar({ projects, activeProject, onProjectSelec
                                  <SidebarMenuButton>
                                      <Settings />
                                      <span className="flex-1 text-left">Settings</span>
-                                     <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 group-data-[disabled]:opacity-0 group-data-[state=open]:rotate-180" />
+                                     <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
                                  </SidebarMenuButton>
                             </AccordionTrigger>
                             <AccordionContent className="pl-4 pt-1">
                                 <SidebarMenu>
                                     <SidebarMenuItem>
-                                        <Link href="/settings" passHref legacyBehavior>
-                                            <SidebarMenuButton asChild className="text-xs">
-                                                <a>General</a>
-                                            </SidebarMenuButton>
-                                        </Link>
+                                        <SidebarMenuButton asChild className="text-xs">
+                                            <Link href="/settings">General</Link>
+                                        </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 </SidebarMenu>
                             </AccordionContent>

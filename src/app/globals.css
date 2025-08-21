@@ -74,4 +74,17 @@
   }
 }
 
-    
+@layer components {
+  .card {
+    @apply transition-all duration-300 ease-in-out;
+    animation: fade-in 0.5s ease-in-out, slide-up 0.5s ease-in-out;
+  }
+
+  .btn, .button, button, input[type="submit"], input[type="button"] {
+      @apply transition-all duration-200 ease-in-out;
+  }
+
+  .btn:hover, .button:hover, button:hover, input[type="submit"]:hover, input[type="button"]:hover {
+      @apply transform-gpu scale-[1.03];
+  }
+}

@@ -92,7 +92,7 @@ const ItemCard = ({ item, onDelete, onEdit, organization }: { item: SteelItem, o
     }
 
     return (
-        <Card className="shadow-md hover:shadow-lg transition-shadow bg-card">
+        <Card className="shadow-md hover:shadow-lg hover:scale-[1.02] transition-transform bg-card">
             <CardContent className="p-4 flex flex-col gap-4">
                 <div className="flex justify-between items-start">
                     <div>

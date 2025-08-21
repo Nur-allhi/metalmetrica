@@ -276,7 +276,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
           <ProjectReport ref={reportRef} project={project} organization={organization} />
         )}
       </div>
-      <div className="grid auto-rows-max items-start gap-4 lg:grid-cols-3 lg:gap-8">
+      <div className="grid auto-rows-max items-start gap-4 lg:grid-cols-3 lg:gap-8 w-full">
         <div className="grid auto-rows-max items-start gap-4 lg:col-span-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -306,7 +306,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             </Card>
           ) : (
             <>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2">
                 {project.items.map((item) => (
                   <ItemCard key={item.id} item={item} onDelete={() => setItemToDelete(item)} />
                 ))}

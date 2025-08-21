@@ -66,47 +66,45 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                 </div>
 
                 <h2 className="text-xl font-bold mb-4">Itemized List</h2>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="text-gray-600">Item Name</TableHead>
-                            <TableHead className="text-gray-600">Type</TableHead>
-                            <TableHead className="text-gray-600">Dimensions / Profile</TableHead>
-                            <TableHead className="text-right text-gray-600">Qty</TableHead>
-                            <TableHead className="text-right text-gray-600">Weight (kg)</TableHead>
-                            <TableHead className="text-right text-gray-600">Cost ($)</TableHead>
-                            <TableHead className="text-right text-gray-600">Total Weight (kg)</TableHead>
-                            <TableHead className="text-right text-gray-600">Total Cost ($)</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {project.items.map(item => (
-                            <TableRow key={item.id}>
-                                <TableCell className="font-medium">{item.name}</TableCell>
-                                <TableCell>
-                                    <span className="capitalize border rounded-full px-2.5 py-0.5 text-xs font-semibold">
-                                        {item.type}
-                                    </span>
-                                </TableCell>
-                                <TableCell>
-                                    {renderItemDimensions(item)}
-                                </TableCell>
-                                <TableCell className="text-right">{item.quantity}</TableCell>
-                                <TableCell className="text-right">{item.weight.toFixed(2)}</TableCell>
-                                <TableCell className="text-right">{(item.cost || 0).toFixed(2)}</TableCell>
-                                <TableCell className="text-right font-medium">{(item.weight * item.quantity).toFixed(2)}</TableCell>
-                                <TableCell className="text-right font-medium">{((item.cost || 0) * item.quantity).toFixed(2)}</TableCell>
+                <div className="border border-gray-300">
+                    <Table className="border-collapse">
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2">Item Name</TableHead>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2">Type</TableHead>
+                                <TableHead className="text-gray-600 border border-gray-300 p-2">Dimensions / Profile</TableHead>
+                                <TableHead className="text-right text-gray-600 border border-gray-300 p-2">Qty</TableHead>
+                                <TableHead className="text-right text-gray-600 border border-gray-300 p-2">Weight (kg)</TableHead>
+                                <TableHead className="text-right text-gray-600 border border-gray-300 p-2">Cost ($)</TableHead>
+                                <TableHead className="text-right text-gray-600 border border-gray-300 p-2">Total Weight (kg)</TableHead>
+                                <TableHead className="text-right text-gray-600 border border-gray-300 p-2">Total Cost ($)</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                    <TableFooter>
-                    <TableRow>
-                        <TableCell colSpan={6} className="text-right font-bold text-lg">Project Totals</TableCell>
-                        <TableCell className="text-right font-bold text-lg">{totalWeight.toFixed(2)} kg</TableCell>
-                        <TableCell className="text-right font-bold text-lg">${totalCost.toFixed(2)}</TableCell>
-                    </TableRow>
-                    </TableFooter>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {project.items.map(item => (
+                                <TableRow key={item.id} className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2">
+                                    <TableCell className="font-medium">{item.name}</TableCell>
+                                    <TableCell className="capitalize">{item.type}</TableCell>
+                                    <TableCell>
+                                        {renderItemDimensions(item)}
+                                    </TableCell>
+                                    <TableCell className="text-right">{item.quantity}</TableCell>
+                                    <TableCell className="text-right">{item.weight.toFixed(2)}</TableCell>
+                                    <TableCell className="text-right">{(item.cost || 0).toFixed(2)}</TableCell>
+                                    <TableCell className="text-right font-medium">{(item.weight * item.quantity).toFixed(2)}</TableCell>
+                                    <TableCell className="text-right font-medium">{((item.cost || 0) * item.quantity).toFixed(2)}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                        <TableFooter>
+                        <TableRow className="[&_td]:border [&_td]:border-gray-300 [&_td]:p-2">
+                            <TableCell colSpan={6} className="text-right font-bold text-lg">Project Totals</TableCell>
+                            <TableCell className="text-right font-bold text-lg">{totalWeight.toFixed(2)} kg</TableCell>
+                            <TableCell className="text-right font-bold text-lg">${totalCost.toFixed(2)}</TableCell>
+                        </TableRow>
+                        </TableFooter>
+                    </Table>
+                </div>
             </main>
 
             <footer className="mt-16 text-center text-xs text-gray-400">

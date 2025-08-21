@@ -1,6 +1,6 @@
 "use client";
 
-import React, from "react";
+import React, { useEffect, useState, createContext, useContext } from "react";
 import { onAuthStateChanged, signInAnonymously, type User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
@@ -9,29 +9,46 @@ interface AuthContextType {
   loading: boolean;
 }
 
-const AuthContext = React.createContext<AuthContextType>({ user: null, loading: true });
+const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = React.useState<User | null>(null);
-  const [loading, setLoading] = React.useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
         setLoading(false);
       } else {
-        signInAnonymously(auth).catch((error) => {
-          console.error(
-            "Anonymous sign-in failed. Please make sure Anonymous sign-in is enabled in your Firebase project's authentication settings.", 
-            error
-          );
-          setLoading(false);
-        });
+        // Only try to sign in anonymously once
+        if (sessionStorage.getItem('anonymousSignInAttempted') !== 'true') {
+            sessionStorage.setItem('anonymousSignInAttempted', 'true');
+            signInAnonymously(auth)
+                .then(userCredential => {
+                    setUser(userCredential.user);
+                })
+                .catch((error) => {
+                  console.error(
+                    "Anonymous sign-in failed. Please make sure Anonymous sign-in is enabled in your Firebase project's authentication settings.", 
+                    error
+                  );
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        } else {
+             setUser(null);
+             setLoading(false);
+        }
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+        // Clean up session storage on component unmount
+        sessionStorage.removeItem('anonymousSignInAttempted');
+        unsubscribe();
+    }
   }, []);
 
   return (
@@ -41,4 +58,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const useAuth = () => React.useContext(AuthContext);
+export const useAuth = () => useContext(AuthContext);

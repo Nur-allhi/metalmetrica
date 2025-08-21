@@ -57,7 +57,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await signInWithPopup(auth, provider);
     } catch (error) {
       console.error("Error signing in with Google:", error);
-      // Let handleUser set user to null
+      // If sign-in fails (e.g., popup closed), reset loading state
+      setLoading(false);
     }
   };
 

@@ -8,14 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { ResponsiveDialog, ResponsiveDialogContent, ResponsiveDialogHeader, ResponsiveDialogTitle, ResponsiveDialogDescription, ResponsiveDialogFooter } from "@/components/ui/responsive-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -103,18 +96,18 @@ export default function OrganizationSetupDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+    <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
+      <ResponsiveDialogContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <DialogHeader>
-              <DialogTitle>{organization ? "Edit Organization" : "Welcome to MetalMetrica"}</DialogTitle>
-              <DialogDescription>
+            <ResponsiveDialogHeader>
+              <ResponsiveDialogTitle>{organization ? "Edit Organization" : "Welcome to MetalMetrica"}</ResponsiveDialogTitle>
+              <ResponsiveDialogDescription>
                 {organization ? "Update your organization details." : "Set up your organization details. This will be used in your project reports."}
-              </DialogDescription>
-            </DialogHeader>
+              </ResponsiveDialogDescription>
+            </ResponsiveDialogHeader>
             <ScrollArea className="max-h-[70vh] -mr-4 pr-4">
-              <div className="grid gap-4 py-4">
+              <div className="grid gap-4 py-4 px-4">
                 <FormField
                   control={form.control}
                   name="name"
@@ -236,13 +229,13 @@ export default function OrganizationSetupDialog({
                   )}
               </div>
             </ScrollArea>
-            <DialogFooter className="pt-4 border-t">
+            <ResponsiveDialogFooter className="pt-4 border-t px-4">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button type="submit">Save</Button>
-            </DialogFooter>
+            </ResponsiveDialogFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveDialogContent>
+    </ResponsiveDialog>
   );
 }

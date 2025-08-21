@@ -44,7 +44,7 @@ const renderItemDimensions = (item: SteelItem) => {
             return `L:${pipe.length} Ø:${pipe.outerDiameter} Wall:${pipe.wallThickness} mm`;
         case 'girder':
             const girder = item as SteelGirder;
-            return `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm`;
+            return `L:${girder.length}\nFlange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm`;
         case 'circular':
             const circular = item as SteelCircular;
             if (circular.innerDiameter && circular.innerDiameter > 0) {
@@ -250,11 +250,11 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             [
                 'Item Type', 
                 'Name & Dimensions', 
-                'Unit Wt(kg)', 
-                ...(hasCost ? [`Unit Cost (${currencySymbol})`] : []),
+                'Unit Wt\n(kg)', 
+                ...(hasCost ? [`Unit Cost\n(${currencySymbol})`] : []),
                 'Qty', 
-                'Total Wt(kg)', 
-                ...(hasCost ? [`Total Cost (${currencySymbol})`] : [])
+                'Total Wt\n(kg)', 
+                ...(hasCost ? [`Total Cost\n(${currencySymbol})`] : [])
             ]
         ];
 
@@ -297,10 +297,30 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             footContent.push({ content: currencySymbol + numberFormat(totalCost), styles: { halign: 'right', fontStyle: 'bold' } });
         }
 
-
         const foot = [ footContent ];
 
-        
+        let columnStyles: { [key: string]: any } = {};
+
+        if (hasCost) {
+            columnStyles = {
+                0: { cellWidth: 25 }, // Item Type
+                1: { cellWidth: 50 }, // Name & Dimensions
+                2: { cellWidth: 15 }, // Unit Wt
+                3: { cellWidth: 20 }, // Unit Cost
+                4: { cellWidth: 10 }, // Qty
+                5: { cellWidth: 20 }, // Total Wt
+                6: { cellWidth: 25 }, // Total Cost
+            };
+        } else {
+            columnStyles = {
+                0: { cellWidth: 30 }, // Item Type
+                1: { cellWidth: 75 }, // Name & Dimensions
+                2: { cellWidth: 25 }, // Unit Wt
+                3: { cellWidth: 15 }, // Qty
+                4: { cellWidth: 25 }, // Total Wt
+            };
+        }
+
         (doc as any).autoTable({
             startY: currentY,
             head: head,
@@ -318,9 +338,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 fontStyle: 'bold',
                 textColor: 0,
             },
-            columnStyles: {
-                1: { cellWidth: 'auto' }, // Name & Dimensions
-            },
+            columnStyles: columnStyles,
             styles: {
                 cellPadding: 2,
                 fontSize: 8,
@@ -331,11 +349,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             }
         });
         
-        // This is needed to get the final Y position of the table
         const finalY = (doc as any).lastAutoTable.finalY;
         currentY = finalY;
 
-        // Terms and Conditions
         if (organization?.termsAndConditions) {
             const termsHeight = doc.getTextDimensions(organization.termsAndConditions, { maxWidth: pageWidth - pageMargin * 2 }).h;
             if (currentY + termsHeight + 20 > pageHeight) {

@@ -200,17 +200,24 @@ export default function AddItemDialog({ open, onOpenChange, onAddItem }: AddItem
     } else if (data.type === "girder" && data.length && data.flangeWidth && data.flangeThickness && data.webHeight && data.webThickness) {
         const { length, flangeWidth, flangeThickness, webHeight, webThickness } = data;
         
-        // Using "Girder by Running Feet" logic from blueprint
-        const DENSITY_G_CM3 = density / 1000; // 7.85
         const MM_TO_M = 1 / 1000;
+        const MM_TO_FT = 1 / 304.8;
+        
+        const flangeVolumeM3 = (flangeWidth * MM_TO_M) * (flangeThickness * MM_TO_M) * (length * MM_TO_M) * 2;
+        const webVolumeM3 = (webHeight * MM_TO_M) * (webThickness * MM_TO_M) * (length * MM_TO_M);
 
-        const flangeWeight = (flangeWidth * flangeThickness * 2 * length * MM_TO_M) * (DENSITY_G_CM3 / 1000);
-        const webWeight = (webHeight * webThickness * length * MM_TO_M) * (DENSITY_G_CM3 / 1000);
+        const flangeWeight = flangeVolumeM3 * density;
+        const webWeight = webVolumeM3 * density;
         const weightKg = flangeWeight + webWeight;
+
+        const flangeRunningFeet = length * MM_TO_FT * 2;
+        const webRunningFeet = length * MM_TO_FT;
 
         newItem = {
             name: data.name, type: 'girder', quantity, length, flangeWidth, flangeThickness, webHeight, webThickness,
-            weight: weightKg, cost: weightKg * pricePerKg, flangeWeight, webWeight,
+            weight: weightKg, cost: weightKg * pricePerKg, 
+            flangeWeight, webWeight,
+            flangeRunningFeet, webRunningFeet,
         };
     } else if (data.type === "circular" && data.thickness && data.diameter) {
         const { thickness, diameter, innerDiameter } = data;

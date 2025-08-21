@@ -25,6 +25,7 @@ const renderItemDimensions = (item: SteelItem) => {
               <>
                 <p>L:{girder.length} Flange:{girder.flangeWidth}x{girder.flangeThickness} Web:{girder.webHeight}x{girder.webThickness} mm</p>
                 <p className="text-xs text-gray-500">Flange Wt: {girder.flangeWeight?.toFixed(2)} kg, Web Wt: {girder.webWeight?.toFixed(2)} kg</p>
+                <p className="text-xs text-gray-500">Flange Ft: {girder.flangeRunningFeet?.toFixed(2)}, Web Ft: {girder.webRunningFeet?.toFixed(2)}</p>
               </>
             )
         case 'circular':

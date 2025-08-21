@@ -71,6 +71,8 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
               <div className="text-xs text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-1">
                 <p>Flange Wt:</p><p className="text-right font-medium">{(item as SteelGirder).flangeWeight?.toFixed(2)} kg</p>
                 <p>Web Wt:</p><p className="text-right font-medium">{(item as SteelGirder).webWeight?.toFixed(2)} kg</p>
+                <p>Flange Running Ft:</p><p className="text-right font-medium">{(item as SteelGirder).flangeRunningFeet?.toFixed(2)}</p>
+                <p>Web Running Ft:</p><p className="text-right font-medium">{(item as SteelGirder).webRunningFeet?.toFixed(2)}</p>
               </div>
             )}
             

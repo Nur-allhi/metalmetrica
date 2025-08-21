@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, Workflow } from "lucide-react";
 import useLocalStorage from "@/hooks/use-local-storage";
 import { useAuth } from "@/components/auth-provider";
@@ -25,8 +25,6 @@ import ProjectView from "@/components/project-view";
 import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarTrigger } from "@/components/ui/sidebar";
 import AddProjectDialog from "@/components/add-project-dialog";
 import { useToast } from "@/hooks/use-toast";
-import ProjectReport from "@/components/project-report";
-
 
 export default function Home() {
   const { user, loading: authLoading } = useAuth();
@@ -66,10 +64,6 @@ export default function Home() {
       return () => unsubscribe();
     }
   }, [user, activeProject?.id]);
-
-  const handlePrint = () => {
-    window.print();
-  };
   
   const handleAddProject = async (data: { name: string; customer: string; }) => {
     if (!user) return;
@@ -129,18 +123,13 @@ export default function Home() {
     return (
       <ProjectView 
         project={activeProject}
-        onPrint={handlePrint}
         organization={organization}
       />
     )
   }
 
   return (
-    <>
-      <div className="print-container">
-        {activeProject && organization && <ProjectReport project={activeProject} organization={organization} />}
-      </div>
-      <div className="no-print">
+      <div>
         <SidebarProvider>
             <div className="flex min-h-screen w-full flex-col bg-muted/40">
                 <Sidebar>
@@ -192,6 +181,5 @@ export default function Home() {
           onAddProject={handleAddProject}
          />
       </div>
-    </>
   );
 }

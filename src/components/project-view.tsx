@@ -1,8 +1,9 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Plus, Download, Trash2, Edit } from "lucide-react";
+import { useReactToPrint } from 'react-to-print';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,11 +22,11 @@ import { addItemToProject as addItemToProjectDb, deleteItemFromProject as delete
 import { useToast } from "@/hooks/use-toast";
 import ProjectSummaryChart from './project-summary-chart';
 import { CHART_COLORS } from '@/lib/constants';
+import ProjectReport from './project-report';
 
 interface ProjectViewProps {
     project: Project;
     organization: Organization | null;
-    onPrint: () => void;
 }
 
 const renderItemDimensions = (item: SteelItem) => {
@@ -85,11 +86,17 @@ const ItemCard = ({ item, onDelete }: { item: SteelItem, onDelete: () => void })
     </Card>
 );
 
-export default function ProjectView({ project, organization, onPrint }: ProjectViewProps) {
+export default function ProjectView({ project, organization }: ProjectViewProps) {
   const [isAddItemDialogOpen, setAddItemDialogOpen] = useState(false);
   const [isEditProjectDialogOpen, setEditProjectDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<SteelItem | null>(null);
   const { toast } = useToast();
+  
+  const reportRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = useReactToPrint({
+      content: () => reportRef.current,
+  });
 
   const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0) || 0;
   const totalCost = project.items.reduce((acc, item) => acc + item.cost * item.quantity, 0) || 0;
@@ -168,6 +175,13 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
 
   return (
     <>
+        <div style={{ display: "none" }}>
+          {project && organization && (
+             <div ref={reportRef}>
+                <ProjectReport project={project} organization={organization} />
+             </div>
+          )}
+        </div>
         <div className="grid gap-6 md:gap-8 flex-1">
             <div>
                 <Card>
@@ -235,7 +249,7 @@ export default function ProjectView({ project, organization, onPrint }: ProjectV
                     <CardFooter>
                         <Button 
                             className="w-full" 
-                            onClick={onPrint} 
+                            onClick={handlePrint} 
                             disabled={!project || !organization}
                             title={!organization ? "Please set up an organization first" : "" }
                         >

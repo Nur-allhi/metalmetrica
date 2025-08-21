@@ -46,7 +46,7 @@ const renderItemDimensions = (item: SteelItem) => {
             return `L:${pipe.length} Ø:${pipe.outerDiameter} Wall:${pipe.wallThickness} mm`;
         case 'girder':
             const girder = item as SteelGirder;
-            return `L:${girder.length}\nFlange:${girder.flangeWidth}x${girder.flangeThickness}\nWeb:${girder.webHeight}x${girder.webThickness} mm`;
+            return `L:${girder.length}\nFlange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm`;
         case 'circular':
             const circular = item as SteelCircular;
             if (circular.innerDiameter && circular.innerDiameter > 0) {
@@ -82,6 +82,8 @@ const ItemCard = ({ item, onDelete, organization }: { item: SteelItem, onDelete:
     const hasCost = item.cost !== null;
     const pricePerKg = hasCost && item.weight > 0 ? item.cost! / item.weight : null;
     const currencySymbol = getCurrencySymbol(organization?.currency);
+    const currencyCode = organization?.currency || "USD";
+
 
     const numberFormat = (value: number) => {
         return value.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
@@ -133,8 +135,8 @@ const ItemCard = ({ item, onDelete, organization }: { item: SteelItem, onDelete:
                     </div>
                      {hasCost && (
                          <div>
-                            <p className="text-muted-foreground">Price ({currencySymbol}/kg)</p>
-                            <p>{pricePerKg !== null ? `${getCurrencySymbol(organization?.currency)}${numberFormat(pricePerKg)}` : 'N/A'}</p>
+                            <p className="text-muted-foreground">Price ({currencyCode}/kg)</p>
+                            <p>{pricePerKg !== null ? `${currencyCode} ${numberFormat(pricePerKg)}` : 'N/A'}</p>
                         </div>
                     )}
                     <div>
@@ -143,7 +145,7 @@ const ItemCard = ({ item, onDelete, organization }: { item: SteelItem, onDelete:
                     </div>
                      <div>
                         <p className="text-muted-foreground">Unit Cost</p>
-                        <p>{hasCost ? `${getCurrencySymbol(organization?.currency)}${numberFormat(item.cost!)}` : 'N/A'}</p>
+                        <p>{hasCost ? `${currencyCode} ${numberFormat(item.cost!)}` : 'N/A'}</p>
                     </div>
                      <div>
                         <p className="text-muted-foreground">Total Wt (kg)</p>
@@ -152,7 +154,7 @@ const ItemCard = ({ item, onDelete, organization }: { item: SteelItem, onDelete:
                     {hasCost && (
                          <div>
                             <p className="text-muted-foreground">Total Cost</p>
-                            <p className="font-semibold text-green-600">{getCurrencySymbol(organization?.currency)}{numberFormat((item.cost || 0) * item.quantity)}</p>
+                            <p className="font-semibold text-green-600">{currencyCode} {numberFormat((item.cost || 0) * item.quantity)}</p>
                         </div>
                     )}
                 </div>
@@ -170,6 +172,8 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   
   const handleGeneratePdf = (additionalCosts: AdditionalCost[] = []) => {
     const doc = new jsPDF();
+    doc.setFont("helvetica");
+
     const currencyCode = organization?.currency || 'USD';
     
     const numberFormat = (value: number) => value.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
@@ -208,7 +212,6 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
 
     function generateHeaderAndContent() {
-        doc.setFont("helvetica");
         // Header
         doc.setFontSize(22);
         doc.setFont("helvetica", "bold");
@@ -267,14 +270,13 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             const totalWeight = item.weight * item.quantity;
             const totalCost = item.cost !== null ? item.cost * item.quantity : null;
             
-            let dimensions = `${item.name}\n${renderItemDimensions(item)}`;
+            let dimensions;
             if (item.type === 'girder') {
                 const girder = item as SteelGirder;
-                const flangeWeightText = `Flange Wt: ${numberFormat(girder.flangeWeight!)} kg`;
-                const webWeightText = `Web Wt: ${numberFormat(girder.webWeight!)} kg`;
-                const flangeFtText = `Flange Ft: ${numberFormat(girder.flangeRunningFeet!)} ft`;
-                const webFtText = `Web Ft: ${numberFormat(girder.webRunningFeet!)} ft`;
-                dimensions = `${item.name}\nL:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm\n${flangeWeightText} | ${webWeightText}\n${flangeFtText} | ${webFtText}`;
+                const mainDims = `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness} Web:${girder.webHeight}x${girder.webThickness} mm`;
+                const weights = `Flange Wt: ${numberFormat(girder.flangeWeight!)} kg | Web Wt: ${numberFormat(girder.webWeight!)} kg`;
+                const feets = `Flange Ft: ${numberFormat(girder.flangeRunningFeet!)} ft | Web Ft: ${numberFormat(girder.webRunningFeet!)} ft`;
+                dimensions = `${item.name}\n${mainDims}\n${weights}\n${feets}`;
             } else {
                  dimensions = `${item.name}\n${renderItemDimensions(item)}`;
             }
@@ -294,32 +296,50 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         const totalWeight = project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0);
         const subTotalCost = hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null;
         
-        const foot = [[] as any[]];
-        const footRow = foot[0];
+        const footerRows = [];
 
-        footRow.push({
-          content: 'Sub-Total',
-          colSpan: hasCost ? 4 : 5,
-          styles: { halign: 'right', fontStyle: 'bold' },
-        });
-
-        footRow.push({
-          content: `${numberFormat(totalWeight)} kg`,
-          styles: { halign: 'right', fontStyle: 'bold' },
-        });
-
-        if (hasCost && subTotalCost != null) {
-          footRow.push({
-            content: `${currencyCode} ${numberFormat(subTotalCost)}`,
-            styles: { halign: 'right', fontStyle: 'bold' },
-          });
+        // Sub-Total Row
+        if (hasCost && subTotalCost !== null) {
+            footerRows.push([
+                { content: 'Sub-Total', colSpan: 5, styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: `${numberFormat(totalWeight)} kg`, styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: `${currencyCode} ${numberFormat(subTotalCost)}`, styles: { halign: 'right', fontStyle: 'bold' } },
+            ]);
+        } else {
+            footerRows.push([
+                 { content: 'Total', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
+                 { content: `${numberFormat(totalWeight)} kg`, styles: { halign: 'right', fontStyle: 'bold' } },
+            ]);
         }
         
+        // Additional Costs Rows
+        let grandTotal = subTotalCost;
+        if (hasCost && grandTotal !== null) {
+            additionalCosts.forEach(cost => {
+                footerRows.push([
+                    { content: cost.description, colSpan: 6, styles: { halign: 'right' } },
+                    { content: `${currencyCode} ${numberFormat(cost.amount)}`, styles: { halign: 'right' } },
+                ]);
+            });
+            
+            const additionalCostTotal = additionalCosts.reduce((acc, cost) => acc + cost.amount, 0);
+            grandTotal += additionalCostTotal;
+
+            // Grand Total Row
+            if(additionalCosts.length > 0) {
+                 footerRows.push([
+                    { content: 'Grand Total', colSpan: 6, styles: { halign: 'right', fontStyle: 'bold' } },
+                    { content: `${currencyCode} ${numberFormat(grandTotal)}`, styles: { halign: 'right', fontStyle: 'bold' } },
+                ]);
+            }
+        }
+
+
         (doc as any).autoTable({
             startY: currentY,
             head: head,
             body: body,
-            foot: foot,
+            foot: footerRows,
             theme: 'grid',
             margin: { horizontal: pageMargin },
             tableWidth: 'auto',
@@ -337,18 +357,17 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             },
             footStyles: {
                 fillColor: [245, 245, 245], // White smoke
-                fontStyle: 'bold',
                 textColor: 0,
                 fontSize: 10,
             },
             columnStyles: {
               0: { cellWidth: '15%' },
               1: { cellWidth: 'auto' },
-              2: { cellWidth: '12.5%' },
-              3: { cellWidth: '12.5%' },
+              2: { cellWidth: '10%' },
+              3: { cellWidth: hasCost ? '12%' : 0 },
               4: { cellWidth: '8%' },
-              5: { cellWidth: '12.5%' },
-              6: { cellWidth: '15%' },
+              5: { cellWidth: '12%' },
+              6: { cellWidth: hasCost ? '15%' : 0 },
             },
             didDrawPage: (data: any) => {
                 currentY = data.cursor.y;
@@ -357,43 +376,6 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         
         let finalY = (doc as any).lastAutoTable.finalY;
         currentY = finalY;
-
-        if (hasCost && additionalCosts.length > 0 && subTotalCost !== null) {
-          currentY += 5;
-          const additionalCostTotal = additionalCosts.reduce((acc, cost) => acc + cost.amount, 0);
-          const grandTotal = subTotalCost + additionalCostTotal;
-          
-          const costsBody = additionalCosts.map(cost => [
-              { content: cost.description },
-              { content: `${currencyCode} ${numberFormat(cost.amount)}`, styles: { halign: 'right' }}
-          ]);
-
-          (doc as any).autoTable({
-              startY: currentY,
-              head: [['Additional Costs', 'Amount']],
-              body: costsBody,
-              foot: [[
-                  { content: 'Grand Total', styles: { halign: 'right', fontStyle: 'bold' } },
-                  { content: `${currencyCode} ${numberFormat(grandTotal)}`, styles: { halign: 'right', fontStyle: 'bold' } }
-              ]],
-              theme: 'grid',
-              tableWidth: 'auto',
-              margin: { left: pageWidth / 2, right: pageMargin },
-              headStyles: {
-                  fillColor: [47, 79, 79],
-                  textColor: 255,
-                  fontStyle: 'bold',
-                  halign: 'center',
-              },
-               footStyles: {
-                  fillColor: [245, 245, 245],
-                  fontStyle: 'bold',
-                  textColor: 0,
-              },
-          });
-          finalY = (doc as any).lastAutoTable.finalY;
-          currentY = finalY;
-        }
 
 
         if (organization?.termsAndConditions) {
@@ -431,6 +413,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
   const totalWeight = useMemo(() => project.items.reduce((acc, item) => acc + item.weight * item.quantity, 0) || 0, [project.items]);
   const hasCost = useMemo(() => project.items.some(item => item.cost !== null), [project.items]);
   const totalCost = useMemo(() => hasCost ? project.items.reduce((acc, item) => acc + (item.cost || 0) * item.quantity, 0) : null, [project.items, hasCost]);
+  const currencyCode = organization?.currency || 'USD';
 
 
   const weightByType = project.items.reduce((acc, item) => {
@@ -572,7 +555,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
               {hasCost && totalCost !== null && (
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Total Cost</span>
-                  <span className="font-bold text-green-600">{getCurrencySymbol(organization?.currency)}{numberFormat(totalCost)}</span>
+                  <span className="font-bold text-green-600">{currencyCode} {numberFormat(totalCost)}</span>
                 </div>
               )}
               <hr />

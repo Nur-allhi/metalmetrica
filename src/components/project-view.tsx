@@ -262,11 +262,14 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
             const totalWeight = item.weight * item.quantity;
             const totalCost = item.cost !== null ? item.cost * item.quantity : null;
             
-            let dimensions = `${item.name}\n${renderItemDimensions(item)}`;
+            let dimensions = `${item.name}\n`;
             if (item.type === 'girder') {
                 const girder = item as SteelGirder;
+                dimensions += `L:${girder.length} Flange:${girder.flangeWidth}x${girder.flangeThickness}\nWeb:${girder.webHeight}x${girder.webThickness} mm`;
                 dimensions += `\nFlange Wt: ${numberFormat(girder.flangeWeight!)} kg | Web Wt: ${numberFormat(girder.webWeight!)} kg`;
                 dimensions += `\nFlange Ft: ${numberFormat(girder.flangeRunningFeet!)} ft | Web Ft: ${numberFormat(girder.webRunningFeet!)} ft`;
+            } else {
+                 dimensions += renderItemDimensions(item);
             }
 
             const row = [
@@ -290,8 +293,8 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
              { content: numberFormat(totalWeight) + ' kg', styles: { halign: 'right', fontStyle: 'bold' } },
         ];
         
-        if (hasCost) {
-            footContent.push({ content: currencySymbol + numberFormat(totalCost!), styles: { halign: 'right', fontStyle: 'bold' } });
+        if (hasCost && totalCost != null) {
+            footContent.push({ content: currencySymbol + numberFormat(totalCost), styles: { halign: 'right', fontStyle: 'bold' } });
         }
 
 
@@ -503,10 +506,10 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                 <span className="text-muted-foreground">Total Weight</span>
                 <span className="font-bold">{numberFormat(totalWeight)} kg</span>
               </div>
-              {hasCost && (
+              {hasCost && totalCost !== null && (
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Total Cost</span>
-                  <span className="font-bold text-green-600">{currencySymbol}{numberFormat(totalCost!)}</span>
+                  <span className="font-bold text-green-600">{currencySymbol}{numberFormat(totalCost)}</span>
                 </div>
               )}
               <hr />

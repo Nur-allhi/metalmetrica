@@ -312,17 +312,16 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
         if (hasCost && subTotalCost !== null) {
             const subTotalRow = [
-                '', '', '',
+                { content: '', colSpan: 4 },
                 { content: 'Sub-Total', styles: rightAlignBold },
-                '',
                 { content: `${numberFormat(totalWeight)}\nkg`, styles: rightAlignBold },
                 { content: `${numberFormat(subTotalCost)}\n${currencySymbol}`, styles: rightAlignBold },
             ];
             footerRows.push(subTotalRow);
         } else {
              const subTotalRow = [
-                 '', '',
-                { content: 'Sub-Total', colSpan: 3, styles: rightAlignBold },
+                { content: '', colSpan: 4 },
+                { content: 'Sub-Total', styles: rightAlignBold },
                 { content: `${numberFormat(totalWeight)}\nkg`, styles: rightAlignBold },
             ];
             if (hasCost) footerRows.push('');
@@ -333,9 +332,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
         if (hasCost && grandTotal !== null) {
             additionalCosts.forEach(cost => {
                 const additionalCostRow = [
-                   '', '', '',
+                   { content: '', colSpan: 4},
                    { content: cost.description, styles: { halign: 'right' } },
-                   '', '',
+                   '',
                    { content: `${numberFormat(cost.amount)}\n${currencySymbol}`, styles: { halign: 'right' } }
                 ];
                 footerRows.push(additionalCostRow);
@@ -346,9 +345,9 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
 
             if(additionalCosts.length > 0) {
                  const grandTotalRow = [
-                    '', '', '',
+                    { content: '', colSpan: 4 },
                     { content: 'Grand Total', styles: rightAlignBold },
-                    '', '',
+                    '',
                     { content: `${numberFormat(grandTotal)}\n${currencySymbol}`, styles: rightAlignBold },
                  ]
                  footerRows.push(grandTotalRow);

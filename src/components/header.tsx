@@ -43,7 +43,6 @@ export default function Header({}: HeaderProps) {
   return (
     <>
       <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 no-print">
-        <SidebarTrigger className="flex md:hidden" />
         <div className="hidden items-center gap-2 md:flex">
           <Logo className="h-6 w-6 text-primary" />
           <h1 className="text-xl font-bold">MetalMetrica</h1>

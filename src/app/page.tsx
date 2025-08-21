@@ -154,13 +154,11 @@ export default function Home() {
                   <main className="flex flex-1 flex-col gap-4 p-4 sm:p-4 md:p-6 overflow-hidden">
                       <Tabs defaultValue="projects" className="flex-1 flex flex-col overflow-hidden h-full">
                         <div className="flex items-center">
+                            <SidebarTrigger className="md:hidden" />
                             <TabsList>
                             <TabsTrigger value="single">Single Calc</TabsTrigger>
                             <TabsTrigger value="projects">Projects</TabsTrigger>
                             </TabsList>
-                              <div className="ml-auto flex items-center gap-2">
-                                <SidebarTrigger className="md:hidden" />
-                            </div>
                         </div>
                         <TabsContent value="single" className="mt-4">
                             <CalculatorCard />

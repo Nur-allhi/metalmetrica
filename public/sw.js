@@ -1,29 +1,30 @@
 
 const CACHE_NAME = 'metalmetrica-cache-v1';
-const urlsToCache = [
+const URLS_TO_CACHE = [
   '/',
   '/manifest.json',
   '/favicon.ico',
-  '/icon-192x192.png',
-  '/icon-512x512.png'
+  '/globals.css',
+  'https://placehold.co/192x192.png',
+  'https://placehold.co/512x512.png'
 ];
 
-self.addEventListener('install', event => {
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
+      .then((cache) => {
         console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        return cache.addAll(URLS_TO_CACHE);
       })
   );
 });
 
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map(cacheName => {
+        cacheNames.map((cacheName) => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
             return caches.delete(cacheName);
           }
@@ -33,30 +34,30 @@ self.addEventListener('activate', event => {
   );
 });
 
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)
-      .then(response => {
+      .then((response) => {
         // Cache hit - return response
         if (response) {
           return response;
         }
 
-        // Clone the request to use it both for fetching and for caching
+        // Clone the request because it's a stream and can only be consumed once
         const fetchRequest = event.request.clone();
 
         return fetch(fetchRequest).then(
-          response => {
+          (response) => {
             // Check if we received a valid response
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
 
-            // Clone the response to put it in the cache
+            // Clone the response because it's a stream and can only be consumed once
             const responseToCache = response.clone();
 
             caches.open(CACHE_NAME)
-              .then(cache => {
+              .then((cache) => {
                 cache.put(event.request, responseToCache);
               });
 
@@ -64,5 +65,5 @@ self.addEventListener('fetch', event => {
           }
         );
       })
-    );
+  );
 });

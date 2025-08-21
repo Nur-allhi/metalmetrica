@@ -56,11 +56,11 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
 
 
     return (
-        <div ref={ref} className="bg-white p-8 font-sans text-sm text-black">
+        <div ref={ref} className="bg-white p-12 font-sans text-base text-black">
             <header className="flex justify-between items-center mb-8 border-b pb-4">
                 <div>
-                     {organization?.name && <h1 className="text-3xl font-bold text-black">{organization.name}</h1>}
-                    <p className="text-gray-700">Project Weight {hasCost && '& Cost'} Report</p>
+                     {organization?.name && <h1 className="text-4xl font-bold text-black">{organization.name}</h1>}
+                    <p className="text-lg text-gray-700">Project Weight {hasCost && '& Cost'} Report</p>
                 </div>
                 {organization?.logoUrl && (
                     <Image src={organization.logoUrl} alt="Organization Logo" width={150} height={50} className="object-contain" data-ai-hint="company logo" />
@@ -68,32 +68,32 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
             </header>
 
             <main>
-                <div className="grid grid-cols-2 gap-8 mb-8">
+                <div className="grid grid-cols-2 gap-8 mb-10">
                     <div>
-                        <h2 className="text-lg font-bold mb-2 text-black">Project Details</h2>
+                        <h2 className="text-xl font-bold mb-2 text-black">Project Details</h2>
                         <p className="text-black"><span className="font-semibold">Project Name:</span> {project.name}</p>
                         <p className="text-black"><span className="font-semibold">Project ID:</span> {project.projectId}</p>
                         <p className="text-black"><span className="font-semibold">Client:</span> {project.customer}</p>
                     </div>
                     <div>
-                        <h2 className="text-lg font-bold mb-2 text-black">Report Details</h2>
+                        <h2 className="text-xl font-bold mb-2 text-black">Report Details</h2>
                         <p className="text-black"><span className="font-semibold">Report Date:</span> {new Date().toLocaleDateString()}</p>
                         <p className="text-black"><span className="font-semibold">Items:</span> {project.items.length}</p>
                     </div>
                 </div>
 
-                <h2 className="text-xl font-bold mb-4 text-black">Itemized List</h2>
+                <h2 className="text-2xl font-bold mb-4 text-black">Itemized List</h2>
                 <div className="border border-gray-300">
                     <Table className="border-collapse">
                         <TableHeader>
                             <TableRow className="bg-gray-100">
-                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Item Name</TableHead>
-                                <TableHead className="text-black border border-gray-300 p-2 font-bold">Dimensions / Profile</TableHead>
-                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Unit Weight (kg)</TableHead>
-                                {hasCost && <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Unit Cost ({currencySymbol})</TableHead>}
-                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Qty</TableHead>
-                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Total Weight (kg)</TableHead>
-                                {hasCost && <TableHead className="text-black border border-gray-300 p-2 font-bold text-center">Total Cost ({currencySymbol})</TableHead>}
+                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-center text-base">Item Name</TableHead>
+                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-base">Dimensions / Profile</TableHead>
+                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-center text-base">Unit Weight (kg)</TableHead>
+                                {hasCost && <TableHead className="text-black border border-gray-300 p-2 font-bold text-center text-base">Unit Cost ({currencySymbol})</TableHead>}
+                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-center text-base">Qty</TableHead>
+                                <TableHead className="text-black border border-gray-300 p-2 font-bold text-center text-base">Total Weight (kg)</TableHead>
+                                {hasCost && <TableHead className="text-black border border-gray-300 p-2 font-bold text-center text-base">Total Cost ({currencySymbol})</TableHead>}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -104,25 +104,25 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
                                        <span className='capitalize font-semibold'>{item.type === 'plate' ? 'Steel Plate (Quality)' : item.type === 'plate-imperial' ? 'Steel Plate (Non-Quality)' : item.type}</span> - {renderItemDimensions(item)}
                                     </TableCell>
                                     <TableCell className="text-center">{item.weight.toFixed(2)}</TableCell>
-                                    {hasCost && <TableCell className="text-center">{item.cost !== null ? `${currencySymbol}${item.cost.toFixed(2)}` : 'N/A'}</TableCell>}
+                                    {hasCost && <TableCell className="text-center">{item.cost !== null ? <><span className='font-bold'>{currencySymbol}</span>{item.cost.toFixed(2)}</> : 'N/A'}</TableCell>}
                                     <TableCell className="text-center">{item.quantity}</TableCell>
                                     <TableCell className="text-center font-medium">{ (item.weight * item.quantity).toFixed(2) }</TableCell>
-                                    {hasCost && <TableCell className="text-center font-medium">{item.cost !== null ? `${currencySymbol}${(item.cost * item.quantity).toFixed(2)}` : 'N/A'}</TableCell>}
+                                    {hasCost && <TableCell className="text-center font-medium">{item.cost !== null ? <><span className='font-bold'>{currencySymbol}</span>{(item.cost * item.quantity).toFixed(2)}</> : 'N/A'}</TableCell>}
                                 </TableRow>
                             ))}
                         </TableBody>
                          <TableFooter>
                             <TableRow className="[&>td]:border [&>td]:border-gray-300 [&>td]:p-2 bg-gray-100">
-                                <TableCell colSpan={colSpanTotal} className="text-right font-bold text-lg pr-4 text-black">Project Totals</TableCell>
-                                <TableCell className="text-center font-bold text-lg text-black">{totalWeight.toFixed(2)} kg</TableCell>
-                                {hasCost && <TableCell className="text-center font-bold text-lg text-black">{currencySymbol}{totalCost?.toFixed(2)}</TableCell>}
+                                <TableCell colSpan={colSpanTotal} className="text-right font-bold text-xl pr-4 text-black">Project Totals</TableCell>
+                                <TableCell className="text-center font-bold text-xl text-black">{totalWeight.toFixed(2)} kg</TableCell>
+                                {hasCost && <TableCell className="text-center font-bold text-xl text-black"><span className="font-bold">{currencySymbol}</span>{totalCost?.toFixed(2)}</TableCell>}
                             </TableRow>
                         </TableFooter>
                     </Table>
                 </div>
             </main>
 
-            <footer className="mt-16 text-center text-xs text-gray-700">
+            <footer className="mt-16 text-center text-sm text-gray-700">
                 <p>Report generated by MetalMetrica on {new Date().toLocaleString()}</p>
                  {organization?.name && <p>{organization.name}</p>}
             </footer>
@@ -131,3 +131,4 @@ const ProjectReport = React.forwardRef<HTMLDivElement, ProjectReportProps>(({ pr
 });
 ProjectReport.displayName = 'ProjectReport';
 export default ProjectReport;
+

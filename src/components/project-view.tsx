@@ -167,7 +167,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
       return;
     }
 
-    html2canvas(input, { scale: 2 })
+    html2canvas(input, { scale: 3 })
       .then((canvas) => {
         const imgData = canvas.toDataURL('image/jpeg', 0.9);
         const pdf = new jsPDF('p', 'mm', 'a4');

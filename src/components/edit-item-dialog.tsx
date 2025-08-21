@@ -280,7 +280,7 @@ export default function EditItemDialog({ open, onOpenChange, onEditItem, item }:
                 Update the item's specifications.
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto pr-6">
+            <div className="grid gap-4 p-4 max-h-[60vh] overflow-y-auto">
               <FormField
                 control={form.control}
                 name="name"

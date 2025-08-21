@@ -180,7 +180,7 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
               <ProjectReport ref={reportRef} project={project} organization={organization} />
           )}
         </div>
-        <div className="grid gap-6 md:gap-8 md:grid-cols-[1fr_300px]">
+        <div className="grid gap-6 md:gap-8 md:grid-cols-1">
             <div className="grid gap-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">
@@ -243,19 +243,15 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
                         <ProjectSummaryChart data={chartData} />
                     </CardContent>
                     <CardFooter>
-                         <div
+                         <Button 
+                            className="w-full" 
+                            disabled={!project || !organization}
                             onClick={handlePrint}
-                            className="w-full cursor-pointer"
                             title={!organization ? "Please set up an organization first" : ""}
                         >
-                            <Button 
-                                className="w-full" 
-                                disabled={!project || !organization}
-                            >
-                                <Download />
-                                Generate Report
-                            </Button>
-                        </div>
+                            <Download />
+                            Generate Report
+                        </Button>
                     </CardFooter>
                 </Card>
             </div>
@@ -280,3 +276,5 @@ export default function ProjectView({ project, organization }: ProjectViewProps)
     </>
   )
 }
+
+    

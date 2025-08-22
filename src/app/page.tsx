@@ -198,30 +198,27 @@ export default function Home() {
                       loading={loading}
                   />
               </Sidebar>
-              <SidebarInset>
-                <div className='flex flex-col h-screen'>
-                    <MobileHeader />
-                    <Header className="hidden sm:flex" />
-                    <main className='flex-1 overflow-y-auto'>
-                      <Tabs defaultValue="single">
-                        <div className="sticky top-0 sm:top-14 z-30 bg-background/95 backdrop-blur-sm">
-                            <TabsList className="px-4 sm:px-6">
-                            <TabsTrigger value="single">Single Calc</TabsTrigger>
-                            <TabsTrigger value="projects">Projects</TabsTrigger>
-                            </TabsList>
-                            <div className="border-b -mt-px"></div>
-                        </div>
-                        <div className='p-4 sm:p-6'>
-                            <TabsContent value="single">
-                                <CalculatorCard />
-                            </TabsContent>
-                            <TabsContent value="projects">
-                                {renderProjectContent()}
-                            </TabsContent>
-                        </div>
-                      </Tabs>
-                    </main>
-                </div>
+              <SidebarInset className="flex flex-col">
+                <MobileHeader />
+                <Header className="hidden sm:flex" />
+                <main className='flex-1 flex flex-col overflow-hidden'>
+                  <Tabs defaultValue="single" className="flex flex-col flex-1 overflow-hidden">
+                    <div className="flex-shrink-0 border-b">
+                        <TabsList className="px-4 sm:px-6">
+                        <TabsTrigger value="single">Single Calc</TabsTrigger>
+                        <TabsTrigger value="projects">Projects</TabsTrigger>
+                        </TabsList>
+                    </div>
+                    <div className='flex-1 overflow-y-auto p-4 sm:p-6'>
+                        <TabsContent value="single">
+                            <CalculatorCard />
+                        </TabsContent>
+                        <TabsContent value="projects">
+                            {renderProjectContent()}
+                        </TabsContent>
+                    </div>
+                  </Tabs>
+                </main>
               </SidebarInset>
           </div>
       </SidebarProvider>

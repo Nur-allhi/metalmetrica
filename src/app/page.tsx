@@ -151,19 +151,19 @@ export default function Home() {
               </Sidebar>
               <SidebarInset>
                   <Header />
-                  <main className="flex flex-1 flex-col gap-4 p-4 sm:p-6 overflow-hidden">
+                  <main className="flex flex-1 flex-col gap-4 overflow-hidden">
                       <Tabs defaultValue="single" className="flex-1 flex flex-col overflow-hidden h-full">
-                        <div className="flex items-center">
-                            <SidebarTrigger className="md:hidden" />
-                            <TabsList>
+                        <div className="flex items-center border-b px-4 py-2 sm:py-0 sm:px-6">
+                            <SidebarTrigger className="sm:hidden" />
+                            <TabsList className="ml-auto sm:ml-0">
                             <TabsTrigger value="single">Single Calc</TabsTrigger>
                             <TabsTrigger value="projects">Projects</TabsTrigger>
                             </TabsList>
                         </div>
-                        <TabsContent value="single" className="mt-4">
+                        <TabsContent value="single" className="mt-4 p-4 sm:p-6 sm:pt-4">
                             <CalculatorCard />
                         </TabsContent>
-                        <TabsContent value="projects" className="flex-1 flex flex-col mt-4 overflow-y-auto">
+                        <TabsContent value="projects" className="flex-1 flex flex-col overflow-y-auto p-4 sm:p-6 sm:pt-4">
                             {renderProjectContent()}
                         </TabsContent>
                       </Tabs>

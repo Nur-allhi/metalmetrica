@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus } from "lucide-react";
+import { Plus, LogIn } from "lucide-react";
 import useLocalStorage from "@/hooks/use-local-storage";
 import { useAuth } from "@/components/auth-provider";
 import { getProjects, addProject as addProjectToDb } from "@/services/firestore";
@@ -21,11 +21,60 @@ import CalculatorCard from "@/components/calculator-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProjectSidebar from "@/components/project-sidebar";
 import ProjectView from "@/components/project-view";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import AddProjectDialog from "@/components/add-project-dialog";
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/logo";
 import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import SaveProgressDialog from "@/components/save-progress-dialog";
+
+const MobileHeader = () => {
+    const { user, signInWithGoogle } = useAuth();
+    const [isSaveDialogOpen, setSaveDialogOpen] = useState(false);
+
+    const getInitials = (name?: string | null) => {
+        if (!name) return "";
+        return name.split(' ').map(n => n[0]).join('');
+    };
+
+    const handleSignIn = () => {
+        if (user && user.isAnonymous) {
+            setSaveDialogOpen(true);
+        } else if (!user) {
+            signInWithGoogle();
+        }
+    };
+
+    return (
+        <>
+            <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:hidden">
+                <SidebarTrigger />
+                <div className="ml-auto flex items-center gap-2">
+                    {user && !user.isAnonymous ? (
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={user.photoURL || undefined} alt={user.displayName || "User"} data-ai-hint="user avatar" />
+                            <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
+                        </Avatar>
+                    ) : (
+                        <Button variant="ghost" size="icon" onClick={handleSignIn}>
+                            <LogIn className="h-5 w-5" />
+                        </Button>
+                    )}
+                </div>
+            </header>
+            <SaveProgressDialog
+                open={isSaveDialogOpen}
+                onOpenChange={setSaveDialogOpen}
+                onConfirm={() => {
+                    setSaveDialogOpen(false);
+                    signInWithGoogle();
+                }}
+            />
+        </>
+    );
+};
+
 
 export default function Home() {
   const { user, loading: authLoading } = useAuth();
@@ -150,11 +199,13 @@ export default function Home() {
                   />
               </Sidebar>
               <SidebarInset>
-                  <Header />
-                  <main className="flex flex-1 flex-col gap-4 overflow-hidden">
+                    <div className="hidden sm:block">
+                        <Header />
+                    </div>
+                    <MobileHeader />
+                  <main className="flex flex-1 flex-col overflow-hidden">
                       <Tabs defaultValue="single" className="flex-1 flex flex-col overflow-hidden h-full">
                         <div className="flex items-center border-b px-4 py-2 sm:py-0 sm:px-6">
-                            <SidebarTrigger className="sm:hidden" />
                             <TabsList className="ml-auto sm:ml-0">
                             <TabsTrigger value="single">Single Calc</TabsTrigger>
                             <TabsTrigger value="projects">Projects</TabsTrigger>

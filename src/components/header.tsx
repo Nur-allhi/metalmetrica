@@ -19,11 +19,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import SaveProgressDialog from "./save-progress-dialog";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
-interface HeaderProps {
-}
+interface HeaderProps extends React.HTMLAttributes<HTMLElement> {}
 
-export default function Header({}: HeaderProps) {
+export default function Header({className, ...props}: HeaderProps) {
   const { user, signInWithGoogle, logout } = useAuth();
   const [isSaveDialogOpen, setSaveDialogOpen] = useState(false);
 
@@ -42,7 +42,7 @@ export default function Header({}: HeaderProps) {
 
   return (
     <>
-      <header className="sticky top-0 z-30 hidden h-auto items-center gap-4 border-b bg-background px-6 sm:flex no-print">
+      <header className={cn("sticky top-0 z-30 h-auto items-center gap-4 border-b bg-background px-6 sm:flex no-print", className)} {...props}>
         <div className="flex items-center gap-2">
           <Logo className="h-6 w-6 text-primary" />
           <h1 className="text-xl font-bold">MetalMetrica</h1>

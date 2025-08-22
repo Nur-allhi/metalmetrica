@@ -21,7 +21,7 @@ import CalculatorCard from "@/components/calculator-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProjectSidebar from "@/components/project-sidebar";
 import ProjectView from "@/components/project-view";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import AddProjectDialog from "@/components/add-project-dialog";
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/logo";
@@ -152,7 +152,7 @@ export default function Home() {
   const renderProjectContent = () => {
     if (loading) {
         return (
-            <div className="p-4 md:p-0">
+            <div>
                 <Card>
                     <CardHeader><Skeleton className="h-8 w-3/4" /></CardHeader>
                     <CardContent><Skeleton className="h-40 w-full" /></CardContent>
@@ -198,27 +198,25 @@ export default function Home() {
                       loading={loading}
                   />
               </Sidebar>
-              <SidebarInset className="flex flex-col">
-                    <div className="hidden sm:block">
-                        <Header />
+              <SidebarInset>
+                <Header className="hidden sm:block" />
+                <MobileHeader />
+                <main className="flex-1 overflow-auto p-4 sm:p-6">
+                  <Tabs defaultValue="single">
+                    <div className="flex items-center border-b">
+                        <TabsList className="ml-auto sm:ml-0">
+                        <TabsTrigger value="single">Single Calc</TabsTrigger>
+                        <TabsTrigger value="projects">Projects</TabsTrigger>
+                        </TabsList>
                     </div>
-                    <MobileHeader />
-                    <main className="flex-1 flex flex-col overflow-auto">
-                      <Tabs defaultValue="single" className="flex flex-col overflow-hidden flex-1">
-                        <div className="flex items-center border-b px-4 sm:px-6">
-                            <TabsList className="ml-auto sm:ml-0">
-                            <TabsTrigger value="single">Single Calc</TabsTrigger>
-                            <TabsTrigger value="projects">Projects</TabsTrigger>
-                            </TabsList>
-                        </div>
-                        <TabsContent value="single" className="flex-1 overflow-y-auto p-4 sm:p-6">
-                            <CalculatorCard />
-                        </TabsContent>
-                        <TabsContent value="projects" className="flex-1 flex flex-col overflow-y-auto p-4 sm:p-6">
-                            {renderProjectContent()}
-                        </TabsContent>
-                      </Tabs>
-                    </main>
+                    <TabsContent value="single" className="mt-4">
+                        <CalculatorCard />
+                    </TabsContent>
+                    <TabsContent value="projects" className="mt-4">
+                        {renderProjectContent()}
+                    </TabsContent>
+                  </Tabs>
+                </main>
               </SidebarInset>
           </div>
       </SidebarProvider>

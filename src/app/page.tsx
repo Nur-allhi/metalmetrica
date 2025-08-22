@@ -198,18 +198,18 @@ export default function Home() {
                       loading={loading}
                   />
               </Sidebar>
-              <SidebarInset className="flex flex-col">
+              <SidebarInset>
                 <MobileHeader />
                 <Header className="hidden sm:flex" />
-                <main className='flex-1 flex flex-col overflow-hidden'>
-                  <Tabs defaultValue="single" className="flex flex-col flex-1 overflow-hidden">
-                    <div className="flex-shrink-0 border-b">
+                <main className='flex-1 overflow-auto sm:pt-14'>
+                  <Tabs defaultValue="single" className="flex flex-col flex-1">
+                    <div className="sticky top-0 sm:top-14 z-30 flex-shrink-0 border-b bg-background/95 backdrop-blur-sm">
                         <TabsList className="px-4 sm:px-6">
-                        <TabsTrigger value="single">Single Calc</TabsTrigger>
-                        <TabsTrigger value="projects">Projects</TabsTrigger>
+                            <TabsTrigger value="single">Single Calc</TabsTrigger>
+                            <TabsTrigger value="projects">Projects</TabsTrigger>
                         </TabsList>
                     </div>
-                    <div className='flex-1 overflow-y-auto p-4 sm:p-6'>
+                    <div className='flex-1 p-4 sm:p-6'>
                         <TabsContent value="single">
                             <CalculatorCard />
                         </TabsContent>

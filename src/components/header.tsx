@@ -42,7 +42,7 @@ export default function Header({className, ...props}: HeaderProps) {
 
   return (
     <>
-      <header className={cn("sticky top-0 z-30 h-auto items-center gap-4 border-b bg-background px-6 sm:flex no-print", className)} {...props}>
+      <header className={cn("sticky top-0 z-40 h-14 items-center gap-4 border-b bg-background/95 px-6 backdrop-blur-sm no-print", className)} {...props}>
         <div className="flex items-center gap-2">
           <Logo className="h-6 w-6 text-primary" />
           <h1 className="text-xl font-bold">MetalMetrica</h1>

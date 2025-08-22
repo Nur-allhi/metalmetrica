@@ -21,7 +21,7 @@ import CalculatorCard from "@/components/calculator-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProjectSidebar from "@/components/project-sidebar";
 import ProjectView from "@/components/project-view";
-import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { SidebarProvider, Sidebar, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import AddProjectDialog from "@/components/add-project-dialog";
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/logo";
@@ -48,7 +48,7 @@ const MobileHeader = () => {
 
     return (
         <>
-            <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:hidden">
+            <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-4 sm:hidden">
                 <SidebarTrigger />
                 <div className="ml-auto flex items-center gap-2">
                     {user && !user.isAnonymous ? (
@@ -199,24 +199,29 @@ export default function Home() {
                   />
               </Sidebar>
               <SidebarInset>
-                <Header className="hidden sm:block" />
-                <MobileHeader />
-                <main className="flex-1 overflow-auto p-4 sm:p-6">
-                  <Tabs defaultValue="single">
-                    <div className="flex items-center border-b">
-                        <TabsList className="ml-auto sm:ml-0">
-                        <TabsTrigger value="single">Single Calc</TabsTrigger>
-                        <TabsTrigger value="projects">Projects</TabsTrigger>
-                        </TabsList>
-                    </div>
-                    <TabsContent value="single" className="mt-4">
-                        <CalculatorCard />
-                    </TabsContent>
-                    <TabsContent value="projects" className="mt-4">
-                        {renderProjectContent()}
-                    </TabsContent>
-                  </Tabs>
-                </main>
+                <div className='flex flex-col h-screen'>
+                    <MobileHeader />
+                    <Header className="hidden sm:flex" />
+                    <main className='flex-1 overflow-y-auto'>
+                      <Tabs defaultValue="single">
+                        <div className="sticky top-0 sm:top-14 z-30 bg-background/95 backdrop-blur-sm">
+                            <TabsList className="px-4 sm:px-6">
+                            <TabsTrigger value="single">Single Calc</TabsTrigger>
+                            <TabsTrigger value="projects">Projects</TabsTrigger>
+                            </TabsList>
+                            <div className="border-b -mt-px"></div>
+                        </div>
+                        <div className='p-4 sm:p-6'>
+                            <TabsContent value="single">
+                                <CalculatorCard />
+                            </TabsContent>
+                            <TabsContent value="projects">
+                                {renderProjectContent()}
+                            </TabsContent>
+                        </div>
+                      </Tabs>
+                    </main>
+                </div>
               </SidebarInset>
           </div>
       </SidebarProvider>

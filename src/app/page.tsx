@@ -203,18 +203,18 @@ export default function Home() {
                         <Header />
                     </div>
                     <MobileHeader />
-                  <main className="flex flex-1 flex-col overflow-hidden">
-                      <Tabs defaultValue="single" className="flex-1 flex flex-col overflow-hidden h-full">
+                  <main className="flex-1 overflow-hidden">
+                      <Tabs defaultValue="single" className="flex flex-col overflow-hidden h-full">
                         <div className="flex items-center border-b px-4 py-2 sm:py-0 sm:px-6">
                             <TabsList className="ml-auto sm:ml-0">
                             <TabsTrigger value="single">Single Calc</TabsTrigger>
                             <TabsTrigger value="projects">Projects</TabsTrigger>
                             </TabsList>
                         </div>
-                        <TabsContent value="single" className="mt-4 p-4 sm:p-6 sm:pt-4">
+                        <TabsContent value="single" className="mt-4 p-4 sm:p-6">
                             <CalculatorCard />
                         </TabsContent>
-                        <TabsContent value="projects" className="flex-1 flex flex-col overflow-y-auto p-4 sm:p-6 sm:pt-4">
+                        <TabsContent value="projects" className="flex-1 flex flex-col overflow-y-auto p-4 sm:p-6">
                             {renderProjectContent()}
                         </TabsContent>
                       </Tabs>
